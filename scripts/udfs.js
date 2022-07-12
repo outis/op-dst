@@ -179,6 +179,7 @@
 				if (! $toPip.length) {
 					$toPip = $dsfs.last();
 				}
+				//$toPip.each((i, elt) => pips.pippify($elt));
 				pips.pippify($toPip);
 			}
 

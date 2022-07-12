@@ -432,6 +432,13 @@
 		},
 
 		pippify($elt, {name, value=0}={}) {
+			if ($elt instanceof $) {
+				if ($elt.length > 1) {
+					return $elt.each((i, elt) => this.pippify(elt));
+				}
+			} else {
+				$elt = $($elt);
+			}
 			name ||= dsf.name($elt[0]);
 			// .readonly to disable DSF framework's click listener & field editor
 			$elt.addClass('pips readonly');
