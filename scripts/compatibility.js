@@ -1231,6 +1231,11 @@
 				}
 			}
 			*/
+			for (const dst of Object.values(this.export.dst)) {
+				if (is_function(dst._finish)) {
+					dst._finish();
+				}
+			}
 		},
 
 		exportField(theirs, value, mine, extra={}) {

@@ -469,6 +469,12 @@
 						this._gather(...arguments);
 					},
 
+					_finish() {
+						if (Object.keys(this._items).length) {
+							this._store();
+						}
+					},
+
 					_flavor(names, values, base) {
 						compatibility.export.flavor(
 							base + '{i}', values, names.value
@@ -489,7 +495,8 @@
 							item.mine = compatibility.aliasFor(names);
 						}
 						// adding their items is delayed, so register a handler to actually store them in DSFs when done collecting
-						module.on('preSave', 'old_wod_generic._store', this._store.bind(this));
+						// Handled via this._finish instead of preSave handler
+						//module.on('preSave', 'old_wod_generic._store', this._store.bind(this));
 						if (! (category in this._items)) {
 							this._items[category] = [];
 						}
