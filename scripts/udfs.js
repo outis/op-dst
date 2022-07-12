@@ -123,16 +123,24 @@
 			$(document).on('click', '.udf + .controls button', function (evt) {
 				// prevent form submission
 				evt.preventDefault();
+				return false;
 			});
 
 			// for list-based UDFs
 			$(document).on('click', '.udf + .controls .add', function (evt) {
 				udfs.add(udfs.udfFor(evt.target));
+				// prevent form submission.
+				// For some reason, generic button.click above doesn't prevent
+				evt.preventDefault();
+				return false;
 			});
 
 			// for table-based UDFs
 			$(document).on('click', '.udf + * .controls .add', function (evt) {
 				udfs.add(udfs.udfFor(evt.target));
+				// prevent form submission.
+				evt.preventDefault();
+				return false;
 			});
 
 			$(document).on('click', '.udf .del', function (evt) {
@@ -149,6 +157,9 @@
 					}
 					udfs.del($item);
 				}
+				// prevent form submission.
+				evt.preventDefault();
+				return false;
 			});
 		},
 
