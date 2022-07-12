@@ -659,7 +659,7 @@
 							compatibility.export.dynamicField(
 								klass.eval(names.cat, {i}),
 								category,
-								item.mine
+								{mine: item.mine}
 							);
 						}).bind(this);
 
@@ -676,7 +676,7 @@
 									compatibility.export.dynamicField(
 										klass.eval(names.item, {i,j}),
 										this._preserve(item, 'bg', category),
-										item.mine
+										{mine: item.mine}
 									);
 								}
 							}
@@ -775,7 +775,7 @@
 					},
 					
 					health(names, values) {
-						compatibility.exportField('humanity_value', values.value, 'health');
+						compatibility.exportField('humanity_value', values.value, {mine: 'health'});
 					},
 					
 					merits(names, values) {
@@ -790,12 +790,12 @@
 						let theirs = dsf.nextName({name: 'other_trait_{i}', value: 'other{i}_value'});
 						
 						if (theirs.i <= 7) {
-							compatibility.export.dynamicField(theirs.name, name, mine);
-							compatibility.export.dynamicField(theirs.value, value, mine);
+							compatibility.export.dynamicField(theirs.name, name, {mine});
+							compatibility.export.dynamicField(theirs.value, value, {mine});
 							if (theirs.name in compatibility.sesalia.simple) {
 								// also create misspelled fields
 								theirs.name = compatibility.sesalia.simple[theirs.name];
-								compatibility.export.dynamicField(theirs.name, name, mine);
+								compatibility.export.dynamicField(theirs.name, name, {mine});
 							}
 						} else {
 							theirs = dsf.nextName('misc{i}');
@@ -803,7 +803,7 @@
 								console.warn(`Cannot export ${mine}: ran out of fields.`);
 								return;
 							}
-							compatibility.export.dynamicField(theirs, `${name}: ${value}`, mine);
+							compatibility.export.dynamicField(theirs, `${name}: ${value}`, {mine});
 						}
 					},
 				}, // /export
@@ -1009,8 +1009,8 @@
 						/*
 						  let theirs = dsf.nextName(, {start:0});
 						  
-						  compatibility.export.dynamicField(theirs.name, name, mine);
-						  compatibility.export.dynamicField(theirs.value, value, mine);
+						  compatibility.export.dynamicField(theirs.name, name, {mine});
+						  compatibility.export.dynamicField(theirs.value, value, {mine});
 						*/
 					},
 

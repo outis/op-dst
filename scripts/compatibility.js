@@ -146,7 +146,7 @@
 			
 			all(names, values, mine) {
 				for (let key in names) {
-					this.export.dynamicField(names[key], values[key], mine);
+					this.export.dynamicField(names[key], values[key], {mine});
 				}
 			},
 			
@@ -177,13 +177,13 @@
 				this.export.generic('equipment', ...arguments);
 			},
 
-			dynamicField(theirs, value, mine, extra={}) {
+			dynamicField(theirs, value, extra={}) {
 				if (extra.classes) {
 					extra.classes += 'dyn';
 				} else {
 					extra.classes = 'dyn';
 				}
-				return this.exportField(theirs, value, mine, extra);
+				return this.exportField(theirs, value, extra);
 			},
 
 			field(name, value, mine, options={}) {
@@ -193,7 +193,7 @@
 				}
 				let theirs = dsf.nextName(name, options);
 
-				this.export.dynamicField(theirs, value, mine);
+				this.export.dynamicField(theirs, value, {mine});
 			},
 
 			flavor(name, values, mine, options={}) {
@@ -873,7 +873,7 @@
 				&& slug_a.replace(reEd, '') == slug_b.replace(reEd, '');
 		},
 		
-		createField(theirs, mine, {attrs='', classes=''}={}) {
+		createField(theirs, {mine, attrs='', classes=''}={}) {
 			theirs = dsf.addPrefix(theirs);
 			if (mine) {
 				mine = dsf.addPrefix(mine);
@@ -905,7 +905,7 @@
 		createSimpleFields() {
 			// eachSimple
 			for (let [theirs, mine] of this.simpleAliases()) {
-				this.createField(theirs, mine);
+				this.createField(theirs, {mine});
 			}
 		},
 
@@ -920,7 +920,7 @@
 				for (let {theirs, mine} of this.expandTo(t, m, envs)) {
 					$mine = $(`.${mine}`);
 					if ($mine.length) {
-						this.createField(theirs, mine);
+						this.createField(theirs, {mine});
 					} else {
 						break;
 					}
@@ -1176,11 +1176,11 @@
 			}
 			//this.createFields();
 			for (const [theirs, mine] of this.simpleAliases({prefix:false, skipCorrections:true})) {
-				this.exportField(theirs, dsf.value(mine), mine);
+				this.exportField(theirs, dsf.value(mine), {mine});
 			}
 			/*
 			this.eachSimple(function (theirs, mine) {
-				this.exportField(theirs, dsf.value(mine), mine);
+				this.exportField(theirs, dsf.value(mine), {mine});
 			}, this, {prefix:true});
 			*/
 			for (let {mine, value, theirs, env} of this.myTemplateEntries({prefix:false})) {
@@ -1196,7 +1196,7 @@
 				}
 				// use env & overwrite old fields of theirs
 				theirs = klass.eval(theirs, env);
-				this.export.dynamicField(theirs, value, mine);
+				this.export.dynamicField(theirs, value, {mine});
 			}
 
 			// handle complex cases
@@ -1238,8 +1238,8 @@
 			}
 		},
 
-		exportField(theirs, value, mine, extra={}) {
-			this.createField(theirs, mine, extra);
+		exportField(theirs, value, extra={}) {
+			this.createField(theirs, extra);
 			dsf.value(theirs, value);
 		},
 
