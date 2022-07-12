@@ -45,7 +45,7 @@
 
 		$dsf(name) {
 			name = this.addPrefix(name);
-			return $context.find(`.${name}`);
+			return this.$context.find(`.${name}`);
 		},
 
 		$dsfs(context, {excludeCompatibility=false}={}) {
