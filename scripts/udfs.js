@@ -987,8 +987,8 @@
 		},
 
 		$udf(base) {
-			// TODO: fix-exclude .compatibility
-			return this.$context.find(`.${base} .udf`);
+			// only look in .page to exclude compatibility fields
+			return this.$context.find(`.page .${base} .udf`);
 		},
 
 		/**
