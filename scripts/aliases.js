@@ -307,6 +307,14 @@
 				// importing handled by edition module, so prevent compatibility import
 				override(data) {},
 			},
+
+			cWoD_Revised: {
+				export: {
+					_start() {
+						compatibility.export.exportField('powers_value', 'Arcanoi');
+					},
+				},
+			},
 			
 			old_wod_generic: {
 				/**
