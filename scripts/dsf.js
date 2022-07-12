@@ -5,32 +5,30 @@
 	 */
 	let dsf = globals.dsf = {
 		/* DST event handlers */
-		postLoad({containerId}, $context) {
+		preLoad({containerId, slug}, $context) {
 			this.$context = $context;
 			this.sheetId = containerId;
+			this.slug = slug;
+		},
+		
+		postLoad(opts, $context) {
 			this.each(function (elt, $elt, name, value) {
 				// strip 'Click to edit' text?
 				if (editMarker == elt.textContent) {
 					elt.textContent = '';
 				}
-				value = this.override(name, value)
-				if (is_flag(elt, name, value)) {
-				} else if (pips.is(elt, name, value)) {
-					//let val = $elt.text() || elt.dataset.value || $elt.data('value');
-					$elt.text('');
-					pips.pippify($elt, {name, value});
-				} else {
-				}
 			}, this);
 
-			this.$context.find('input[type="checkbox"].dsf').each(function (i, elt) {
-				if (elt.className.match(/_specialty\b/)) {
-					elt.title = 'Specialty';
-				}
+			this.$context.find('.dsf.specialty').each(function (i, elt) {
+				elt.title = 'Specialty';
 			});
 		},
 
 		/* */
+		addPrefix(name) {
+			return name.replace(/^(?:dsf_)?/, 'dsf_');
+		},
+		
 		/** Remove the value set on a DSF node. */
 		clear(eltDsf) {
 			delete eltDsf.dataset.value;
@@ -40,6 +38,23 @@
 				$eltDsf.empty();
 			}
 		},
+		
+		count(tpl) {
+			return this.last(tpl).i;
+		},
+
+		$dsf(name) {
+			name = this.addPrefix(name);
+			return $context.find(`.${name}`);
+		},
+
+		$dsfs(context, {excludeCompatibility=false}={}) {
+			let $dsfs = $(context).find('.dsf');
+			if (excludeCompatibility) {
+				$dsfs = $dsfs.not(dsf => $(dsf).closest('.compatibility').length);
+			}
+			return $dsfs;
+		},
 
 		/**
 		 * @param {(Node, jQuery, string, string) => null} fn (element, $(element), name, value)
@@ -48,46 +63,121 @@
 			if (self) {
 				fn = fn.bind(self);
 			}
-			this.$context.find('.dsf').each(function (i, elt) {
+			this.$dsfs(this.$context).each(function (i, elt) {
 				let $elt = $(elt),
 					name = dsf.name(elt),
-					value = field.value(elt, name); // elt.dataset.value || $elt.data('value') || field.value(name);
-				fn(elt, $elt, name, value);
+					value = dsf.value(elt);
+				if (name) {
+					fn(elt, $elt, name, value);
+				} else {
+					console.log(`No name for dsf ${elt.className}`, elt);
+				}
 			});
 		},
 
 		/* make node's descendant DSFs editable */
 		editable(node) {
-			$(node)
-				.find('.dsf')
+			this.$dsfs($(node))
 				.not('.readonly')
 				//.not('.pips') // should be covered by .readonly
 				//.not('.hidden') // should be covered by .readonly
 				.each(function (i, elt) {
 					let name = dsf.stripPrefix(dsf.name(elt));
-					aisleten.characters.bindField(name, udfs.containerId, udfs.slug);
+					aisleten.characters.bindField(name, dsf.sheetId, dsf.slug);
 				});
 		},
+
+		entries(tpl) {
+			tpl = dsf.addPrefix(tpl);
+			let pre = klass.prefix(tpl);
+			return this.$context.find(`.dsf[class*=" ${pre}"]`)
+				.toArray()
+				.filter(elt => klass.matches(tpl, elt.className))
+				.map(elt => [this.name(elt), this.value(elt)]);
+		},
+
+		exists(name) {
+			return this.$dsf(name).length;
+		},
+		
+		isVolatile(node) {
+			return /(?:\b|_)curr_|\bcurrent\b/.test(node.className);
+		},
+
+		/**
+		 * Get the last name & index from the DSA matching the given name template.
+		 */
+		last(tpl) {
+			let entries = this.entries(tpl),
+				i =  entries.length,
+				last = entries[entries.length - 1],
+				name = last && last[0];
+			return {name, i};
+			
+			// can't simply grab last element, as it might not match tpl
+			/*
+			tpl = dsf.addPrefix(tpl);
+			let pre = klass.pre(tpl),
+				= this.$context.find(`.dsf[class*=" ${pre}"]:last-of-type`)
+				.toArray()
+				.filter(elt => klass.matches(tplMine, elt.className))
+				.map(elt => [this.name(elt), this.value(elt)]);
+			*/
+			/* could potentially use nameGen.last instead */
+		},
+
 
 		linked: {
 			base(name) {
 				if (this.isExtra(name)) {
-					return name.replace(/(^|_)extra_/, '$1perm_');
+					return name.replace(/(^|_)extra_/, '$1');
+				}
+			},
+			
+			bases(name) {
+				let bases = [], base;
+				if (this.isExtra(name)) {
+					if ((base = this.perm(name))) {
+						bases.push(base);
+					}
+					if ((base = this.curr(name))) {
+						bases.push(base);
+					}
+				}
+			},
+			
+			curr(name) {
+				if (this.isExtra(name)) {
+					return name.replace(/(^|_)extra_/, '$1curr_');
 				}
 			},
 
 			extra(name) {
 				if (this.isBase(name)) {
-					return name.replace(/(^|_)perm_/, '$1extra_');
+					return name.replace(/(^|_)(perm|curr)_/, '$1extra_');
+				}
+			},
+			
+			perm(name) {
+				if (this.isExtra(name)) {
+					return name.replace(/(^|_)extra_/, '$1perm_');
 				}
 			},
 			
 			isBase(name) {
-				return name.match(/(^|_)perm_/);
+				return /(^|_)(perm|curr)_/.test(name);
+			},
+
+			isCurr(name) {
+				return /(^|_)curr_/.test(name);
 			},
 			
 			isExtra(name) {
-				return name.match(/(^|_)extra_/);
+				return /(^|_)extra_/.test(name);
+			},
+
+			isPerm(name) {
+				return /(^|_)perm_/.test(name);
 			},
 
 			/*
@@ -95,16 +185,23 @@
 			},
 			*/
 		},
-		
-		isVolatile(node) {
-			return node.className.match(/(?:\b|_)curr_|\bcurrent\b/);
+
+		sectionName(elt) {
+			let $elt;
+			if ('string' == typeof(elt)) {
+				$elt = this.$context.find(elt);
+			} else if (elt instanceof $) {
+				$elt = elt;
+			} else {
+				$elt = $(elt);
+			}
+			let sectionElt = $elt.parent().closest('[class]')[0];
+			if (sectionElt) {
+				return sectionElt.className.split(/\s+/)[0];
+			}
 		},
 
-		addPrefix(name) {
-			return name.replace(/^(?:dsf_)?/, 'dsf_');
-		},
-
-		/** 
+		/**
 		 * A unique string for a name.
 		 *
 		 * Allows DSFs that use the same name from multiple sheets to be stored in local storage without colliding.
@@ -118,20 +215,50 @@
 		},
 		
 		name(elt) {
+			if (elt instanceof $) {
+				elt = elt[0];
+			}
 			return klass.param(elt, 'dsf');
 		},
 
-		/* get/set value from dsf */
-		value(name, value) {
-			name = this.addPrefix(name);
-			let $dsf = this.$context.find(`.${name}`);
-			if (value) {
-				$dsf.text(value);
+		/**
+		 * Sort out whether the given thing is a field name, element or jQuery result.
+		 */
+		resolve(field) {
+			let name, elt, $elt;
+			if ('string' == typeof(field)) {
+				name = this.stripPrefix(field);
+				$elt = this.$dsf(name);
+				elt = $elt[0];
+			} else {
+				if (field instanceof $) {
+					$elt = field;
+					elt = $elt[0];
+				} else {
+					elt = field;
+					$elt = $(field);
+				}
+				name = this.name(elt);
 			}
-			return $dsf.text();
+			return {name, elt, $elt};
 		},
 
-		// TODO: find better name
+		/* get/set value from dsf */
+		value(field, value) {
+			let {elt, $elt} = this.resolve(field);
+			if (! elt) {
+				return '';
+			}
+			if (value) {
+				$elt.text(value);
+				elt.dataset.value = value;
+				$elt.data('value', value);
+				return value;
+			}
+			return elt.dataset.value || $elt.data('value') || $elt.text();
+		},
+
+		// TODO: refactor-find better name
 		/**
 		 * Use value from local storage (if any) instead of value from page load.
 		 *
@@ -148,7 +275,7 @@
 			return value;
 		},
 
-		/* Volatile & DSFs are currently incompatible (as reordering changes field name, but localStorage isn't updated) */
+		/* Volatile & UDFs are currently incompatible (as reordering changes field name, but localStorage isn't updated) */
 		update(eltField, name, value) {
 			eltField.dataset.value = value;
 			if (this.isVolatile(eltField)) {
@@ -159,3 +286,4 @@
 			//this.value(name, value);
 		},
 	};
+	mixIn(dsf, nameGen);

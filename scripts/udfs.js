@@ -3,18 +3,26 @@
 	 * 
 	 * @requires dfs, klass, pips, reorder
 	 */
-	let udfs = globals.udfs = {
-		// 
+	const udfs = globals.udfs = {
+		//
 		itemNumberWidth: 2,
+		// maximum number of items allowed in a UDF
+		maxCount: 100,
 		udfSel: '.udf',
+		get $udfs() {
+			if (! this._$udfs && this.$context) {
+				// exclude UDFs outside of page elements so as to exclude compatibility fields
+				//this._$udfs = this.$context.find('.page ' + this.udfSel);
+				this._$udfs = this.$context.find(this.udfSel);
+			}
+			return this._$udfs;
+		},
 
 		/* DST event handlers */
-		init() {
-			version.register();
-		},
-		
 		preLoad({slug}, $context) {
-			this.$context = $context;
+			module.tarryFor('compatibility');
+			module.tarryFor('edition');
+			
 			this.slug = slug;
 			this._createControls();
 			this._subscribeListeners();
@@ -26,59 +34,141 @@
 			udfs.reCountAll();
 		},
 
+		/* Update old versions */
+		updaters: {
+			//'1.1': function () { console.log('v1.1'); },
+			//'2.5': function () { console.log('v2.5'); },
+			'1': function (data) {
+				//console.log('v1');
+				let parts;
+				for (let name in data) {
+					parts = this.parseOld(this.pluralize(name));
+					if (parts.base) {
+						this.renameField(data, name, parts);
+					}
+				}
+			},
+			//'2.1': function () { console.log('v2.5'); },
+		},
+
+
+		/** Determines whether the given field name uses an old format ({base}_{}_{i}). */
+		parseOld(name) {
+			let parts = name.match(/^(?:dsf_)?(?<dyn>dyn_)?(?<mid>\w+)_(?<i>\d+)$/);
+			if (parts && ! parts.groups.dyn) {
+				let mid = parts.groups.mid.dromedaryCase();
+				if (this.$udf(mid).length) {
+					return {base: mid, i: parts.groups.i};
+				}
+				// check for named subfields; if mid doesn't have any, 0 iterations
+				for (let [base, sub] of range.halves(parts.groups.mid, '_')) {
+					base = base.dromedaryCase();
+					if (this.$udf(base).length) {
+						sub &&= sub.dromedaryCase();
+						return {base, sub, i: parts.groups.i};
+					}
+				}
+			}
+			return {};
+		},
+
+		pluralize(name) {
+			return name.replace(/^(dyn_)?(thorn|dark_passion)(_|$)/, '$1$2s$3');
+		},
+
+		renameField(data, name, {base, sub, i}) {
+			let newName = `dyn_${base}_${i}`;
+			if (sub) {
+				newName += '_' + sub;
+			}
+			dsa.rename(name, newName, {data});
+		},
 		
-		/* */
+		/*  */
+		/**
+		 */
+		_appendItem(eltList, item) {
+			$(eltList).append(item);
+			$(eltList).trigger('mll.udfs.add', item);
+		},
 		
+		/**
+		 * Creates list & item controls.
+		 */
 		_createControls() {
-			this.$listControls = $('<div class="controls"><button class="add" title="add">+</button></div>'),
+			this.$listControls = $('<div class="controls"><button class="add" title="add"></button></div>');
 			// note: can't use button for "draggable" handle, as jQueryUI doesn't recognize it (click overrides drag).
-			this.$itemControls = $('<span class="controls"><span class="del" title="delete">&ndash;</span><span class="drag" title="drag">&#x21C5;</span></span>');
+			this.$itemControls = $('<span class="controls"><span class="del" title="delete"></span><span class="drag" title="click or drag to move"></span></span>');
 		},
 
 		/**
 		 * Ensures that a UDF has a DSF to hold its size.
+		 *
+		 * @param {HTMLElement} udf
+		 * @param {Object} [options]
+		 * @param {base} [options.base] Base portion of `udf`'s name.
+		 * @param {jQuery} [options.$udf] `$(udf)`. If not provided, created from `udf`.
 		 */
 		_createSizeDsf(udf, {base, $udf}={}) {
-			base ||= this.base(udf);
-			$udf ||= $(udf);
-			let $size = this.sizeField(udf, base);
-			if (! $size.length) {
-				$udf.before($(`<span class="dsf ${$size.name} readonly hidden"></span>`));
-			}
+			this.$size(udf, {base, $udf});
 		},
 
 		_createSizeDsfs() {
-			this.$context.find(this.udfSel).each(function (i, elt) {
+			this.$udfs.each(function (i, elt) {
 				udfs._createSizeDsf(elt);
 			});
 		},
 
 		_subscribeListeners() {
 			$(document).on('click', '.udf + .controls button', function (evt) {
+				// prevent form submission
 				evt.preventDefault();
 			});
-			
+
+			// for list-based UDFs
 			$(document).on('click', '.udf + .controls .add', function (evt) {
-				udfs.add($(evt.target).closest('.controls').prev()[0]);
+				udfs.add(udfs.udfFor(evt.target));
+			});
+
+			// for table-based UDFs
+			$(document).on('click', '.udf + * .controls .add', function (evt) {
+				udfs.add(udfs.udfFor(evt.target));
 			});
 
 			$(document).on('click', '.udf .del', function (evt) {
-				udfs.del($(evt.target).closest('.udf > *'));
-			});
-			
-			$(document).on('drag', '.udf .drag', function (evt) {
+				// ignore click if currently taking another action
+				if (! $(evt.target).closest(udfs.udfSel).hasClass('busy')) {
+					let $item = $(evt.target).closest('.udf > *');
+					switch ($item) {
+					case 'dd':
+						udfs.del($item.prev('dt'));
+						break;
+					case 'dt':
+						udfs.del($item.next('dd'));
+						break;
+					}
+					udfs.del($item);
+				}
 			});
 		},
-		
-		add(eltList, {tpl}={}) {
-			tpl ||= this.template(eltList);
-			let eltItem, $dsfs;
+
+		/**
+		 * Create & add a new item to a list, setting behavior.
+		 *
+		 * @param {HTMLElement} eltList Dynamic list to add to.
+		 */
+		add(eltList) {
+			let eltItem, $dsfs, $toPip;
 			eltItem = this.newItem(eltList);
-			$(eltList).append(eltItem);
-			if (   (pips.is(eltItem))
+			this._appendItem(eltList, eltItem);
+			if (   (pips.has(eltItem))
 				&& ($dsfs = $(eltItem).find('span.dsf')).length >= 2)
 			{
-				pips.pippify($dsfs.last());
+				$toPip = $dsfs.filter('.pips');
+				if (! $toPip.length) {
+					$toPip = $dsfs.last();
+				}
+				pips.pippify($toPip);
 			}
 
 			//this.renumberItem(eltItem, iItem);
@@ -90,28 +180,69 @@
 			dsf.editable(eltItem);
 		},
 
+		addDsa(names, values, base) {
+			let result = dsa.add(...arguments);
+			if (result.base) {
+				// TODO? feature-support different index bases (0- vs. 1-)
+				udfs.updateSize(result.base, result.i);
+			}
+		},
+
+		addItemControls(eltItem, $placeholder) {
+			let $controls = udfs.$itemControls.clone();
+			$placeholder ||= $(eltItem).find('.controls');
+			if ($placeholder.length) {
+				$placeholder.replaceWith($controls);
+			} else switch (eltItem.tagName) {
+			case 'TR':
+				$(eltItem).append(
+					$('<td></td>')
+						.append($controls)
+				);
+				break;
+			default:
+				$(eltItem).append($controls);
+				break;
+			}
+		},
+
+		addListControls(eltList, $placeholder) {
+			let $controls = udfs.$listControls.clone();
+			$placeholder ||= $(eltList).find('+ .controls');
+			if ($placeholder.length) {
+				$placeholder.replaceWith($controls);
+			} else switch (eltList.tagName) {
+			case 'TBODY':
+				$(eltList).after(
+					$('<tfoot></tfoot>')
+						.append(
+							$('<tr></tr>')
+								.append($('<td></td>')
+										.append($controls)))
+				);
+				break;
+			default:
+				$(eltList).after($controls);
+				break;
+			}
+		},
+		
 		/**
 		 * Return the base portion of a UDF name, given a list node.
 		 */
 		base(eltList) {
-			let name = klass.param(eltList, 'list');
-			if (! name) {
-				name = eltList.dataset.base;
-			}
-			if (! name) {
-				name = eltList.dataset.name;
-			}
-			if (! name) {
-				name = $(eltList).parent().closest('[class]')[0].className.split(/\s+/)[0];
-			}
-			return name;
+			return klass.param(eltList, 'list')
+				|| eltList.dataset.base
+				|| eltList.dataset.name
+				|| dsf.sectionName(eltList)
+			;
 		},
 		
 		/**
 		 * Return a list of the base field name for all UDFs.
 		 */
 		bases() {
-			return this.$context.find(this.udfSel)
+			return this.$udfs
 				.parent()
 				.closest('[class]')
 				.toArray()
@@ -122,49 +253,154 @@
 			return new RegExp(`^(?:dsf_)?dyn_${base}(?:_|$)`);
 		}),
 
-		countUdfItems(udfs) {
-			udfs ||= window.dynamic_sheet_attrs;
-			let fieldInfo = this.fieldInfo(),
-				counts = {};
-			for (let name of Object.keys(udfs)) {
-				let base = this.dsfBase(name, fieldInfo),
-					{key, i} = this.splitName(name, base);
-				if (base && i) {
-					// name is a UDF name
-					if (base in counts) {
-						counts[base] = Math.max(counts[base], +i);
-					} else {
-						counts[base] = +i;
+		/**
+		 * Close any gaps in a sequence of UDF field templates by moving existing fields to lower indices.
+		 *
+		 * Scans existing data, stopping when certain conditions are met. There are various types of stop conditons & ways stop conditions are calculated:
+		 * + by gap: stop when consecutive nonexistent fields exceeds a threshhold (the "gap")
+		 * + by index: stop at the first nonexistent field of index higher than provided
+		 * + by size: if there's a size field for the given base, that is set as the stop index, overriding any provided stop condition
+		 *
+		 * @param {string} base UDF base; used to look up UDF size (if exists).
+		 * @param {} [tpls] Templates for fields to rename. If not provided,  {@this.}.
+		 * @param {object | number} [stop] Stop conditions. A number is interpreted as a stop-by-index
+		 * @param {number} [stop.gap] Stop after consecutive nonexistent fields exceeds this gap.
+		 * @param {number} [stop.index] Stop at the first nonexistent field after this index.
+		 */
+		compact(base, tpls, stop={gap:5}) {
+			let sizeName = this.sizeName(base);
+
+			if (! tpls) {
+				tpls = this.keyedFieldsFor(base);
+				if (! tpls.length) {
+					tpls = {
+						name: `dyn_${base}_{i:02}_name`,
+						value: `dyn_${base}_{i:02}`,
+					};
+				}
+			}
+			
+			if (dsa.exists(sizeName) && is_numeric(dsa.data[sizeName])) {
+				stop = dsa.data[sizeName]
+			}
+
+			let size = dsa.compact(tpls, stop);
+			
+			if (dsa.exists(sizeName) && is_numeric(size)) {
+				dsa.data[sizeName] = size;
+			}
+			return size;
+		},
+
+		countUdfItems(data) {
+			data ||= dsa.data;
+			//debugger;
+			let counts = {},
+				uncounted = {},
+				scan = false;
+			for (let udf of this.$udfs) {
+				let base = this.base(udf),
+					name = this.sizeName(base);
+				if (dsa.exists(name, data) && is_real(data[name])) {
+					counts[base] = data[name];
+				} else {
+					// in case it's non-numeric, delete to scan instead
+					delete data[name];
+					uncounted[base] = base;
+					scan = true;
+				}
+			};
+			/*
+			this.$udfs.each(function (i, udf) {
+				let base = udfs.base(udf),
+					name = udfs.sizeName(base);
+				if (dsa.exists(name, data)) {
+					counts[base] = data[name];
+				} else {
+					uncounted[base] = base;
+					scan = true;
+				}
+			});
+			*/
+
+			if (scan) {
+				console.log('Scanning data to determine size of UDFs without a stored size field:', Object.values(uncounted));
+				// some fields don't have counts; scan for specific fields
+				for (let base in uncounted) {
+					let tpl = `dyn_${base}_{i:02}`,
+						name, i;
+					for (i = 1; i < this.maxCount; ++i) {
+						name = klass.eval(tpl, {i});
+						if (! (   dsa.exists(name, data)
+							   || dsa.exists(name + '_name', data)))
+						{
+							break;
+						}
+					}
+					if ((counts[base] = i-1)) {
+						delete uncounted[base];
 					}
 				}
 			}
+			if (Object.keys(uncounted).length) {
+				// some fields still don't have counts; scan all data
+				for (let name of Object.keys(data)) {
+					let {base, i} = this.parseName(name) || {};
+					if (base && i) { // name is a UDF name
+						/* don't exclude UDFs with size fields (i.e. those not in `uncounted`; check their counts */
+						if (base in counts) {
+							counts[base] = Math.max(counts[base], +i);
+						} else {
+							counts[base] = +i;
+						}
+					}
+				}
+			}
+
 			return counts;
 		},
 
+		/**
+		 * Add multiple (empty) items to a list.
+		 *
+		 * @param {HTMLElement} eltList Dynamic list to add to.
+		 * @param {number} nItems Number of items to add.
+		 * @param {Object} [options]
+		 * @param {string} [options.base] Base name of dynamic list.
+		 */
 		createItemsFor(eltList, nItems, {base}) {
 			base ||= udfs.base(eltList);
 			let $eltList = $(eltList),
-				scion = this.newItem(eltList, {base}),
-				clone;
+				$scion = this.newItem(eltList, {base}),
+				$clone;
+			this._createSizeDsf(eltList, {base, $udf: $eltList});
 			for (let i = 1; i <= nItems; ++i) {
-				clone = scion.cloneNode(true);
-				this.renumberItem(clone, i);
-				$eltList.append(clone);
+				$clone = $scion.clone();
+				this.renumberItem($clone, i);
+				this._appendItem($eltList, $clone);
 			}
 		},
 
+		/**
+		 * Create dynamic list items to store dynamic DSFs.
+		 */
 		createItems() {
-			/* TODO:
-			 * 1. for each stored DSF, if from UDF, record max index
-			 * 2. for each UDF, add items up to max index
-			 */
-			let udfCounts = this.countUdfItems(window.dynamic_sheet_attrs);
-			this.$context.find(this.udfSel).each(function (i, eltList) {
+			let udfCounts = this.countUdfItems();
+			for (let udf of this.$udfs) {
+				let base = udfs.base(udf);
+				udfs.createItemsFor(udf, udfCounts[base], {base});
+			}
+			/*
+			this.$udfs.each(function (i, eltList) {
 				let base = udfs.base(eltList);
 				udfs.createItemsFor(eltList, udfCounts[base], {base});
 			});
+			*/
 		},
-		
+
+		/**
+		 * Remove an item from a dynamic list.
+		 */
 		del(item) {
 			let eltNext = $(item).next()[0];
 			$(item).remove();
@@ -176,18 +412,61 @@
 		/**
 		 * Returns the base portion of a UDF name, given a DSF name & field info.
 		 */
+		/*
 		dsfBase: memoize(function (name, fieldInfo) {
 			let {base} = this.udfField(name, fieldInfo) || {};
 			return base;
 		}),
-		
+		*/
+
+		/**
+		 * Call a function for each UDF element in the sheet.
+		 */
 		each(fn, self) {
 			if (self) {
 				fn = fn.bind(self);
 			}
-			this.$context.find(this.udfSel).each(function (i, elt) {
+			this.$udfs.each(function (i, elt) {
 				fn.bind(this)(elt, i);
 			});
+		},
+
+		eachEntry(udf, fn) {
+			function entry(item) {
+				return fn(this.entry(item));
+			}
+			this.eachItem(udf, entry.bind(this));
+		},
+
+		eachItem(udf, fn) {
+			// TODO? feature-support templates/items without a unique root
+			let {$elt} = this.resolve(udf);
+			$elt.children().each(fn);
+		},
+
+		entry(item) {
+			let entry = dsf.$dsfs(item)
+				.toArray()
+				.map(elt => ({
+					name: dsf.name(elt),
+					value: dsf.value(elt),
+				}));
+			return entry.reduce(function (accum, b) {
+				let key = udfs.key(b.name);
+				accum.names[key] = b.name;
+				accum.values[key] = b.value;
+				return accum;
+			}, {names:{}, values:{}})
+		},
+
+		*entries(udf) {
+			for (let item of this.items(udf)) {
+				yield this.entry(item);
+			};
+		},
+		
+		exists(name) {
+			return this.$context.find(`.${name} .udf`).length;
 		},
 
 		/**
@@ -207,27 +486,41 @@
 		 * short: short name for UDF; if UDF base name is compound (i.e. has underscores; e.g. 'some_thing'), the short name is the first component (e.g. 'some'). This eases finding the UDF for a DSF.
 		 * templates: the classname templates for DSFs in a UDF item template, without the 'dsf_' prefix.
 		 */
+		/* Not currently used */
 		fieldInfo() {
-			// TODO: find a better name
-			// ? put field info in subproperty (so as to prevent collisions w/ 'shorthand')
-			let fieldInfo = {
-				shorthand: {},
-				fields: {},
+			// TODO: refactor-find a better name
+			let fieldInfo = new ShorthandDict({
+				shorthand: this.shorthand,
+				matches(full, key) {
+					return klass.matchesAny(this.full[full], key);
+				},
+				value({full, match}) {
+					return {base: full, field: match};
+				},
+			});
+			/*
+			fieldInfo.shorthand = this.shorthand;
+			fieldInfo.matches = function (full, key) {
+				return klass.matchesAny(this.full[full], key);
 			};
+			fieldInfo.value = function ({full, match}) {
+				return {base: full, field: match};
+			};
+			*/
+			/*
+			fieldInfo.entry = function (full, key) {
+				let value = klass.matchesAny(this.full[full], key);
+				if (value) {
+					return {key: full, value};
+				}
+			};
+			*/
 			
-			this.$context.find(this.udfSel).each(function (i, udf) {
+			this.$udfs.each(function (i, udf) {
 				let base = udfs.base(udf),
 					$udf = $(udf),
 					parts, short;
-				if ((short = udfs.shorthand(base))) {
-					if (short in fieldInfo.shorthand) {
-						fieldInfo.shorthand[short].push(base);
-					} else {
-						fieldInfo.shorthand[short] = [base];
-					}
-				}
-				udfs._createSizeDsf(udf, {base, $udf});
-				fieldInfo.fields[base] = udfs.fieldsFor(udf, {base});
+				fieldInfo[base] = udfs.fieldsFor(udf, {base});
 			});
 
 			// save results for future calls
@@ -237,23 +530,31 @@
 
 			return fieldInfo;
 		},
+		/**/
 
 		/**
 		 * Extract names of fields for a given UDF.
 		 *
+		 * @param {HTMLElement|string|$} eltList Dynamic list.
+		 * @param {Object} [kwargs]
+		 * @param {string} [kwargs.base] Base name of dynamic list.
+		 * @param {HTMLElement} [kwargs.tpl] Template for an item of `eltList`.
+		 *
 		 * @returns {[string]} list of DSF names (w/o 'dsf_' prefix)
 		 */
-		fieldsFor(eltList, {base, tpl}={}) {
-			base ||= this.base(eltList);
+		fieldsFor(eltList, {base, tpl, $tpl}={}) {
+			let resolved = this.resolve(eltList);
+			eltList = resolved.elt;
+			base ||= resolved.base
 			if (base in this.fieldsFor) { // memoize result for base
 				return this.fieldsFor[base];
 			}
 			// tpl may be a template node, or an actual node from eltList
-			tpl ||= this.templateItem(eltList);
+			$tpl ||= tpl ? $(tpl) : this.$templateItem(eltList);
 			let env = {base, name: base},
-				$dsfs = $(tpl).find('.dsf'),
+				$dsfs = dsf.$dsfs($tpl),
 				// note: dsf.name removes 'dsf_' prefix
-				names = $dsfs.toArray().map(elt => klass.eval(dsf.name(elt), env).replace(/\d+$/, '{i}'));
+				names = $dsfs.toArray().map(elt => klass.eval(dsf.name(elt), env).replace(/\d+$/, '{i:02}'));
 			this.fieldsFor[base] = names;
 			return names;
 		},
@@ -262,7 +563,7 @@
 		 * The 1-based index of a UDF in the parent collection.
 		 *
 		 * @param {string} name
-		 * @param {string} the template matching name
+		 * @param {string} the template for the UDF
 		 */
 		indexOf(name, tpl) {
 			let parts;
@@ -282,6 +583,7 @@
 		 *     	...
 		 *     }
 		 */
+		/* Not currently used
 		inflate(dsfs=null) {
 			let fieldInfo = this.fieldInfo(),
 				base,
@@ -290,7 +592,7 @@
 			for (let [name, value] of Object.entries(dsfs)) {
 				if ((base = this.dsfBase(name, fieldInfo))) {
 					// name is a UDF name
-					let {key, i} = this.splitName(name, base);
+					let {key, i} = this.parseName(name, base) || {};
 					data[udfField.base] ||= [];
 					data[udfField.base][+i] ||= {};
 					data[udfField.base][+i][key || ''] = value;
@@ -298,63 +600,107 @@
 			}
 			return data;
 		},
+		*/
+
+		/**
+		 * Answers whether `name` is a dynamic DSF name.
+		 */
+		isName(name) {
+			return /^(dsf_)?dyn_/.test(name);
+		},
 		
+		isTemplate(name) {
+			return /^(dsf_)?dyn_.*\{.*\}/.test(name);
+		},
+
+		*items(udf) {
+			// TODO? feature-support templates/items without a unique root
+			let {$elt} = this.resolve(udf);
+			yield* $elt.children();
+		},
+
 		/** 1-based index number of an item. */
 		itemNumber(eltItem) {
 			return nodeIndex(eltItem) + 1;
 		},
 
+		key(name, dflt='value') {
+			let {key} = this.parseName(name);
+			return key || dflt;
+		},
+
+		/**
+		 * Extract names of fields for a given UDF.
+		 *
+		 * Differs from {@link this.fieldsFor} in the latter returns a list of only field names, while this also extracts field keys and uses them for indices.
+		 *
+		 * @param {HTMLElement|string|$} eltList Dynamic list.
+		 * @param {Object} [kwargs] `this.fieldsFor` keyword arguments
+		 *
+		 * @returns {Object} DSF names (w/o 'dsf_' prefix), indexed by field key
+		 */
+		keyedFieldsFor(eltList, kwargs={}) {
+			let fields = this.fieldsFor(eltList, kwargs).map(dsf.stripPrefix),
+				tpls = {},
+				nTpls = 0;
+			for (let field of fields) {
+				let key = this.key(field);
+				tpls[key] = field;
+				++nTpls;
+			}
+			Object.defineProperty(tpls, 'length', {
+				enumerable:false,
+				value: nTpls,
+			});
+			Object.defineProperty(tpls, 'size', {
+				enumerable:false,
+				value: nTpls,
+			});
+			return tpls;
+		},
+
+		/* Not currently used
 		nameRe: memoize(function (base) {
 			return new RegExp(`^(?:dsf_)?dyn_(?<base>${base})_(?<i>\\d+)(?:_(?<key>.*))?$`);
 		}),
-
-		/*
-		newItem(eltList, env={}) {
-			let tpl = this.template(eltList),
-				iItem = eltList.children.length + 1,
-				eltItem, $dsfs;
-			env.base ||= this.base(eltList);
-			env.i ||= this.zeroPad(iItem);
-			if (tpl) {
-				eltItem = tpl.content.firstElementChild.cloneNode(true);
-			} else {
-				eltItem = eltList.children[0].cloneNode(true);
-			}
-			return eltItem;
-		},
 		*/
 
-		// TODO: finish
+		/**
+		 * Create a new item for a dynamic list.
+		 *
+		 * Note this only creates the basic HTML elements by filling out a template. It does not set any behaviors or other sheet features (such as pips).
+		 *
+		 * @param {HTMLElement} eltList Dynamic list.
+		 * @param {Object} [env] variables for templated HTML classes
+		 */
 		newItem(eltList, env={}) {
-			let tpl = this.template(eltList),
+			let $tpl = this.$template(eltList),
 				// 1-based index (used by other sheets & CSS)
 				iItem = eltList.children.length + 1,
-				eltItem;
-			env.base ||= this.base(eltList);
-			env.name ||= env.base;
-			env.i ||= this.zeroPad(iItem);
-			if (tpl) {
-				eltItem = tpl.content.firstElementChild.cloneNode(true);
-				this.renameItem(eltItem, env);
+				$eltItem;
+			if ($tpl.length) {
+				env.base ||= this.base(eltList);
+				env.name ||= env.base;
+				env.i ||= iItem;
+				$eltItem = $tpl.clone(true);
+				this.renameItem($eltItem, env);
 			} else {
-				eltItem = eltList.children[0].cloneNode(true);
-				$eltItem = $(eltItem);
-				// TODO: clear values
-				$eltItem.find('.dsf').each((i, elt) => dsf.clear(elt));
-				// TODO: check that (what?)
-				pips.clear($eltItem);
-				// clear label of any content & add a DSF for the label
-				$eltItem.find('label').empty().append($(`<span class="dsf dsf_dyn_${env.base}_label_${env.i}"></span>`));
-				//$(eltItem).data('value', null);
-				this.renumberItem(eltItem, iItem);
+				$eltItem = $(eltList.children[0].cloneNode(true));
+				this.resetItem($eltItem, iItem);
 			}
-			return eltItem;
+			return $eltItem;
 		},
 
+		parseName: memoize(function (name) {
+			let parts = this.splitName(name);
+			if (parts.length) {
+				return {base: parts[0], i: parts[1], key: parts[2]};
+			}
+		}),
+
 		reCount(eltList) {
-			let base = this.base(eltList),
-				n = eltList.children.length;
-			this.sizeField(eltList, base).text(n);
+			let n = eltList.children.length;
+			this.$size(eltList).text(n);
 		},
 
 		reCountAll() {
@@ -362,7 +708,7 @@
 				this.reCount(eltList);
 			}, this);
 		},
-		
+
 		renameItem(eltItem, env) {
 			$(eltItem).find('.dsf').each(function (i, node) {
 				node.className = klass.eval(node.className, env);
@@ -370,23 +716,48 @@
 		},
 
 		/**
-		 * @param { (node) => null } addl Additional .
+		 * Update the UDF item number portion of DSF names.
 		 *
-		 * TODO: update to handle digits within, rather than at end.
+		 * The first number in a DSF name is assumed to be the index. Consequently, doesn't handle inner UDFs (if nested) or other uses of numbers in DSF names (if they precede the UDF item index).
+		 *
+		 * @param {HTMLElement} eltItem A dynamic list item
+		 * @param {number} i New index of item
+		 * @param {Object} [options]
+		 * @param {number} [options.width] width of numeric index in name; determines zero-padding
+		 * @param { (node) => null } [options.addl] Additional renumbering operations (if any).
 		 */
 		renumberItem(eltItem, i, {width, addl}={}) {
 			if (! i) {
-				i = this.itemNumber(eltItem);
+				let iLast = eltItem.length - 1;
+				if ('length' in eltItem && iLast in $tpl) {
+					// template doesn't have a solo root 
+					i = this.itemNumber(eltItem[iLast]) / eltItem.length;
+				} else {
+					i = this.itemNumber(eltItem);
+				}
 			}
 			$(eltItem).find('.dsf').each(function (_, dsf) {
-				dsf.className = dsf.className.replace(
-					/\b(dsf_[^ ]*?)(?:_\d+)?\b/,
-					'$1_' + udfs.zeroPad(i, width)
-				);
+				let vars = (klass.vars(dsf.className) || []).filter(v => 1 == v.length);
+				if (vars.length) {
+					dsf.className = klass.eval(dsf.className, {[vars[0]]: i});
+				} else {
+					// replace the 1st number, or append if no numbers
+					dsf.className = dsf.className.replace(
+						/\b(dsf_[^ \d]*[^_ \d])(?:_\d+)?/,
+						'$1_' + udfs.zeroPad(i, width)
+					);
+				}
 			});
 			addl && addl(eltItem);
 		},
 
+		/**
+		 * Update the UDF item number portion of DSF names for the given HTML element and all following siblings.
+		 *
+		 * @param {HTMLElement} eltItem A dynamic list item
+		 * @param {Object} [options]
+		 * @param { (node) => null } [options.addl] Additional renumbering operations (if any).
+		 */
 		renumberItems(eltItem, {addl}={}) {
 			let iItem = this.itemNumber(eltItem);
 			for (; eltItem; eltItem = eltItem.nextSibling) {
@@ -395,7 +766,14 @@
 			}
 		},
 		
-		renumberList(eltList, addl) {
+		/**
+		 * Update item numbers in DSF field names for all items in a dynamic list.
+		 *
+		 * @param {HTMLElement} eltList A dynamic list
+		 * @param {Object} [options]
+		 * @param { (node) => null } [options.addl] Additional renumbering operations (if any).
+		 */
+		renumberList(eltList, {addl}={}) {
 			let eltItem;
 			for (let i = 0; i < eltList.children.length; ++i) {
 				// Note: 1-based index
@@ -403,53 +781,145 @@
 			}
 		},
 
-		shorthand(name) {
-			let parts = name.match(/^(?:dsf_)?([^_]+)_/);
+		/**
+		 *
+		 */
+		resetItem(eltItem, iItem) {
+			let $eltItem = $(eltItem);
+			$eltItem.find('.dsf').each((i, elt) => dsf.clear(elt));
+			// TODO: check that (what?)
+			pips.clear($eltItem);
+			this.renumberItem(eltItem, iItem);
+		},
+
+		resolve(list) {
+			let base, elt, $elt;
+			if ('string' == typeof(list)) {
+				base = list;
+				$elt = this.$udf(base);
+				elt = $elt[0];
+			} else {
+				if (list instanceof $) {
+					$elt = list;
+					elt = list[0];
+				} else {
+					elt = list;
+					$elt = $(list);
+				}
+				base = this.base(elt);
+			}
+			return {base, elt, $elt};
+		},
+
+		/**
+		 * Extract the first component of a compound name.
+		 */
+		/* Not currently used */
+		shorthand: memoize(function (name) {
+			let parts = name.match(/^(?:dsf_)?(?:dyn_)?([^_]+)_/);
 			if (parts) {
 				return parts[1];
 			}
+		}),
+		/**/
+
+		/**
+		 * The number of items in the given list.
+		 */
+		size(list) {
+			let {base, elt, $elt} = this.resolve(list),
+				size = this.sizeName(base);
+			return dsf.value(size) || dsa.data[size];
 		},
 
-		sizeField(eltList, base) {
+		/**
+		 * Returns the DSF that holds the size of the given list, creating it if it doesn't exist.
+		 *
+		 * @param {HTMLElement eltList Dynamic list element.
+		 * @param {Object} [options]
+		 * @param {string} [options.base] Base name for list.
+		 * @param {jQuery} [options.$udf] `$(eltList)`. If not provided, created from `eltList`.
+		 *
+		 * @returns {jQuery}
+		 */
+		$size(eltList, {base, $udf}={}) {
 			base ||= this.base(eltList);
+			$udf ||= $(eltList);
+			let $size = this.sizeField(eltList, {base, $udf});
+			if (! $size.length) {
+				$size = $(`<span class="dsf ${$size.name} readonly hidden nopips"></span>`);
+				switch (eltList.tagName) {
+				case 'TR':
+					$udf.closest('table').before($size);
+					break;
+				default:
+					$udf.before($size);
+					break;
+				}
+			}
+			return $size;
+		},
+		
+		/**
+		 * Returns the DSF that holds the size of the given list, if it exists.
+		 *
+		 * @param {HTMLElement eltList Dynamic list element.
+		 * @param {Object} [options]
+		 * @param {string} [options.base] Base name for list.
+		 * @param {jQuery} [options.$udf] .
+		 *
+		 * @returns {jQuery}
+		 */
+		sizeField(eltList, {base, $udf}) {
+			base ||= this.base(eltList);
+			$udf ||= $(eltList);
 			let name = `dsf_${base}_size`,
-				$size = $(eltList).parent().find(`.${name}`);
+				$size = $udf.parent().find(`.${name}`);
 			$size.name = name;
 			return $size;
+		},
+
+		sizeName(base) {
+			return base + '_size';
 		},
 
 		/**
 		 * Split a UDF field name into base, key and index
 		 */
-		splitName: memoize(function (name, base) {
-			let nameRe = this.nameRe(base),
-				parts = name.match(nameRe) || {};
-			return parts.groups || {};
+		splitName: memoize(function (name) {
+			if (this.isName(name)) {
+				return path.split(this.stripPrefix(name));
+			}
+			return [];
 		}),
 
 		start() {
+			// add item controls to templates
 			this.$context.find('template.item').each(function (i, doc) {
-				$(doc.content.firstElementChild).append(udfs.$itemControls.clone());
+				let item = doc.content.firstElementChild;
+				udfs.addItemControls(item);
 			});
 		
-
-			this.$context.find(this.udfSel).each(function(i, eltList) {
+			// add list controls to UDFs
+			this.$udfs.each(function(i, eltList) {
 				let $list = $(eltList),
 					$controls = $list.find('+ .controls');
 				
-				if ($controls.length) {
+				if ($controls.length && $controls[0].childElementCount) {
 					$controls.show();
 				} else {
-					$list.after(udfs.$listControls.clone());
+					udfs.addListControls(eltList, $controls);
 				}
 			});
 
+			// add item controls to existing items (those created during preLoad)
 			this.$context.find('.udf > *').each(function (i, eltItem) {
 				let $controls = $(eltItem).find('.controls');
-				if ($controls.length) {
+				if ($controls.length && $controls[0].childElementCount) {
 					$controls.show();
 				} else {
-					$(eltItem).append(udfs.$itemControls.clone());
+					udfs.addItemControls(eltItem, $controls);
+					//$(eltItem).append(udfs.$itemControls.clone());
 				}
 			});
 		},
@@ -461,20 +931,38 @@
 			*/
 		},
 
+		stripPrefix(name) {
+			return name.replace(/^(dsf_)?dyn_/, '');
+		},
+		
 		template(eltList) {
-			return $(eltList).parent()
+			let $eltList;
+			if ('string' == typeof eltList) {
+				$eltList = this.$udf(eltList);
+			} else {
+				$eltList = $(eltList);
+			}
+			let tpl = $eltList.parent()
 				.closestHaving('[class]', ':scope > template')
 				.children('template')[0];
+			if (tpl && 'content' in tpl) {
+				tpl = tpl.content;
+			}
+			return tpl;
 			/* jQuery selectors don't seem to work on document fragments, so return 
 			 * the template itself and let caller pull elements from it.
 			 .children(':first-child')[0];
 			 */
 		},
 
-		templateItem(eltList) {
-			let tpl = this.template(eltList);
-			if (tpl) {
-				return tpl.content.firstElementChild;
+		$template(eltList) {
+			return $((this.template(eltList) || {}).children);
+		},
+
+		$templateItem(eltList) {
+			let $tpl = this.$template(eltList);
+			if ($tpl.length) {
+				return $tpl;
 			}
 			/* Should dsf names be converted back to template classes? Or at least
 			 * the item number be converted to a template param (`{i}`)?
@@ -483,42 +971,43 @@
 			tpl = eltList.children[0].clone(true);
 			$(tpl).find('.dsf');
 			*/
-			return eltList.children[0];
+			return $(eltList.children[0]);
+		},
+
+		$udf(base) {
+			// TODO: fix-exclude .compatibility
+			return this.$context.find(`.${base} .udf`);
 		},
 
 		/**
 		 * Search for UDF field info for the given field name.
 		 *
+		 * Implemented as a function (rather than fetched directly from `fieldInfo`) for caching.
+		 *
 		 * @returns {{base:string, field:string}} The base name for the UDF & the field template.
 		 */
+		/* Not currently used */
 		udfField: memoize(function (name, fieldInfo) {
-			let short = this.shorthand(name),
-				candidates;
-			// ? check fieldInfo.shorthand before fieldInfo.fields, in case `short` matches a UDF whose name is the prefix for another UDF that matches `name`.
-			if (short in fieldInfo.shorthand) {
-				for (let udf of fieldInfo.shorthand[short]) {
-					let field = klass.matchesAny(fieldInfo.fields[udf], name);
-					if (field) {
-						return {base: udf, field};
-					}
-				}
-			}
-			if (short in fieldInfo.fields) {
-				let field = klass.matchesAny(fieldInfo.fields[short], name);
-				if (field) {
-					return {base: short, field};
-				}
-			}
-			for (let [udf, fields] of Object.entries(fieldInfo.fields)) {
-				let re = this.baseToRe(udf);
-				if (name.match(re)) {
-					let field = klass.matchesAny(fields, name);
-					if (field) {
-						return {base: udf, field};
-					}
-				}
-			}
+			return fieldInfo[name];
 		}),
+		/**/
+
+		udfFor(elt) {
+			//$(elt).closest('.controls').prev()[0];
+			// controls are after UDF, so check previous sibling while traversing upwards
+			while (elt && ! (elt.previousElementSibling && /\budf\b/.test(elt.previousElementSibling.className))) {
+				elt = elt.parentNode;
+			}
+			return elt && elt.previousElementSibling;
+		},
+
+		updateSize(base, size) {
+			let sizeName = this.sizeName(base);
+			if (sizeName in dsa.data) {
+				// in case size isn't a number, default it to 0
+				dsa.data[sizeName] = Math.max(dsa.data[sizeName], size);
+			}
+		},
 
 		zeroPad(i, width) {
 			return i.toString().padStart(width || this.itemNumberWidth, '0')

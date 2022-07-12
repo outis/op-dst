@@ -1,30 +1,56 @@
-	/* TODO: 
-	 * + don't demi-ize UDF size DSFs.
-	 */
 	/*** 
 	 * Pipped fields 
+	 *
+	 * TODO: support different damage types for corpus: bashing (/), lethal (x), aggravated (*)
 	 *
 	 * @requires dsf, 
 	 */
 	let pips = globals.pips = {
+		reDemi: /(?<left>(?<lmask>0x)?[\dA-F]+) *\/ *(?<right>(?<rmask>0x)?[\dA-F]+)/i,
+		
 		/* DST event handlers */
-		init() {
+		init($context) {
+			this.$context = $context;
 			this.clicker = this.clicked.bind(this);
 			this.clickerInLimit = this.clickedInLimit.bind(this);
-			this.demi.init();
+			this.demi.init($context);
 		},
 		
 		postLoad(opts, $context) {
-			this.$context = $context;
+			module.waitFor('dsf');
+			dsf.each(function (elt, $elt, name, value) {
+				value = dsf.override(name, value)
+				if ($elt.closest('.equipment').length) {
+					//debugger;
+				}
+				if (   ! is_flag(elt, name, value)
+					&& this.is(elt, name, value)
+				) {
+					//const val = $elt.text() || elt.dataset.value || $elt.data('value');
+					$elt.text('');
+					this.pippify($elt, {name, value});
+				}
+			}, this);
+
 			this.demi.postLoad(opts, $context);
 			// use delegate, as pipped fields likely haven't been pippified yet
 			//this.$context.on('click', '.pips.current > span', this.clickerInLimit);
 			this.$context.on('click', '.pips.current > span', this.clicker);
 
-			for (let fn of this.postLoad.queue) {
+			for (const fn of this.postLoad.queue) {
 				fn();
 			}
+			this.postLoad.queue = [];
 			this.postLoad.done = true;
+		},
+
+		preSave() {
+			/* convert back to numeric fields */
+			dsf.each(function (elt, $elt, name, value) {
+				if (pips.is(elt, name, value)) {
+					pips.unpippify($elt, {name, value});
+				}
+			});
 		},
 
 		/* */
@@ -39,14 +65,15 @@
 		 * @param {int} delta Amount to change pips by.
 		 */
 		adjust($elt, delta) {
-			let $kids = $elt.children();
+			const $kids = $elt.children();
 			if (delta > 0) {
 				for (let i = 0; i < delta; ++i) {
 					$elt.append($(`<span></span>`));				
 				}
-				// TODO: handle demi pips
-				this.mark($elt, this.value($elt));
+				this.refresh($elt);
 			} else if (delta < 0) {
+				// don't remove 1st child
+				delta = Math.max(delta, 1-$kids.length);
 				$kids.slice($kids.length + delta).remove();
 			}
 		},
@@ -59,23 +86,24 @@
 			for (let i = 0; i <= nPips; ++i) {
 				$elt.append($(`<span></span>`));				
 			}
+			$elt.children().first().attr('title', 'click to clear pips');
 			//$elt.children(':first-child').text('╳');
 		},
 
 		/* Mark pips as being "blocked" off. */
 		block($elt, value) {
 			value = +value;
-			let $pips = $elt.find('span');
+			const $pips = $elt.find('span');
 			$pips.slice(1, value+1).removeClass('D');
 			$pips.slice(value+1).addClass('D');
 		},
 
 		/* Mark current pips beyond permanent pips as "blocked". */
 		blockCurr(name, nPip) {
-			let matches = name.match(/perm_(?<curr>.*)/);
+			const matches = name.match(/perm_(?<curr>.*)/);
 			if (matches) {
-				let curr = matches.groups.curr;
-				this.block(this.$context.find(`.dsf_curr_${curr}`), nPip);
+				const curr = matches.groups.curr;
+				this.block(dsf.$dsf(`curr_${curr}`), nPip);
 			}
 		},
 
@@ -90,8 +118,13 @@
 			}
 			if ($elt.hasClass('pips')) {
 				this.mark($elt, 0);
+				if (this.demi.is($elt)) {
+					this.demi.value($elt, this.demi.zero());
+				} else {
+					this.value($elt, 0);
+				}
 			} else {
-				this.mark($elt.find('.pips'), 0);
+				$elt.find('.pips').each((i, elt) => pips.clear(elt));
 			}
 		},
 
@@ -99,25 +132,28 @@
 			if (this.demi.is(evt.target)) {
 				this.demi.clicked(evt);
 			} else {
-				let nPip = this.countPips(evt.target);
+				const nPip = this.countPips(evt.target);
 			
 				this.setPips(evt.target, nPip);
 			}
 		},
 
 		clickedInLimit(evt) {
-			let name = dsf.name(evt.target.parentNode),
+			const name = dsf.name(evt.target.parentNode),
 				maxPips = dsf.lookup(`perm_${name}`, 10),
 				nPip = Math.min(this.countPips(evt.target), maxPips);
 			
 			this.setPips(evt.target, nPip);
 		},
-		
+
+		/**
+		 * Determine how many pips (filled or unfilled) the given DSF element should have.
+		 */
 		count(elt, dflt) {
-			let nPips = +elt.dataset.pips || +dflt || 5,
-				name = dsf.name(elt),
-				extra = dsf.linked.extra(name),
-				nExtra = 0;
+			const nPips = +elt.dataset.pips || +dflt || 5,
+				  name = dsf.name(elt),
+				  extra = dsf.linked.extra(name);
+			let nExtra = 0;
 			if (extra) {
 				nExtra = + dsf.value(extra);
 			}
@@ -127,24 +163,59 @@
 		countPips: nodeIndex,
 
 		demi: {
-			init() {
+			init($context) {
 				this.clicker = this.clicked.bind(this);
 			},
 
 			postLoad(opts, $context) {},
 			
 			assemble($elt) {
-				let nPips = 2 * pips.count($elt[0]);
+				const nPips = 2 * pips.count($elt[0]);
 				for (let i = 0; i <= nPips; ++i) {
 					$elt.append($(`<span></span>`));				
 				}
 				//$elt.children(':first-child').text('╳');
 			},
 
+			/**
+			 * Calculate the value for the given chirality of pips.
+			 *
+			 * @param {HTMLElement} elt The DSF node.
+			 */
+			countPips(elt, chirality) {
+				let $pips = this.$pips(elt, chirality),
+					mask = 0;
+				// check whether there are any unmarked demi-pips preceding marked ones (skipping the "clear" box)
+				if ($(elt).find('* + :not(.X) + * + .X')) {
+					for (let i = 0, m = 1; i < $pips.length; ++i, m <<= 1) {
+						if ($pips.eq(i).hasClass('X')) {
+							mask |= m;
+						}
+					}
+					return '0x' + mask.toString(16);
+				} else {
+					const pips = $pips.toArray(),
+						  // ordinal to cardinal
+						  i = 1 + pips.findIndex(elt => /\bX\b/.test(elt.className));
+					// i == 0: none found, thus all marked
+					return i || pips.length;
+				}
+			},
+			
 			clicked(evt) {
-				let {chirality, i} = this.locate(evt.target);
-				
-				this.setPips(evt.target, chirality, i);
+				const {chirality, i} = this.locate(evt.target);
+
+				if (    chirality
+					&& (evt.altKey || evt.metaKey || evt.shiftKey || evt.button == 1))
+				{
+					this.toggle(evt.target, chirality, i);
+				} else {
+					this.setPips(evt.target, chirality, i);
+				}
+			},
+
+			has(elt) {
+				return this.is(elt);
 			},
 			
 			is(elt) {
@@ -152,7 +223,8 @@
 			},
 
 			locate(pip) {
-				let nPip = pips.countPips(pip);
+				// note: pips.countPips, not pips.demi.countPips
+				const nPip = pips.countPips(pip);
 				if (nPip > 0) {
 					if (nPip % 2) {
 						return {chirality: 'left', i: Math.ceil(nPip / 2)};
@@ -164,39 +236,63 @@
 			},
 
 			mark($elt, chirality, value) {
-				value = +value;
-				let $pips = $elt.find(`span`).slice(1);
-				switch (chirality) {
-				case 'left':
-					$pips = $pips.even();
-					break;
-				case 'right':
-					$pips = $pips.odd();
-					break;
-				}
+				const $pips = this.$pips($elt, chirality);
+				
+				if (/0x/.test(value)) {
+					value = +value;
+					for (let i = 0, m = 1; i < $pips.length; ++i, m <<= 1) {
+						if (m & value) {
+							$pips.eq(i).addClass('X');
+						} else {
+							$pips.eq(i).removeClass('X');
+						}
+					}
+				} else {
+					value = +value;
 
-				$pips.slice(0, value).addClass('X');
-				$pips.slice(value).removeClass('X');
+					$pips.slice(0, value).addClass('X');
+					$pips.slice(value).removeClass('X');
+				}
 			},
 
 			parse(value) {
-				if ('string' == typeof(value)) {
-					let values = value.match(/(\d+) *\/ *(\d+)/),
+				// TODO: handle numeric & undefined value
+				switch (typeof(value)) {
+				case 'string':
+					let values = value.match(pips.reDemi),
 						_, left, right;
 					if (values) {
-						[_, left, right] = values;
-					} else if ((values = value.match(/\d+/))) {
+						({left, right} = values.groups);
+					} else if ((values = value.match(/(?:\b|0x)?[\dA-F]+\b/i))) {
 						left = values[0];
 						right = values[0];
 					} else {
-						debugger;
+						if (! /click to /i.test(value)) {
+							//debugger;
+						}
+						// In case value is editing placeholder.
+						value = +value || 0;
 					}
 					value = {left, right, value};
-				} else if ('left' in value || 'right' in value) {
-					value.value = `${value.left || 0} / ${value.right || 0}`;
-				} else if ('value' in value) {
-					// shouldn't be reached with current usage
-					return this.parse(value.value);
+					break;
+					
+				case 'number':
+					value = {value, left: value, right: value};
+					break;
+					
+				case 'object':
+					if ('left' in value || 'right' in value) {
+						value.value = `${value.left || 0} / ${value.right || 0}`;
+					} else if ('value' in value) {
+						// shouldn't be reached with current usage
+						return this.parse(value.value);
+					}
+					break;
+					
+				case 'undefined':
+				default:
+					value = {left: 0, right: 0, value: 0};
+					break;
 				}
 				return value;
 			},
@@ -205,24 +301,55 @@
 				// parses string & sets field value
 				value = this.value($elt, value);
 				this.assemble($elt);
+				this.refresh($elt, value);
+			},
+			
+			$pips(elt, chirality) {
+				let $pips = $(elt).find('span').slice(1);
+				switch (chirality) {
+				case 'left':
+					$pips = $pips.even();
+					break;
+				case 'right':
+					$pips = $pips.odd();
+					break;
+				default: // all $pips
+				}
+				return $pips;
+			},
+			
+			reassemble($elt) {
+				const nPips = 2 * pips.count($elt[0]),
+					  nKids = $(elt).children().length,
+					  delta = nPips - nKids + 1; // 1 for clear box
+				pips.adjust($elt, delta);
+				//$elt.children(':first-child').text('╳');
+			},
+
+			/**
+			 * Calculate & set the value for the given chiral pips.
+			 *
+			 * @param {HTMLElement} elt The DSF node.
+			 */
+			recalc(elt, chirality) {
+				const val = this.value(elt);
+				val[chirality] = this.countPips(elt, chirality);
+				this.value(elt, val);
+			},
+
+			/**
+			 * Update marked pips.
+			 */
+			refresh($elt, value) {
+				value ||= this.value($elt);
 				this.mark($elt, 'left', value.left);
 				this.mark($elt, 'right', value.right);
 			},
 			
-			reassemble($elt) {
-				let nPips = 2 * pips.count($elt[0]),
-					nKids = $(elt).children().length,
-					delta = nPips - nKids + 1; // 1 for clear box
-				pips.adjust($elt, delta);
-				//$elt.children(':first-child').text('╳');
-			},
-			
 			setPips(eltPip, chirality, nPip) {
-				let eltField = eltPip.parentNode,
-					$field = $(eltField),
-					name = dsf.name(eltField),
-					// get the value
-					val = this.value(eltField);
+				const eltField = eltPip.parentNode,
+					  $eltField = $(eltField),
+					  val = this.value(eltField);
 
 				if (chirality) {
 					val[chirality] = nPip;
@@ -240,36 +367,61 @@
 			start() {
 			},
 			
+			toggle(eltPip, chirality, iPip) {
+				let $eltPip = $(eltPip);
+				if ($eltPip.hasClass('X')) {
+					$eltPip.removeClass('X');
+				} else {
+					$eltPip.addClass('X');
+				}
+
+				this.recalc(eltPip.parentNode, chirality);
+			},
+			
 			value(field, value) {
 				if (field instanceof $) {
 					field = field[0];
 				}
 				if (is_undefined(value)) {
 					//value = {left: 0, right: 0, value: '0 / 0'};
-				} else if (value) {
+				} else if (value || 0 == value) { // also handles '' == value
 					value = this.parse(value);
 					dsf.update(field, name, value.value);
-					$.extend(field.dataset, value);
+					Object.assign(field.dataset, value);
 				} else if (! ('left' in field.dataset)) {
-					$.extend(field.dataset, this.parse(field.dataset.value));
+					Object.assign(field.dataset, this.parse(field.dataset.value));
 				}
 				return field.dataset;
 			},
 
-			zero(value) {
+			zero(value={}) {
 				value.left = value.right = 0;
 				value.value = '0/0';
 				return value;
 			},
 		},
 
+		has(elt) {
+			let $elt = $(elt),
+				closer = $elt.closer('.pips', '.nopips');
+			
+			return closer == '.pips'
+				|| $elt.find('.pips').length
+				|| (! closer && is_kind(pippedKinds, elt));
+		},
+
 		is(elt, name, value) {
-			let $elt = $(elt);
-			return ! $elt.parent('label').length
-				&& ! $elt.hasClass('hidden')//$elt.closest('.hidden').length
-				&& ! $elt.closest('.nopips').length
-				&& (   $elt.closest('.pips').length
-					|| (is_kind(pippedKinds, elt) && ! is_flag(elt, name, value)));
+			let $elt = $(elt),
+				closer = $elt.closer('.pips', '.nopips');
+			return closer != '.nopips'
+				&& ! $elt.parent('label').length
+				//&& ! $elt.closest('.hidden').length
+				&& ! $elt.hasSomeClass('hidden', 'specialty')
+				&& ! /_(name|description|specialty|size)\b/.test($elt[0].className)
+				&& (   closer == '.pips'
+					|| (   is_kind(pippedKinds, elt)
+						&& ! is_flag(elt, name, value)))
+			;
 		},
 		
 		mark($elt, value) {
@@ -287,7 +439,14 @@
 				this.demi.pippify($elt, {name, value});
 				return;
 			}
-			value = +value;
+			var pips;
+			if (value) {
+				[value, pips] = value.toString().split('/', 2);
+				value = +value;
+				if (+pips) {
+					$elt[0].dataset.pips = +pips;
+				}
+			}
 			this.assemble($elt);
 			this.mark($elt, value);
 
@@ -316,14 +475,30 @@
 			this.adjust($elt, delta);
 		},
 
+		refresh($elt) {
+			if (this.demi.is($elt)) {
+				this.demi.refresh($elt);
+			} else {
+				this.mark($elt, this.value($elt));
+			}
+		},
+
 		setKinds: setPippedKinds,
 
 		setPips(eltPip, nPip) {
 			let eltField = eltPip.parentNode,
 				$field = $(eltField),
-				name = dsf.name(eltField);
-			
-			dsf.update(eltField, name, nPip);
+				name = dsf.name(eltField),
+				value = nPip,
+				parts;
+
+			// check for charge max
+			if (   eltField.dataset.value
+				&& (parts = eltField.dataset.value.match(/( *\/ *(?:0x[\dA-F]+|\d+))$/i)))
+			{
+				value = nPip + parts[1];
+			}
+			dsf.update(eltField, name, value);
 			this.mark($field, nPip);
 			
 			this.blockCurr(name, nPip);
@@ -333,7 +508,6 @@
 			this.$context.find('input.dsf').prop('disabled', false);
 			/* delegated handler, to catch UDFs */
 			this.$context.find('.mll_sheet')
-				.addClass('editing')
 				.on('click', '.pips:not(.current) > span', this.clicker);
 
 			this.demi.start();
@@ -341,23 +515,37 @@
 
 		stop() {
 			this.$context.find('.mll_sheet')
-				.off('click', '.pips:not(.current) > span', this.clicker)
-				.removeClass('editing');
+				.off('click', '.pips:not(.current) > span', this.clicker);
 			this.$context.find('input.dsf').prop('disabled', true);
 		},
 
-		unpippify($elt, {name, value=0}={}) {
+		toggle(eltPip) {
+			let $eltPip = $(eltPip);
+			if ($eltPip.hasClass('X')) {
+				$eltPip.removeClass('X');
+			} else {
+				$eltPip.addClass('X');
+			}
+		},
+
+		unpippify($elt, {value=0}={}) {
 			//$elt.text($elt.data('value'));
-			value ||= field.value($elt[0], name) || $elt.find('.X').length;
-			$elt.find('span').remove();
+			value ||= dsf.value($elt) || $elt.find('.X').length;
+			$elt.empty();
 			$elt.text(value);
 		},
 
-		value(elt) {
+		value(elt, val) {
 			if (elt instanceof $) {
 				elt = elt[0];
 			}
-			return +field.value(elt) || 0;
+			if (this.demi.is(elt)) {
+				return this.demi.value(elt, val);
+			}
+			if (val) {
+				
+			}
+			return +dsf.value(elt) || 0;
 		},
 	};
 	pips.postLoad.queue = [];
