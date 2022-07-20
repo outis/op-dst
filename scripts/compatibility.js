@@ -441,6 +441,9 @@
 			split(value, names, base) {
 				let parsed = this.parse.split(value, {base});
 				if (parsed) {
+					if (is_numeric(parsed.value)) {
+						parsed.value = +parsed.value;
+					}
 					this.import._udf(parsed, names, base);
 					/*
 					udfs.addDsa(names, parsed, base);
