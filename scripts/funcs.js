@@ -239,12 +239,16 @@
 	function memoize(f) {		
 		var results = {};
 		
-		return function (name, ...args) {
+		function _memoized(name, ...args) {
 			if (! (name in results)) {
 				results[name] = f.call(this, name, ...args);
 			}
 			return results[name];
 		}
+
+		_memoized.original = f;
+
+		return _memoized;
 	}
 	
 	/**
