@@ -7,7 +7,7 @@
 	 */
 	let pips = globals.pips = {
 		reDemi: /(?<left>(?<lmask>0x)?[\dA-F]+) *\/ *(?<right>(?<rmask>0x)?[\dA-F]+)/i,
-		
+
 		/* DST event handlers */
 		init($context) {
 			this.$context = $context;
@@ -15,7 +15,7 @@
 			this.clickerInLimit = this.clickedInLimit.bind(this);
 			this.demi.init($context);
 		},
-		
+
 		postLoad(opts, $context) {
 			module.waitFor('dsf');
 			dsf.each(function (elt, $elt, name, value) {
@@ -68,7 +68,7 @@
 			const $kids = $elt.children();
 			if (delta > 0) {
 				for (let i = 0; i < delta; ++i) {
-					$elt.append($(`<span></span>`));				
+					$elt.append($(`<span></span>`));
 				}
 				this.refresh($elt);
 			} else if (delta < 0) {
@@ -84,7 +84,7 @@
 				nPips *= 2;
 			}
 			for (let i = 0; i <= nPips; ++i) {
-				$elt.append($(`<span></span>`));				
+				$elt.append($(`<span></span>`));
 			}
 			$elt.children().first().attr('title', 'click to clear pips');
 			//$elt.children(':first-child').text('╳');
@@ -133,7 +133,7 @@
 				this.demi.clicked(evt);
 			} else {
 				const nPip = this.countPips(evt.target);
-			
+
 				this.setPips(evt.target, nPip);
 			}
 		},
@@ -142,7 +142,7 @@
 			const name = dsf.name(evt.target.parentNode),
 				maxPips = dsf.lookup(`perm_${name}`, 10),
 				nPip = Math.min(this.countPips(evt.target), maxPips);
-			
+
 			this.setPips(evt.target, nPip);
 		},
 
@@ -168,11 +168,11 @@
 			},
 
 			postLoad(opts, $context) {},
-			
+
 			assemble($elt) {
 				const nPips = 2 * pips.count($elt[0]);
 				for (let i = 0; i <= nPips; ++i) {
-					$elt.append($(`<span></span>`));				
+					$elt.append($(`<span></span>`));
 				}
 				//$elt.children(':first-child').text('╳');
 			},
@@ -201,7 +201,7 @@
 					return i || pips.length;
 				}
 			},
-			
+
 			clicked(evt) {
 				const {chirality, i} = this.locate(evt.target);
 
@@ -217,7 +217,7 @@
 			has(elt) {
 				return this.is(elt);
 			},
-			
+
 			is(elt) {
 				return $(elt).closest('.demi').length;
 			},
@@ -237,7 +237,7 @@
 
 			mark($elt, chirality, value) {
 				const $pips = this.$pips($elt, chirality);
-				
+
 				if (/0x/.test(value)) {
 					value = +value;
 					for (let i = 0, m = 1; i < $pips.length; ++i, m <<= 1) {
@@ -275,11 +275,11 @@
 					}
 					value = {left, right, value};
 					break;
-					
+
 				case 'number':
 					value = {value, left: value, right: value};
 					break;
-					
+
 				case 'object':
 					if ('left' in value || 'right' in value) {
 						value.value = `${value.left || 0} / ${value.right || 0}`;
@@ -288,7 +288,7 @@
 						return this.parse(value.value);
 					}
 					break;
-					
+
 				case 'undefined':
 				default:
 					value = {left: 0, right: 0, value: 0};
@@ -296,14 +296,14 @@
 				}
 				return value;
 			},
-			
+
 			pippify($elt, {name, value=0}={}) {
 				// parses string & sets field value
 				value = this.value($elt, value);
 				this.assemble($elt);
 				this.refresh($elt, value);
 			},
-			
+
 			$pips(elt, chirality) {
 				let $pips = $(elt).find('span').slice(1);
 				switch (chirality) {
@@ -317,7 +317,7 @@
 				}
 				return $pips;
 			},
-			
+
 			reassemble($elt) {
 				const nPips = 2 * pips.count($elt[0]),
 					  nKids = $(elt).children().length,
@@ -345,7 +345,7 @@
 				this.mark($elt, 'left', value.left);
 				this.mark($elt, 'right', value.right);
 			},
-			
+
 			setPips(eltPip, chirality, nPip) {
 				const eltField = eltPip.parentNode,
 					  $eltField = $(eltField),
@@ -366,7 +366,7 @@
 
 			start() {
 			},
-			
+
 			toggle(eltPip, chirality, iPip) {
 				let $eltPip = $(eltPip);
 				if ($eltPip.hasClass('X')) {
@@ -377,7 +377,7 @@
 
 				this.recalc(eltPip.parentNode, chirality);
 			},
-			
+
 			value(field, value) {
 				if (field instanceof $) {
 					field = field[0];
@@ -404,7 +404,7 @@
 		has(elt) {
 			let $elt = $(elt),
 				closer = $elt.closer('.pips', '.nopips');
-			
+
 			return closer == '.pips'
 				|| $elt.find('.pips').length
 				|| (! closer && is_kind(pippedKinds, elt));
@@ -423,7 +423,7 @@
 						&& ! is_flag(elt, name, value)))
 			;
 		},
-		
+
 		mark($elt, value) {
 			value = +value;
 			let $pips = $elt.find('span');
@@ -467,7 +467,7 @@
 				fn.bind(this)();
 			} else {
 				this.postLoad.queue.push(fn.bind(this));
-			}				
+			}
 		},
 
 		/** alter the number of pips */
@@ -507,7 +507,7 @@
 			}
 			dsf.update(eltField, name, value);
 			this.mark($field, nPip);
-			
+
 			this.blockCurr(name, nPip);
 		},
 

@@ -31,7 +31,7 @@
 		set aliases(aliases) {
 			this._aliases = aliases;
 			derefProperties(this._aliases.options);
-			
+
 			//Object.assign(this._aliases, this.port);
 			this._merge('export');
 			aliases.import = new ShorthandDict(aliases.import);
@@ -68,7 +68,7 @@
 			if ((port+'.') in this._aliases) {
 				// check & merge dst separately so as not to either overwrite it or miss copying the properties
 				if ('dst' in this._aliases[port+'.']) {
-					this[port].dst ||= {};					
+					this[port].dst ||= {};
 					Object.assign(this[port].dst, this._aliases[port+'.'].dst);
 				}
 				bindAll(this._aliases[port+'.'], this);
@@ -81,7 +81,7 @@
 			this.aliases;
 			return this._sesalia;
 		},
-		
+
 		get $aliases() {
 			if (! this._$aliases) {
 				let $aliases = this.$context.find('.compatibility');
@@ -110,7 +110,7 @@
 				flaws(names, values) {
 					this.export.each(['flaws', 'flaw'], names, values);
 				},
-			
+
 				merits(names, values) {
 					this.export.each(['merits', 'merit'], names, values);
 				},
@@ -123,11 +123,11 @@
 				passions(names, values) {
 					this.export.each(['passions', 'passion'], names, values);
 				},
-				
+
 				power(value) {
 					this.export.simple('power', value);
 				},
-				
+
 				willpower(value) {
 					// nWoD Reloaded! handled via simple aliases
 					this.export.linked('willpower');
@@ -143,13 +143,13 @@
 			backgrounds(names, values) {
 				this.export.generic('backgrounds', ...arguments);
 			},
-			
+
 			all(names, values, mine) {
 				for (let key in names) {
 					this.export.dynamicField(names[key], values[key], {mine});
 				}
 			},
-			
+
 			arcanoi(names, values) {
 				this.export.generic('arcanoi', ...arguments);
 			},
@@ -172,7 +172,7 @@
 					}
 				}
 			},
-			
+
 			equipment(names, values) {
 				this.export.generic('equipment', ...arguments);
 			},
@@ -203,7 +203,7 @@
 				}
 				compatibility.export.field(name, value, mine, options);
 			},
-			
+
 			generic(base, ...args) {
 				this.export.each([base, 'generic'], ...args);
 			},
@@ -223,7 +223,7 @@
 
 				this.export.all(theirs, values, mine);
 			},
-			
+
 			simple(mine, value) {
 				// TODO: behavior-only rename certain aliased fields
 				// power -> pathos, curr_health -> corpus
@@ -239,13 +239,13 @@
 		// copied to function `import`; `this` will get bound to `compatibility`
 		'import.': {
 			dst: {},
-			
+
 			_udf(parsed, names, base) {
 				base ||= parsed.base || words.pluralize(parsed.type);
 				udfs.addDsa(names, parsed, base);
 				parsed.imported = base;
 			},
-			
+
 			advantage(parsed, names) {
 				//console.info(`Trying to import ${parsed.type} as advantage.`);
 				let advantage = this.advantage(parsed.type);
@@ -256,7 +256,7 @@
 
 			abilities(parsed, names) {
 				let base = `dyn_${parsed.base}_{i:02}`;
-				
+
 				names = {name: base + '_name', specialty: base + '_specialty', value: base};
 				parsed.value ||= parsed.points;
 				this.import._udf(parsed, names);
@@ -352,7 +352,7 @@
 				}
 				return ['generic', base];
 			},
-			
+
 			dispatch(parsed, names) {
 				//console.info(`Choosing importer for ${parsed.base}.`);
 				try {
@@ -380,7 +380,7 @@
 				}
 				return parsed;
 			},
-			
+
 			equipment(parsed, names) {
 				this.import.backgrounds(parsed);
 				names = {
@@ -447,7 +447,7 @@
 				parsed.imported = parsed.base;
 				return parsed;
 			},
-			
+
 			split(value, names, base) {
 				let parsed = this.parse.split(value, {base});
 				if (parsed) {
@@ -467,7 +467,7 @@
 				// get template for `.{$parsed.base}`
 				let base = parsed.base,
 					$tpl = udfs.$template(base);
-				
+
 				if ($tpl) {
 					tpls = udfs.keyedFieldsFor(base, {$tpl});
 					this.import._udf(parsed, tpls);
@@ -598,7 +598,7 @@
 
 				equipment(base, values, defaults={}) {
 					let charge = 10, parsed;
-					
+
 					defaults = {...defaults, type:values[0], points:values[2], charge},
 					parsed = this.parse.byPatterns(values[1], 'equipment', defaults);
 					if (parsed) {
@@ -613,7 +613,7 @@
 					}
 					return parsed;
 				},
-				
+
 				generic(base, values, defaults={}) {
 					if (! base) {
 						// base couldn't be determined by categorization, so guess a base based on 1st value
@@ -640,7 +640,7 @@
 				},
 
 				simple(base, values, defaults={}) {
-					defaults = {base, ...defaults};					
+					defaults = {base, ...defaults};
 					let parsed = this.parse.byPatterns(values[1], 'simple', defaults)
 							  || this.parse.byPatterns(values[0], 'simple', defaults),
 						value = values[1] || values[0];
@@ -654,7 +654,7 @@
 					return parsed;
 				},
 			},
-			
+
 			byPatterns(value, patterns, defaults) {
 				if (! value) {
 					return;
@@ -688,7 +688,7 @@
 				if (section in categories) {
 					return [section, base];
 				}
-				
+
 				const sections = {
 					artifact: 'equipment',
 					relic: 'equipment',
@@ -701,14 +701,14 @@
 					// use `type`, even though it may be singular; parser will correct
 					return [section, type];
 				}
-				
+
 				if (dsf.exists(type)) {
 					return ['simple', type];
 				}
 				if (dsf.exists(base)) {
 					return ['simple', base];
 				}
-								
+
 				let advantage = this.advantage(type);
 				if (advantage) {
 					if (udfs.exists(type)) {
@@ -722,7 +722,7 @@
 					}
 					return ['generic', advantage];
 				}
-				
+
 				if (udfs.exists(type)) {
 					return ['generic', type];
 				}
@@ -740,7 +740,7 @@
 						}
 					}
 				}
-				
+
 				return ['generic', null];
 			},
 
@@ -786,7 +786,7 @@
 			glueRe: memoize(function (glue) {
 				return new RegExp(` *${glue} *`);
 			}),
-			
+
 			tagged(values, glue=';') {
 				let parsed = {};
 				for (let value of values) {
@@ -821,7 +821,7 @@
 					if ('_' != name[0] && ! (name in this.aliases.export) && ! (names in this.aliases.export)) {
 						if (udfs.exists(names) || dsf.exists(names)) {
 							base = names;
-							bases = [names, name];							
+							bases = [names, name];
 						} else if (udfs.exists(name) || dsf.exists(name)) {
 							base = name;
 							bases = [name, names];
@@ -837,7 +837,7 @@
 				}
 			}
 		},
-		
+
 		preLoad(options, $context) {
 			this.$context = $context;
 			this.slug = options.slug;
@@ -849,7 +849,7 @@
 
 		change({containerId, fieldName, fieldValue}, $context) {
 			if (this.is(fieldName)) {
-				
+
 			}
 		},
 
@@ -859,7 +859,7 @@
 			this.export();
 		},
 
-		
+
 
 		/*  */
 
@@ -884,7 +884,7 @@
 		*aliasEntries(segment, options={}) {
 			let include = entry => true;
 			if ('simple' == segment && options.skipCorrections) {
-				include = entry => !this.aliases.import[entry[1]];
+				include = entry => ! this.aliases.import[entry[1]];
 			}
 			for (let entry of Object.entries(segment)) {
 				if (options.prefix) {
@@ -909,14 +909,14 @@
 			return slug_a && slug_b
 				&& slug_a.replace(reEd, '') == slug_b.replace(reEd, '');
 		},
-		
+
 		createField(theirs, {mine, attrs='', classes=''}={}) {
 			theirs = dsf.addPrefix(theirs);
 			if (mine) {
 				mine = dsf.addPrefix(mine);
 				attrs += ` data-for="${mine}"`;
 			}
-			
+
 			let $field = this.$context.find(`.${theirs}`);
 			if (! $field.length) {
 				$field = $(`<span class="dsf ${theirs} ${classes}"${attrs}></span>`);
@@ -996,7 +996,7 @@
 			}
 		},
 		*/
-		
+
 		/**
 		 * Remove any backing fields after the last non-empty field for templated aliases.
 		 *
@@ -1058,9 +1058,9 @@
 			if (self) {
 				fn = fn.bind(self);
 			}
-			
+
 			this.eachSimple(fn, null, options);
-			
+
 			for (let [theirs, mine] of Object.entries(this.aliases.templates)) {
 				if (options.prefix) {
 					theirs = dsf.addPrefix(theirs);
@@ -1153,7 +1153,7 @@
 				});
 		},
 		*/
-		
+
 		/**
 		 * For templated aliases, return a collection of field names matching those templates. 
 		 */
@@ -1165,8 +1165,8 @@
 
 			for (let [name, value] of dsa.entries(tplTheirs, envs, options)) {
 			}
-			
-			let pre = klass.prefix(tplTheirs);			
+
+			let pre = klass.prefix(tplTheirs);
 			return this.$context.find(`[class*=" ${pre}"]`)
 				.toArray()
 				.filter(elt => klass.matches(tplTheirs, elt.className))
@@ -1200,7 +1200,7 @@
 			}
 		},
 		*/
-		
+
 		/**
 		 *
 		 */
@@ -1320,7 +1320,7 @@
 		extractMine(data) {
 			return this.extract_(data, this.sesalia);
 		},
-		
+
 		/* Get aliased DSFs for other DSTs out of storage. */
 		extractTheirs(data) {
 			return this.extract_(data, this.aliases);
@@ -1329,7 +1329,7 @@
 		/* Copy from their fields to mine. */
 		import(/*data*/) {
 			let data = dsa.data;
-			
+
 			if (this.compatible(this.slug, data.last_dst)) {
 				/* don't bother importing if the last DST used was this one */
 				return;
@@ -1358,7 +1358,7 @@
 					fn.call(this, name, value, env);
 				}
 			}
-			
+
 			data.last_dst = this.slug;
 		},
 
@@ -1389,7 +1389,7 @@
 		iMine(iTheirs, start) {
 			return (+iTheirs) - this.offset(start);
 		},
-		
+
 		/** Convert index for one of my dynamic fields to theirs. */
 		iTheirs(iMine, start) {
 			return (+iMine) + this.offset(start);
@@ -1400,7 +1400,7 @@
 			name = dsf.stripPrefix(name);
 			return this.isSimple(name) || this.isInstance(name);
 		}),
-		
+
 		isInstance(name, aliases) {
 			return this.templateFor(name, aliases);
 		},
@@ -1423,7 +1423,7 @@
 			}
 			return defaults;
 		},
-		
+
 		/**
 		 */
 		loopVars(tpl, defaults={}) {
@@ -1440,7 +1440,7 @@
 			yield* this.mySimpleEntries(options);
 			yield* this.myTemplateEntries(options);
 		},
-		
+
 		/**
 		 * Generates alias instances for each DSF existing in current DST.
 		 *
@@ -1499,7 +1499,7 @@
 				to = aliases.templates[tpl];
 			return klass.apply(from, to, name);
 		},
-		
+
 		normalize: memoize(function (name) {
 			name = this.scrub(name);
 			name = words.singulize(name);
@@ -1523,11 +1523,11 @@
 		offset(start) {
 			return start - 1;
 		},
-		
+
 		scrub: memoize(function (name) {
 			return name.replace(/ *\((cont('d|inued)?\.*|misc\.?|\.+)\)$/i, '');
 		}),
-		
+
 		standardize: memoize(function (name) {
 			const standardized = {
 				'artefact': 'artifact',
@@ -1546,7 +1546,7 @@
 			}
 			return name;
 		}),
-		
+
 
 		/**
 		 * Remove generated DSFs after the given number.
@@ -1573,12 +1573,12 @@
 			case 'skill':
 			case 'knowledge':
 				return new RegExp(`^[^a-z]*${base}s?[: ]+(?<name>[^(]*)(?: *\\((?<specialty>[^)]*)\\))?`, 'i');
-				
+
 			default:
 				return new RegExp(`^[^a-z]*${base}s?[: ]+(?<name>.*)`, 'i');
 			}
 		}),
-		
+
 		renameSplat(base, theirs, rating, value) {
 			let parts;
 			if ((parts = value.match(this._splatRe(base)))) {
@@ -1638,7 +1638,7 @@
 		*simpleAliases(options={}) {
 			yield* this.aliasEntries(this.aliases.simple, options);
 		},
-		
+
 		/**
 		 * Generate pairs of (unexpanded) templated aliases.
 		 *
@@ -1649,7 +1649,7 @@
 			delete options.skipCorrections;
 			yield* this.aliasEntries(this.aliases.templates, options);
 		},
-		
+
 		/**
 		 * Return the template alias matching the given name (if any).
 		 *
@@ -1681,7 +1681,7 @@
 				([theirs, mine]) => ({theirs, value:dsa.data[theirs], mine})
 			);
 		},
-		
+
 		*theirTemplateEntries(options) {
 			for (let [theirs, mine] of Object.entries(this.aliases.templates)) {
 				let {envs, opts:loopOpts} = this.loopVars(theirs, options);
@@ -1691,7 +1691,7 @@
 				);
 			}
 		},
-		
+
 		/**
 		 * If `mine` is an aliased field from this sheet, return their name for it
 		 *
@@ -1709,7 +1709,7 @@
 	*/
 	for (let funcs of [
 		compatibility.port.export,
-		compatibility.port.import,		
+		compatibility.port.import,
 		compatibility.parse,
 		compatibility.parse._byValues,
 		compatibility['export.'],

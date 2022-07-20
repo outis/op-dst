@@ -43,17 +43,17 @@
 				start: 0,
 				noExport: true,
 			},
-			
+
 			'backgrounds_type_{i:02}': 'jp12x_splat',
 			'backgrounds_value_{i:02}': 'jp12x_splat',
 			'equipment_name_{i:02}': 'jp12x_splat',
 			'equipment_tootip_{i:02}': 'jp12x_splat',
 			'flaw_{i:02}': 'jp12x_splat',
 			'specialty_type_{i:02}': 'jp12x_splat',
-			
+
 			'traits_type_{i:02}': 'jp12x_splat',
 			'traits_value_{i:02}': 'jp12x_splat',
-			
+
 			'ability_type_{i:02}': 'jp12x_splat',
 			'ability_value_{i:02}': 'jp12x_splat',
 			'talent_type_{i:02}': 'jp12x_splat',
@@ -61,7 +61,7 @@
 			'knowledge_type_{i:02}': 'jp12x_splat',
 			'knowledge_value_{i:02}': 'jp12x_splat',
 		},
-		
+
 		simple: {
 			// attributes
 			'presence': 'charisma',
@@ -71,7 +71,7 @@
 			'dex': 'dexterity',
 			'sta': 'stamina',
 			'stam': 'stamina',
-			
+
 			'cha': 'charisma',
 			'man': 'manipulation',
 			'manip': 'manipulation',
@@ -100,7 +100,7 @@
 			'strength_value': 'strength',
 			'dexterity_value': 'dexterity',
 			'stamina_value': 'stamina',
-			
+
 			'charisma_value': 'charisma',
 			'manipulation_value': 'manipulation',
 			'appearance_value': 'appearance',
@@ -108,7 +108,7 @@
 			'perception_value': 'perception',
 			'intelligence_value': 'intelligence',
 			'wits_value': 'wits',
-			
+
 			/// abilities
 			//// talents
 			'alertness_value': 'alertness',
@@ -133,7 +133,7 @@
 			'stealth_value': 'stealth',
 			'survival_value': 'survival',
 			'technology_value': 'technology',
-			
+
 			//// knowledges
 			'academics_value': 'academics',
 			'computer_value': 'computer',
@@ -145,7 +145,7 @@
 			'occult_value': 'occult',
 			'politics_value': 'politics',
 			'science_value': 'science',
-			
+
 			/// advantages
 			'other_trait_7a': 'other_trait_7', // correct typo in sheet
 			'humanity_value': 'health', /* potential issue: all DST exporters 
@@ -160,15 +160,15 @@
 			'attribute_strength': 'strength',
 			'attribute_dexterity': 'dexterity',
 			'attribute_stamina': 'stamina',
-			
+
 			'attribute_presence': 'presence',
 			'attribute_manipulation': 'manipulation',
 			'attribute_composure': 'composure',
-			
+
 			'attribute_intelligence': 'intelligence',
 			'attribute_wits': 'wits',
 			'attribute_resolve': 'resolve',
-			
+
 			/// abilities
 			//// mental
 			'skill_academics_dots': 'academics',
@@ -200,14 +200,14 @@
 			'skill_streetwise_dots': 'streetwise',
 			'skill_subterfuge_dots': 'subterfuge',
 		},
-		
+
 		templates: {
 			// old_wod_generic
 			/*
 			'flaw{i}': 'dyn_flaws_{i:02}_name',
 			'merit{i}': 'dyn_merits_{i:02}_name',
 			*/
-			
+
 			/*
 			'bg{i}': 'bg_{i}_name',
 			'bg{i}_value': 'bg_{i}_value',
@@ -217,7 +217,7 @@
 			// TODO: robustness-compatibility.js-check 'powers_value' to determine category (rather than assuming arcanoi)
 			'power{i}': 'dyn_arcanoi_{i:02}_name',
 			'power{i}_value': 'dyn_arcanoi_{i:02}',
-			
+
 			// jp12x_splat (nWoD Reloaded!)
 			'equipment_name_{i:02}': 'dyn_equipment_{i:02}_name',
 			'equipment_tootip_{i:02}': 'dyn_equipment_{i:02}_description',
@@ -232,7 +232,7 @@
 			'talent_value_{i:02}': 'dyn_skills_{i:02}',
 			'knowledge_type_{i:02}': 'dyn_knowledges_{i:02}_name',
 			'knowledge_value_{i:02}': 'dyn_knowledges_{i:02}',
-			
+
 			'backgrounds_type_{i:02}': 'dyn_backgrounds_{i:02}_name',
 			'backgrounds_value_{i:02}': 'dyn_backgrounds_{i:02}',
 		},
@@ -249,7 +249,7 @@
 				if (! parsed) {
 					return parsed;
 				}
-				if (!parsed.base) {
+				if (! parsed.base) {
 					debugger;
 				}
 				return this.import.dispatch(parsed, names);
@@ -317,7 +317,7 @@
 					},
 				},
 			},
-			
+
 			old_wod_generic: {
 				/**
 				 * Entry points to import only from the given DST.
@@ -388,7 +388,7 @@
 							'backgrounds');
 						console.debug(`Imported ${theirs} as BG ${name}`);
 					},
-					
+
 					'bg{i}_expanded{j}': function (theirs, expanded, env) {
 						let baseTpl = `bg{i}`,
 							valueTpl = `bg{i}_value`,
@@ -397,7 +397,7 @@
 							parsed = this.import.old_wod_generic([baseName, theirs, valueName], [undefined, expanded, undefined]);
 
 						// check whether there's a `.${base} > .udf`
-						
+
 						// BG -> background
 						// if can't find rating, check 'bg{i}_value'
 						if (parsed) {
@@ -416,12 +416,12 @@
 							console.warn(`Could not parse '${theirs}': '${expanded}'`);
 						}
 					},
-					
+
 					/*
 					  'flaw{i}': function function(theirs, value, env) {
 					  },
 					*/
-			
+
 					'misc{i}': function(theirs, value, env) {
 						let parsed = this.import.old_wod_generic([theirs], [value]);
 						if (parsed) {
@@ -499,7 +499,7 @@
 						);
 						*/
 					},
-						
+
 					_gather(category, item, names) {
 						if (names) {
 							item.mine = compatibility.aliasFor(names);
@@ -512,15 +512,15 @@
 						}
 						this._items[category].push(item);
 					},
-					
+
 					_nBg(items) {
 						return Math.ceil(items.length / 3);
 					},
-					
+
 					_fragmentation(items) {
 						return ((-items.length) % 3 + 3) % 3;
 					},
-					
+
 					_preserve: Object.assign(
 						function (item, ...bases) {
 							let preserved;
@@ -554,7 +554,7 @@
 							},
 						}
 					),
-					
+
 					_store() {
 						// Relics & artifacts might have entries both in BGs and equipment; filter them out from BGs
 						this._items.backgrounds = this._items.backgrounds
@@ -581,7 +581,7 @@
 							this._store_bgs(entries);
 							return;
 						}
-						
+
 						// check whether merging inventory groups into single one will reduce fragmentation & number of BGs required
 						let equip_frag = 0,
 							equip_frags = {},
@@ -603,7 +603,7 @@
 							// merging should reduce fragmentation; will it reduce # of BGs required?
 							let inventory = [],
 								merged = {},
-								nBgs1 = nBgs;								
+								nBgs1 = nBgs;
 							for (let category of equip_types) {
 								// don't merge any equipment types with 0 fragmentation
 								if (equip_frags[category]) {
@@ -652,7 +652,7 @@
 							'cat': 'bg{i}',
 							'item': 'bg{i}_expanded{j}',
 						}, i = 0, j;
-						
+
 						const advance_bg = (function (category, item) {
 							if (++i > this._max.bg) {
 								// shouldn't happen, due to checks in _store()
@@ -779,26 +779,26 @@
 					flaws(names, values) {
 						return this._flavor(names, values, 'flaw');
 					},
-					
+
 					generic(base, ...args) {
 						this._addTheirItem(base, args[1] || args[0]);
 					},
-					
+
 					health(names, values) {
 						compatibility.exportField('humanity_value', values.value, {mine: 'health'});
 					},
-					
+
 					merits(names, values) {
 						return this._flavor(names, values, 'merit');
 					},
-					
+
 					passions(names, values) {
 						this._addTheirItem('passions', values, names);
 					},
-					
+
 					simple(mine, name, value) {
 						let theirs = dsf.nextName({name: 'other_trait_{i}', value: 'other{i}_value'});
-						
+
 						if (theirs.i <= 7) {
 							compatibility.export.dynamicField(theirs.name, name, {mine});
 							compatibility.export.dynamicField(theirs.value, value, {mine});
@@ -842,7 +842,7 @@
 							lvl = parts.groups.lvl;
 							value = value.replace(/[:@(]? *[-+]? *\d+(?: *pts?)?\W*$/, '');
 						}
-						
+
 						let names = {
 							name: `dyn_${which}_{i:02}_name`,
 						}, values = {
@@ -856,7 +856,7 @@
 						udfs.addDsa(names, values, which);
 						delete dsa.data[theirs];
 					},
-					
+
 					'specialty_type_{i:02}': function (theirs, value, env) {
 						let parts = value.match(/^(?<attr>[^:]*): *(?<specialty>.*)/);
 						if (parts) {
@@ -868,7 +868,7 @@
 							dsa.data[`${attr}_specialty`] = specialty;
 						}
 					},
-					
+
 					'traits_type_{i:02}': function (theirs, value, env) {
 						let names,
 							rating = theirs.replace('_type_', '_value_');
@@ -918,10 +918,10 @@
 								name: 'numina_type_{i:02}',
 								value: 'numina_value_{i:02}'
 							}, values, names.value, {start:0}
-						);						
-						
+						);
+
 					},
-					
+
 					arcanoi(names, values) {
 						let parts = values.value.match(pips.reDemi),
 							mine = names.value || Object.values(names)[0];
@@ -942,7 +942,7 @@
 									value: 'numina_value_{i:02}'
 								}, {name: values.name+' (common)', value:+left},
 								mine, {start:0}
-							);						
+							);
 							/**/
 							values.name += ' (initiate)';
 							values.value = right;
@@ -954,7 +954,7 @@
 								name: 'numina_type_{i:02}',
 								value: 'numina_value_{i:02}'
 							}, values, mine, {start:0}
-						);						
+						);
 					},
 
 					equipment(names, values) {
@@ -995,7 +995,7 @@
 					},
 
 					fetters: 'splat',
-					
+
 					passions: 'splat',
 
 					// TODO: investigate "Object" values it traits_*_{i}

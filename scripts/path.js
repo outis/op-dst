@@ -4,7 +4,7 @@
 	 * @requires dsf, klass
 	 */
 	let path = globals.path = {
-		_sep: '_',		
+		_sep: '_',
 		//reSeparator: /_(\d+)(?:_|$)/,
 		reSeparator: /_/,
 		get separator() {
@@ -14,11 +14,11 @@
 			this._sep = value;
 			this.reSeparator = new RegExp(`${value}(\d+)${value}`);
 		},
-		
+
 		join(...parts) {
 			return parts.join(this.separator);
 		},
-		
+
 		split(name) {
 			return dsf.stripPrefix(name).split(this.reSeparator);
 		},

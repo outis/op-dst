@@ -236,9 +236,9 @@
 
 	/**
 	 */
-	function memoize(f) {		
+	function memoize(f) {
 		var results = {};
-		
+
 		function _memoized(name, ...args) {
 			if (! (name in results)) {
 				results[name] = f.call(this, name, ...args);
@@ -250,7 +250,7 @@
 
 		return _memoized;
 	}
-	
+
 	/**
 	 * The number of digits in a number.
 	 */
@@ -291,7 +291,7 @@
 	function is_advantage(elt) {
 		return is_kind('advantages', elt);
 	}
-	
+
 	function is_attribute(elt) {
 		return is_kind('attributes', elt);
 	}
@@ -344,7 +344,7 @@
 	function setPippedKinds(kinds) {
 		pippedKinds = kinds;
 	}
-	
+
 	/*** jQuery extensions */
 	// TODO: feature-add methods that take multiple selectors, and return which has closer matching descendents (i.e. `closer()` for descendents)
 
@@ -368,7 +368,7 @@
 		}
 		let $nodes = this,
 			$candidates = {};
-		
+
 		for (;
 			 $nodes.length && ! $candidates.length;
 			 $nodes = $nodes.parent().closest(sel))

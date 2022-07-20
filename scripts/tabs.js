@@ -6,7 +6,7 @@
 		 */
 
 		/* DST event handlers */
-		
+
 		preLoad(opts, $context) {
 			this.$context = $context;
 			// TODO: refactor-find better name
@@ -20,12 +20,12 @@
 			});
 		},
 
-		
-		/* */		
+
+		/* */
 		groupName($tabGroup) {
 			this.name($tabGroup.parent()[0]);
 		},
-		
+
 		is(elt) {
 			return /\btabs\b/.test(elt.parentNode.className);
 		},
@@ -73,7 +73,7 @@
 		tab(name) {
 			return this.$context.find(`.tabs > .${name}`);
 		},
-		
+
 		$tab($tabGroup, name) {
 			return $tabGroup.children(`.${name}`);
 		},
@@ -82,7 +82,7 @@
 		$tabGroup(tab) {
 			return $(tab).closest('.tabs');
 		},
-		
+
 		$tabs($tabGroup) {
 			return $tabGroup.children();
 		},

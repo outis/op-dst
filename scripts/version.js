@@ -12,12 +12,12 @@
 
 		/* DST event handlers */
 		preLoad(opts, $context) {
-			this.$context = $context;			
+			this.$context = $context;
 		},
-		
+
 
 		/* */
-		
+
 		dataVersion({version, data}={}) {
 			// don't use dsa.data, so as to avoid the dependency
 			data ||= dynamic_sheet_attrs;

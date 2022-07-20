@@ -17,7 +17,7 @@
 				return $('<textarea></textarea>');
 			},
 		},
-		
+
 		/* DST event handlers */
 		init($context, slug) {
 			this.$context = $context;
@@ -34,7 +34,7 @@
 				this.clicker = this.clicked.bind(this);
 				this.submitter = this.submitted.bind(this);
 				this.blurrer = this.blurred.bind(this);
-				
+
 				$('.udf').on('mll.udfs.add', (evt, ...args) => this.setup(...args));
 				this.setup(this.$context);
 				//$context.find('.udf').on('click', '.dsf.' + this.custClass, this.clicker);
@@ -61,13 +61,13 @@
 				$editor.data('$input').trigger('focus');
 			}
 		},
-		
+
 		editCancelled(evt) {
 			let $dsf = this.resolve(evt);
 			this.stop($dsf);
 			this.restore($dsf);
 		},
-		
+
 		keyCheck(evt) {
 			switch (evt.keyCode) {
 			case 27:
@@ -75,7 +75,7 @@
 				break;
 			}
 		},
-		
+
 		submitted(evt) {
 			evt.preventDefault();
 			$(evt.target).find('.value').trigger('blur');
@@ -86,11 +86,11 @@
 		addBreaks(value) {
 			return value.replace(/(?:<br\/?>)*\n/g, '<br/>\n');
 		},
-		
+
 		delBreaks(value) {
 			return value.replace(/(?:<br\/?>)*\n/g, '\n');
 		},
-		
+
 		$editor($dsf) {
 			let name = dsf.name($dsf),
 				type = this.type($dsf);
@@ -106,16 +106,16 @@
 				$form.value = function (val) {
 					this.data('$input').val(val); //.html(val);
 				};
-				
+
 				$input.on('keydown', this.keyChecker);
 				$input.on('blur', this.blurrer);
 				$form.on('submit', this.submitter);
-				
+
 				this._$editors[type] = $form;
 			}
 			return this._$editors[type];
 		},
-		
+
 		$input($elt) {
 			let $editor;
 			if (! $elt) {
@@ -137,7 +137,7 @@
 				return $dsf.getAttribute('list');
 			}
 		},
-		
+
 		resolve(dsf) {
 			if ('target' in dsf) {
 				dsf = dsf.target;
@@ -147,7 +147,7 @@
 			}
 			return dsf.closest('.dsf')
 		},
-		
+
 		restore($dsf) {
 			let value = $dsf.data('old-value'),
 				$input = this.$input($dsf);
@@ -155,7 +155,7 @@
 			$input.val(value);
 			this.store($dsf, value);
 		},
-		
+
 		save($dsf) {
 			$dsf = this.resolve($dsf);
 			if (! $dsf.hasClass('editing')) {
@@ -182,7 +182,7 @@
 				.add('.dsf.notes', $context)
 				.addClass('readonly ' + this.custClass)
 				.on('click', this.clicker);
-			// could also use `.one('click', this.clicker)`, but must then rebind after edit finishes			
+			// could also use `.one('click', this.clicker)`, but must then rebind after edit finishes
 		},
 
 		start($dsf) {
@@ -197,26 +197,33 @@
 				// TODO: return default editor?
 				return;
 			}
-			
+
 			if (val == editMarker) {
 				val = '';
 			}
 			//console.log('start', val);
-			
+
 			$dsf.addClass('editing');
 			$input.val(val); //.html(val);
-			
+
 			//$(document).on('keydown', this.keyChecker);
 
 			$dsf.data('old-value', val);
 			$dsf.text('');
+			// TODO? if $dsf is tip, add editor to .tipped ancestor
+			/** /
+			if ($dsf.hasClass('.tip')) {
+				$dsf.closest('.tipped').append($editor);
+			} else {
+			/**/
 			$dsf.append($editor);
+			//}
 			$dsf.data('$editor', $editor);
 
 			this.$active = $editor;
 			return $editor;
 		},
-		
+
 		stop($dsf) {
 			console.debug(`editor.stop ${dsf.name($dsf)}`);
 			$dsf = this.resolve($dsf);
@@ -225,7 +232,7 @@
 			//$(document).off('keydown', this.keyChecker);
 			$editor.detach();
 		},
-		
+
 		store($dsf, value) {
 			console.debug(`editor.store ${dsf.name($dsf)} <- ${value}`);
 			if (! /<p\b/.test(value)) {
