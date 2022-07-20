@@ -429,8 +429,12 @@
 			simple(parsed, names) {
 				// simple field: corpus, pathos, ...
 				if (parsed.name) {
-					// update parsed.value?
-					dsa.data[parsed.base] = parsed.name + ': ' + parsed.value;
+					if (dsf.exists(parsed.name)) {
+						dsa.data[parsed.name] = parsed.value;
+					} else {
+						// update parsed.value?
+						dsa.data[parsed.base] = parsed.name + ': ' + parsed.value;
+					}
 					delete dsa.data[names[1]];
 				} else if (names[1]) {
 					// names[0] is the base, names[1] the value
