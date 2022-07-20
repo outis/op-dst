@@ -568,7 +568,7 @@
 							// found levels, but not name
 							if (values[1]) {
 								// name is 1st, levels 2nd
-								parsed.name = values[0];
+								parsed.name = base || words.singulize(values[0]);
 							} else {
 								// found value, but no name; what do?
 							}
@@ -714,7 +714,7 @@
 						return [advantage, base];
 					}
 					if (advantage in categories) {
-						return [advantage, advantage];
+						return [advantage, type];
 					}
 					return ['generic', advantage];
 				}
