@@ -439,7 +439,7 @@
 			},
 			
 			split(value, names, base) {
-				let parsed = this.parse.byPatterns(value, 'split', {base});
+				let parsed = this.parse.split(value, {base});
 				if (parsed) {
 					this.import._udf(parsed, names, base);
 					/*
@@ -745,6 +745,10 @@
 					base = values[0];
 				}
 				return this.parse.dispatch(base, values, this.parse._byValues);
+			},
+
+			split(value, defaults={}) {
+				return this.parse.byPatterns(value, 'split', defaults);
 			},
 
 			glueRe: memoize(function (glue) {
