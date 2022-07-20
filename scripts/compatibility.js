@@ -647,6 +647,10 @@
 					if (! parsed) {
 						parsed = mergeObjects({ value }, defaults);
 					}
+					// in case of `name: value`
+					if (parsed.name) {
+						parsed.name = this.normalize(parsed.name);
+					}
 					return parsed;
 				},
 			},
@@ -670,7 +674,7 @@
 				}
 			},
 
-			categorize(base, categories) {
+			categorize(base, categories, values) {
 				base = words.pluralize(this.normalize(base));
 				if (base in categories) {
 					return [base, base];
@@ -725,12 +729,23 @@
 				if (udfs.exists(base)) {
 					return ['generic', base];
 				}
+
+				// check for expanded backgrounds that contain misc. DFSs
+				for (let value of values) {
+					let parts = this.parse.split(value);
+					if (parts) {
+						base = this.normalize(parts.name);
+						if (dsf.exists(base)) {
+							return ['simple', base];
+						}
+					}
+				}
 				
 				return ['generic', null];
 			},
 
 			dispatch(base, values, categories) {
-				let [category, base_] = this.parse.categorize(base, categories),
+				let [category, base_] = this.parse.categorize(base, categories, values),
 					parsed = categories[category](base_, values);
 
 				if (parsed) {
