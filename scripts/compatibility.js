@@ -1205,6 +1205,11 @@
 		 *
 		 */
 		export(/*data*/) {
+			if (dsf.exists('export') && ! dsf.value('export')) {
+				this.$aliases.find('.dsf').remove();
+				return;
+			}
+
 			this.$aliases.find('.dsf.dyn').remove();
 			for (const dst of Object.values(this.export.dst)) {
 				if (is_function(dst._start)) {
