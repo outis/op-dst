@@ -417,6 +417,12 @@
 				if (udfs.exists(parsed.base)) {
 					return this.import.udfs(parsed, names);
 				}
+				let base = this.normalize(parsed.name);
+				if (dsf.exists(base)) {
+					parsed.base = base;
+					delete parsed.name;
+					return this.import.simple(parsed, names);
+				}
 				return this.import.advantage(parsed, names);
 			},
 
