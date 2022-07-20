@@ -320,7 +320,7 @@
 
 	function is_numeric(value) {
 		return 'number' === typeof(value)
-			|| /^ *\d+(?:\.\d+)? *$/.test(value);
+			|| /^ *[-+]? *\d+(?:\.\d+)? *$/.test(value);
 	}
 
 	function is_object(value) {
