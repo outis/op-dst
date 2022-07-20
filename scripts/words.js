@@ -62,7 +62,7 @@
 		 */
 		singulize(word) {
 			word = this.correct(word);
-			if (word in this._singles) {
+			if (word.toLowerCase() in this._singles) {
 				return word;
 			}
 			// Intentionally doesn't singulize latin words, such as 'arcanoi' (rather than tranlating to 'arcanum').
