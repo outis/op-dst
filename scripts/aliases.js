@@ -84,7 +84,9 @@
 			'experiance': 'experience',
 			// jp12x_splat (nWoD Reloaded!)
 			'willpower': 'perm_willpower',
+			'perm_willpower_value': 'perm_willpower',
 			'current_will': 'curr_willpower',
+			'temp_willpower_value': 'curr_willpower',
 			'health': 'perm_health',
 			'corpus': 'curr_health',
 			'chealth': 'curr_health',
