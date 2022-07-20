@@ -225,7 +225,7 @@
 		 * Sort out whether the given thing is a field name, element or jQuery result.
 		 */
 		resolve(field) {
-			let name, elt, $elt;
+			let name, elt, $elt, type;
 			if ('string' == typeof(field)) {
 				name = this.stripPrefix(field);
 				$elt = this.$dsf(name);
@@ -240,22 +240,66 @@
 				}
 				name = this.name(elt);
 			}
-			return {name, elt, $elt};
+			type = this.typify($elt);
+			return {name, elt, $elt, type};
+		},
+
+		typify($elt) {
+			if (! $elt[0]) {
+				return;
+			}
+			if (   $elt.hasClass('checkbox')
+				|| $elt.find('> input[type="checkbox"]').length)
+			{
+				return 'checkbox';
+			}
+			if (   'TEXTAREA' == $elt[0].tagName
+				|| $elt.hasClass('notes') || $elt.hasClass('text'))
+			{
+				return 'text';
+			}
+			return 'default';
+		},
+
+		_dsf: {
+			getters: {
+				checkbox($elt) {
+					return $elt.find('input').prop('checked');
+				},
+				text($elt) {
+					return $elt.html();
+				},
+				default($elt) {
+					return $elt[0].dataset.value || $elt.data('value') || $elt.text();
+				},
+			},
+
+			setters: {
+				checkbox($elt, value) {
+					$elt.find('input').prop('checked', !! value);
+				},
+				text($elt, value) {
+					$elt.html(value);
+				},
+				default($elt, value) {
+					$elt.text(value);
+				},
+			},
 		},
 
 		/* get/set value from dsf */
 		value(field, value) {
-			let {elt, $elt} = this.resolve(field);
+			let {elt, $elt, type} = this.resolve(field);
 			if (! elt) {
 				return '';
 			}
-			if (value) {
-				$elt.text(value);
+			if (! is_undefined(value)) {
+				this._dsf.setters[type]($elt, value);
 				elt.dataset.value = value;
 				$elt.data('value', value);
 				return value;
 			}
-			return elt.dataset.value || $elt.data('value') || $elt.text();
+			return this._dsf.getters[type]($elt);
 		},
 
 		// TODO: refactor-find better name
