@@ -604,6 +604,10 @@
 					if (parsed) {
 						parsed.base = 'equipment';
 						parsed.type = this.normalize(parsed.type || base);
+						if (! parsed.value && parsed.charge <= 5) {
+							parsed.value = parsed.charge;
+							parsed.charge = charge;
+						}
 						// for BG value
 						parsed.value ||= parsed.points;
 					}
