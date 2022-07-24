@@ -761,9 +761,7 @@
 			 * Parse a field from oWoD generic.
 			 */
 			outOf3(values) {
-				let [base, name] = breakString(
-					this.scrub(values[0]) /* || '' */, /[-: ]+/,
-					{limit: 2, include:false});
+				let [base, name] = halveString(this.scrub(values[0]) /* || '' */, /[-: ]+/);
 				// store scrubbed version
 				values[0] = this.normalizes(base);
 				//name &&= name.replace(/^ *\((.*)\) *$/g, '$1');
@@ -772,7 +770,7 @@
 					values.splice(1, 0, name);
 				} else if ('backgrounds' == values[0]) {
 					// replace 'backgrounds' to get more specific base
-					[values[0], values[1]] = breakString(values[1], /[-: ]+/, {limit: 2, include:false});
+					[values[0], values[1]] = halveString(values[1], /[-: ]+/);
 					// no need to scrub here
 					base = values[0];
 				}
@@ -792,7 +790,7 @@
 				for (let value of values) {
 					let fields = value.split(this.parse.glueRe(glue));
 					for (let field of fields) {
-						let [name, value] = breakString(field, / *: */, {limit: 2, include: false});
+						let [name, value] = halveString(field, / *: */);
 						if (name) {
 							if (value && value.indexOf(',') > -1) {
 								value = value.split(/ *, */);

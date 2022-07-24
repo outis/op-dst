@@ -8,80 +8,134 @@
 			}
 		}
 	}
-	
-	/**
-	 * Break a string into parts.
-	 *
-	 * Like `String.split`, but can set a limit on the number of breaks. Note that
-	 * this is a hard limit for string separators, but a soft limit for RegExp
-	 * separators. For string separators, there will be no more than <var>limit</var> returned parts, and the limit is only reached if the separator occurs more than <var>limit</var> times. For regexp separators, *the separators are included* in the results.
-	 *
-	 * @param {string} string
-	 * @param {string | RegExp} sep 
-	 * @param {Object} [options]
-	 * @param {number} [options.limit] If provided, sets the limit on the number of breaks.
-	 * @property {boolean} [options.include=true] Whether to include any matched from the separator.
-	 *
-	 * @returns {Array} <var>string</var> separated at each <var>sep</var> into at most <var>limit</var> pieces.
-	 */
-	function breakString(string, sep, opts={}) {
-		let {limit, include=(sep instanceof RegExp)} = opts;
-		if ('number' === typeof(opts)) {
-			limit = opts;
-		} else if ('boolean' === typeof(opts)) {
-			include = opts;
-		}
-			
-		let all = (is_undefined(limit)),
-			parts = [string],
-			halves, matcher;
+
+	const {breakString, halveString} = (function () {
 
 		/* helper functions */
-		function breaker(string, sep) {
+		function breaker(string, sep, matcher, opts={keep:1}) {
 			let i = matcher(string, sep),
 				parts = [string];
 			if (i) {
 				parts[0] = string.substring(0, i.index);
-				parts.push(...i.keep);
+				parts.push(...i.match.slice(opts.include).filter(x => x));
 				parts.push(string.substring(i.index + i.length));
+				parts.groups = i.match.groups;
 			}
 			return parts;
 		}
-		if (sep instanceof RegExp) {
-			matcher = function (string, sep) {
-				let match = string.match(sep);
-				if (match) {
-					return {
-						index: match.index,
-						length: match[0].length,
-						keep: match,
-					};
-				}
-			};
-		} else {
-			matcher = function (string, sep) {
-				let index = string.indexOf(sep);
-				if (index > -1) {
-					return {index, length: sep.length, keep:[sep]};
-				}
-			};
+
+		function matchRegex(string, sep) {
+			let match = string.match(sep);
+			if (match) {
+				return {
+					index: match.index,
+					length: match[0].length,
+					match,
+				};
+			}
 		}
 
-		/* core functionality */
-		while (all || (parts.length < limit)) {
-			halves = breaker(parts[parts.length-1], sep);
-			if (halves.length < 2) {
-				break;
+		function matchString(string, sep) {
+			let index = string.indexOf(sep);
+			if (index > -1) {
+				return {index, length: sep.length, match:[sep]};
 			}
-			parts[parts.length-1] = halves[0];
-			if (include) {
-				parts.push(...halves.slice(1, -1));
-			}
-			parts.push(halves[halves.length - 1]);
 		}
-		return parts;
-	}
-	globals.breakString = breakString;
+
+		function chooseMatcher(sep) {
+			if (sep instanceof RegExp) {
+				return matchRegex;
+			} else {
+				return matchString;
+			}
+		}
+		
+		/**
+		 * Break a string into parts.
+		 *
+		 * Like `String.split`, but can set a limit on the number of breaks. Note that
+		 * this is a hard limit for string separators, but a soft limit for RegExp
+		 * separators. For string separators, there will be no more than <var>limit</var> returned parts, and the limit is only reached if the separator occurs more than <var>limit</var> times. For regexp separators, *the separators are included* in the results.
+		 *
+		 * <var>options.include</var> requires a little explanation. Ultimately, this option is an index into the matches against the separator. With a string separator, there's only a single match (the entire separator), so `0` will include the separator and anything larger will exclude it. With a regex separator, a number is basically the group number, and all groups of that number or higher will be included in the results; a `0` will include the entire match and all groups, `1` just the capturing groups. Boolean values for `options.include` will get translated to numbers appropriate for the separator type. In particular, `true` for RegExp separators will include just capturing groups (but not the entire match), and will include the separator for string separators. The default is 1, which results in excluding the entire match but including capturing groups (if any), which is probably the most generally .
+		 *
+		 * Examples:
+		 *
+		 *     breakString('foo_bar_baz_bam', '_', 3);
+		 *     # ['foo', 'bar', 'baz_bam']
+		 *     breakString('foo_bar_baz_bam', /_/, 3);
+		 *     # ['foo', 'bar', 'baz_bam']
+		 *     breakString('foo_bar_baz_bam', /(_)/, 3);
+		 *     # ['foo', '_', 'bar', '_', 'baz_bam']
+		 *     breakString('foo_bar_baz_bam', /_/, true);
+		 *     # ['foo', 'bar', 'baz', 'bam']
+		 *     breakString('foo_bar_baz_bam', /_/, {include: 0, limit: 3});
+		 *     # ['foo', '_', 'bar', '_', 'baz_bam']
+		 *     
+		 *     breakString('a 7 / 10 solution', / *(\d+) *\\\/ *(\d+) *\/);
+		 *     # ['a', '7', '10', ' solution']
+		 *     breakString('a 7 / 10 solution', / *(\d+) *\\\/ *(\d+) *\/, {include:0});
+		 *     # ['a', ' 7 / 10 ', '7', '10', 'solution']
+		 *     breakString('a 7 / 10 solution', / *((\d+) *\\\/ *(\d+)) *\\/);
+		 *     # ['a', '7 / 10', '7', '10', 'solution']
+		 *     breakString('a 7 / 10 solution is 80% effective', / *(\d+) *(?:\/ *(\d+) *|% *)?/);
+		 *     # ['a', '7', '10', 'solution is', '80', 'effective'];
+		 *
+		 * @param {string} string
+		 * @param {string | RegExp} sep 
+		 * @param {Object} [options]
+		 * @param {number} [options.limit] If provided, sets the limit on the number of breaks.
+		 * @property {boolean|number} [options.include=1] Whether to include any matched groups from the separator. By default, includes all capturing groups (but not entire match) for RegExp separators, and excludes the match for string separators.
+		 *
+		 * @returns {Array} <var>string</var> separated at each <var>sep</var> into at most <var>limit</var> pieces. If <var>sep</var> is a RegExp with named groups, they will be included in a `groups` property of the result (an array of groups for each match).
+		 */
+		function breakString(string, sep, opts={}) {
+			let {limit, include=1} = opts,
+				nParts = 1; // increases with each break
+			if ('number' === typeof(opts)) {
+				limit = opts;
+			} else if ('boolean' === typeof(opts)) {
+				include = opts;
+			}
+			if ('boolean' === typeof(include)) {
+				// regex: include from 1; string: include from 0
+				include = include ? (sep instanceof RegExp) : Infinity;
+			}
+			
+			let all = (is_undefined(limit)),
+				parts = [string],
+				halves, matcher;
+
+			matcher = chooseMatcher(sep);
+			parts.groups = [];
+
+			/* core functionality */
+			while (all || (nParts < limit)) {
+				halves = breaker(parts[parts.length-1], sep, matcher, {include});
+				if (halves.groups) {
+					parts.groups[nParts-1] = halves.groups;
+				}
+				++nParts; // each break adds a part
+				if (halves.length < 2) {
+					// no separator match, so nothing left to break
+					break;
+				}
+				// replace last part (which is being split)
+				parts.splice(-1, 1, ...halves);
+			}
+			return parts;
+		}
+		globals.breakString = breakString;
+
+		function halveString(string, sep, opts={include:1}) {
+			let matcher = chooseMatcher(sep);
+			opts.include ??= 1;
+			return breaker(string, sep, matcher, opts);
+		}
+		globals.halveString = halveString;
+
+		return {breakString, halveString};
+	})();
 
 	function copy(thing) {
 		if (is_object(thing)) {

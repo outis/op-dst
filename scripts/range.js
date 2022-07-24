@@ -389,7 +389,7 @@
 		},
 
 		*halvesByRe(string, reSep) {
-			let tail = breakString(string, reSep, {limit: 2}),
+			let tail = halveString(string, reSep, {include:0}),
 				halves = [tail[0], tail[tail.length - 1]],
 				result;
 			while (tail.length > 1 && halves[1]) {
@@ -400,7 +400,7 @@
 				}
 				// add the previous separator
 				halves[0] += tail[1];
-				tail = breakString(halves[1], sep, {limit: 2});
+				tail = halveString(halves[1], reSep, {include:0});
 				halves[0] += tail[0];
 				halves[1] = tail[tail.length - 1];
 			}
@@ -409,7 +409,7 @@
 		*halvesByStr(string, sep) {
 			// Just in case
 			sep = sep.toString();
-			let halves = breakString(string, sep, {limit: 2, include: false}),
+			let halves = halveString(string, sep),
 				tail,
 				result;
 			while (halves.length > 1 && halves[1]) {
@@ -419,7 +419,7 @@
 					yield `break ${result}`;
 					return result - 1;
 				}
-				tail = breakString(halves[1], sep, {limit: 2, include: false});
+				tail = halveString(halves[1], sep);
 				halves[0] += sep + tail[0];
 				halves[1] = tail[1];
 			}
