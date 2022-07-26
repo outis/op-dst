@@ -244,6 +244,11 @@
 			return {name, elt, $elt, type};
 		},
 
+		type(elt) {
+			let {$elt, type} = this.resolve(elt);
+			return type;
+		},
+
 		typify($elt) {
 			if (! $elt[0]) {
 				return;
