@@ -137,6 +137,14 @@
 		return {breakString, halveString};
 	})();
 
+	function callAll(obj, keys, func, args) {
+		for (let key of keys) {
+			if (is_function(obj[key][func])) {
+				obj[key][fun](...args);
+			}
+		}
+	}
+
 	function copy(thing) {
 		if (is_object(thing)) {
 			return {...thing}; // Object.assign({}, thing);

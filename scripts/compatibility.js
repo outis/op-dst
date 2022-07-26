@@ -1209,11 +1209,7 @@
 			}
 
 			this.$aliases.find('.dsf.dyn').remove();
-			for (const dst of Object.values(this.export.dst)) {
-				if (is_function(dst._start)) {
-					dst._start();
-				}
-			}
+			callAll(this.export.dst, Object.keys(this.export.dst), '_start');
 			//this.createFields();
 			for (const [theirs, mine] of this.simpleAliases({prefix:false, skipCorrections:true})) {
 				this.exportField(theirs, dsf.value(mine), {mine});
@@ -1271,11 +1267,7 @@
 				}
 			}
 			*/
-			for (const dst of Object.values(this.export.dst)) {
-				if (is_function(dst._finish)) {
-					dst._finish();
-				}
-			}
+			callAll(this.export.dst, Object.keys(this.export.dst), '_finish');
 		},
 
 		exportField(theirs, value, extra={}) {
