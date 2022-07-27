@@ -263,6 +263,10 @@
 			{
 				return 'text';
 			}
+			if ('SELECT' == $elt[0].tagName) {
+				return 'select';
+			}
+
 			return 'default';
 		},
 
@@ -270,6 +274,9 @@
 			getters: {
 				checkbox($elt) {
 					return $elt.find('input').prop('checked');
+				},
+				select($elt) {
+					return $elt.val();
 				},
 				text($elt) {
 					return $elt.html();
@@ -282,6 +289,12 @@
 			setters: {
 				checkbox($elt, value) {
 					$elt.find('input').prop('checked', !! value);
+				},
+				select($elt, values) {
+					if (values.match(',')) {
+						values = values.split(/\s*,\s*/);
+					}
+					return $elt.val(values);
 				},
 				text($elt, value) {
 					$elt.html(value);
@@ -304,7 +317,8 @@
 				$elt.data('value', value);
 				return value;
 			}
-			return this._dsf.getters[type]($elt);
+			let getter = this._dsf.getters[type] || this._dsf.getters.default;
+			return getter($elt);
 		},
 
 		// TODO: refactor-find better name
