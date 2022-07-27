@@ -674,8 +674,8 @@
 				}
 			},
 
-			categorize(base, categories, values) {
-				base = words.pluralize(this.normalize(base));
+			categorize(values, categories) {
+				let base = words.pluralize(this.normalize(values[0]));
 				if (base in categories) {
 					return [base, base];
 				}
@@ -744,9 +744,9 @@
 				return ['generic', null];
 			},
 
-			dispatch(base, values, categories) {
-				let [category, base_] = this.parse.categorize(base, categories, values),
-					parsed = categories[category](base_, values);
+			dispatch(values, categories) {
+				let [category, base] = this.parse.categorize(values, categories),
+					parsed = categories[category](base, values);
 
 				if (parsed) {
 					parsed.type ||= words.singulize(parsed.base);
@@ -774,7 +774,7 @@
 					// no need to scrub here
 					base = values[0];
 				}
-				return this.parse.dispatch(base, values, this.parse._byValues);
+				return this.parse.dispatch(values, this.parse._byValues);
 			},
 
 			split(value, defaults={}) {
