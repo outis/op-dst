@@ -1208,8 +1208,8 @@
 				return;
 			}
 
-			this.$aliases.find('.dsf.dyn').remove();
-			callAll(this.export.dst, Object.keys(this.export.dst), '_start');
+			callAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_start');
+
 			//this.createFields();
 			this.exportRequired();
 
@@ -1245,7 +1245,7 @@
 				}
 			}
 			*/
-			callAll(this.export.dst, Object.keys(this.export.dst), '_finish');
+			callAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_finish');
 		},
 
 		exportRequired() {
