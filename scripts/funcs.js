@@ -375,6 +375,10 @@
 		return 'function' === typeof(value);
 	}
 
+	function is_hex_rational(value) {
+		return /^\s*(?:0x[\da-f]+|\d+)\s*\/\s*(?:0x[\da-f]+|\d+)\s*$/i.test(value);
+	}
+
 	function is_iterable(value) {
 		return 'object' === typeof(value)
 			&& 'function' === typeof(value.next);
@@ -391,6 +395,10 @@
 
 	function is_real(value) {
 		return ! Number.isNaN(value) && is_numeric(value);
+	}
+
+	function is_rational(value) {
+		return /^\s*\d+\s*\/\s*\d+\s*$/.test(value);
 	}
 
 	function is_undefined(value) {
