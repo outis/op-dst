@@ -1211,29 +1211,7 @@
 			this.$aliases.find('.dsf.dyn').remove();
 			callAll(this.export.dst, Object.keys(this.export.dst), '_start');
 			//this.createFields();
-			for (const [theirs, mine] of this.simpleAliases({prefix:false, skipCorrections:true})) {
-				this.exportField(theirs, dsf.value(mine), {mine});
-			}
-			/*
-			this.eachSimple(function (theirs, mine) {
-				this.exportField(theirs, dsf.value(mine), {mine});
-			}, this, {prefix:true});
-			*/
-			for (let {mine, value, theirs, env} of this.myTemplateEntries({prefix:false})) {
-				if (theirs in this.aliases.options) {
-					// handle 0-based indices
-					let options = this.aliases.options[theirs];
-					if (options.noExport) {
-						continue;
-					}
-					if ('start' in options) {
-						env.i = (+env.i) + this.offset(options.start);
-					}
-				}
-				// use env & overwrite old fields of theirs
-				theirs = klass.eval(theirs, env);
-				this.export.dynamicField(theirs, value, {mine});
-			}
+			this.exportRequired();
 
 			// handle complex cases
 			for (let base in this.aliases.export) {
@@ -1268,6 +1246,40 @@
 			}
 			*/
 			callAll(this.export.dst, Object.keys(this.export.dst), '_finish');
+		},
+
+		exportRequired() {
+			/*
+			this.eachSimple(function (theirs, mine) {
+				this.exportField(theirs, dsf.value(mine), {mine});
+			}, this, {prefix:true});
+			*/
+			this.exportSimple();
+			this.exportTemplated();
+		},
+
+		exportSimple() {
+			for (const [theirs, mine] of this.simpleAliases({prefix:false, skipCorrections:true})) {
+				this.exportField(theirs, dsf.value(mine), {mine});
+			}
+		},
+
+		exportTemplated() {
+			for (let {mine, value, theirs, env} of this.myTemplateEntries({prefix:false})) {
+				if (theirs in this.aliases.options) {
+					// handle 0-based indices
+					let options = this.aliases.options[theirs];
+					if (options.noExport) {
+						continue;
+					}
+					if ('start' in options) {
+						env.i = (+env.i) + this.offset(options.start);
+					}
+				}
+				// use env & overwrite old fields of theirs
+				theirs = klass.eval(theirs, env);
+				this.export.dynamicField(theirs, value, {mine});
+			}
 		},
 
 		exportField(theirs, value, extra={}) {
