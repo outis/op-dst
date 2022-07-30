@@ -526,6 +526,39 @@
 			};
 		};
 	}
+	if (! ('map' in Object.prototype)) {
+		Object.defineProperties(Object.prototype, {
+			map: {
+				value: function (fn) {
+					let result = Object.create(this);
+					for (let p in this) {
+						result[p] = fn(this[p]);
+					}
+					return result;
+				},
+			},
+			mapKeys: {
+				value: function (fn) {
+					let result = Object.create(this);
+					for (let p in this) {
+						result[fn(p)] = this[p];
+					}
+					return result;
+				},
+			},
+			mapEntries: {
+				value: function (fn) {
+					let result = Object.create(this),
+						key, value;
+					for (let p in this) {
+						[key, value] = fn(p, this[p]);
+						result[key] = value;
+					}
+					return result;
+				}
+			},
+		});
+	}
 	if (! ('capitalize' in String.prototype)) {
 		String.prototype.capitalize = function() {
 			return this.charAt(0).toUpperCase() + this.substr(1).toLowerCase();
