@@ -303,7 +303,7 @@
 				let names = {
 						name: 'dyn_backgrounds_{i:02}_name',
 						value: 'dyn_backgrounds_{i:02}',
-						specialty: 'dyn_backgrounds_{i:02}_specialty',
+						description: 'dyn_backgrounds_{i:02}_description',
 					},
 					label = parsed.name,
 					values = {
@@ -312,11 +312,11 @@
 				if (parsed.type) {
 					//label = `${parsed.type} (${parsed.name})`;
 					values.name = parsed.type;
-					values.specialty = parsed.name;
+					values.description = parsed.name;
 				} else {
 					values.name = parsed.name;
-					if (parsed.specialty) {
-						values.specialty = parsed.specialty;
+					if (parsed.description) {
+						values.description = parsed.description;
 					}
 				}
 				this.import._udf(values, names, 'backgrounds');
@@ -406,7 +406,7 @@
 					base: 'backgrounds',
 					name: parsed.type,
 					value: parsed.points,
-					specialty: parsed.name,
+					description: parsed.name,
 				};
 				this.import.backgrounds(bg);
 				*/
