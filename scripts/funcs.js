@@ -146,10 +146,10 @@
 	}
 
 	function copy(thing) {
-		if (is_object(thing)) {
-			return {...thing}; // Object.assign({}, thing);
-		} else if (Array.isArray(thing)) {
+		if (Array.isArray(thing)) {
 			return [...thing]; // Array.from(thing);
+		} else if (is_object(thing)) {
+			return {...thing}; // Object.assign({}, thing);
 		}
 		return thing;
 	}
