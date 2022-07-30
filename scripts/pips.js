@@ -416,7 +416,7 @@
 			return closer != '.nopips'
 				&& ! $elt.parent('label').length
 				//&& ! $elt.closest('.hidden').length
-				&& ! $elt.hasSomeClass('hidden', 'specialty')
+				&& ! $elt.hasSomeClass('hidden', 'specialty', 'notes')
 				&& ! /_(name|description|specialty|size)\b/.test($elt[0].className)
 				&& (   closer == '.pips'
 					|| (   is_kind(pippedKinds, elt)
