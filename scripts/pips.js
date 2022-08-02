@@ -181,7 +181,8 @@
 			 *
 			 * @param {HTMLElement} elt The DSF node.
 			 */
-			countPips(elt, chirality, marker='X') {
+			countPips(elt, chirality, marker) {
+				marker ??= this.marker;
 				let $pips = this.$pips(elt, chirality),
 					mask = 0;
 				// check whether there are any unmarked demi-pips preceding marked ones (skipping the "clear" box)
@@ -234,7 +235,8 @@
 				return {i: nPip};
 			},
 
-			mark($elt, chirality, value, marker='X') {
+			mark($elt, chirality, value, marker) {
+				marker ??= this.marker;
 				const $pips = this.$pips($elt, chirality);
 
 				if (/0x/.test(value)) {
@@ -366,7 +368,8 @@
 			start() {
 			},
 
-			toggle(eltPip, chirality, iPip, marker='X') {
+			toggle(eltPip, chirality, iPip, marker) {
+				marker ??= this.marker;
 				let $eltPip = $(eltPip);
 				if ($eltPip.hasClass(marker)) {
 					$eltPip.removeClass(marker);
@@ -433,7 +436,8 @@
 			;
 		},
 
-		mark($elt, value, marker='X') {
+		mark($elt, value, marker) {
+			marker ??= this.marker;
 			value = +value;
 			let $pips = $elt.find('span');
 			$pips.slice(1, value+1).addClass(marker);
@@ -539,7 +543,8 @@
 			this.$context.find('input.dsf').prop('disabled', true);
 		},
 
-		toggle(eltPip, marker='X') {
+		toggle(eltPip, marker) {
+			marker ??= this.marker;
 			let $eltPip = $(eltPip);
 			if ($eltPip.hasClass(marker)) {
 				$eltPip.removeClass(marker);
@@ -548,7 +553,8 @@
 			}
 		},
 
-		unpippify($elt, {value=0, marker='X'}={}) {
+		unpippify($elt, {value=0, marker}={}) {
+			marker ??= this.marker;
 			//$elt.text($elt.data('value'));
 			value ||= dsf.value($elt) || $elt.find('.' + marker).length;
 			$elt.empty();
