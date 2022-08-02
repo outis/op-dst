@@ -7,6 +7,7 @@
 	 */
 	let pips = globals.pips = {
 		reDemi: /(?<left>(?<lmask>0x)?[\dA-F]+) *\/ *(?<right>(?<rmask>0x)?[\dA-F]+)/i,
+		marker: 'X',
 
 		/* DST event handlers */
 		init($context) {
@@ -132,9 +133,7 @@
 			if (this.demi.is(evt.target)) {
 				this.demi.clicked(evt);
 			} else {
-				const nPip = this.countPips(evt.target);
-
-				this.setPips(evt.target, nPip);
+				this.fill(evt.target);
 			}
 		},
 
@@ -399,6 +398,16 @@
 				value.value = '0/0';
 				return value;
 			},
+		},
+
+		/**
+		 * Fill pips up to an element, clear after.
+		 *
+		 * Distinguished from {@link this.mark()} and {@link this.setPips()} in that this method determines where to fill based upon the passed element.
+		 */
+		fill(elt) {
+			const nPip = this.countPips(elt);
+			this.setPips(elt, nPip);
 		},
 
 		has(elt) {
