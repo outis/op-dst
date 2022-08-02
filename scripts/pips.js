@@ -182,13 +182,13 @@
 			 *
 			 * @param {HTMLElement} elt The DSF node.
 			 */
-			countPips(elt, chirality) {
+			countPips(elt, chirality, marker='X') {
 				let $pips = this.$pips(elt, chirality),
 					mask = 0;
 				// check whether there are any unmarked demi-pips preceding marked ones (skipping the "clear" box)
-				if ($(elt).find('* + :not(.X) + * + .X')) {
+				if ($(elt).find(`* + :not(.${marker}) + * + .${marker}`)) {
 					for (let i = 0, m = 1; i < $pips.length; ++i, m <<= 1) {
-						if ($pips.eq(i).hasClass('X')) {
+						if ($pips.eq(i).hasClass(marker)) {
 							mask |= m;
 						}
 					}
@@ -196,7 +196,7 @@
 				} else {
 					const pips = $pips.toArray(),
 						  // ordinal to cardinal
-						  i = 1 + pips.findIndex(elt => /\bX\b/.test(elt.className));
+						  i = 1 + pips.findIndex(elt => pips.markRe(marker).test(elt.className));
 					// i == 0: none found, thus all marked
 					return i || pips.length;
 				}
@@ -235,23 +235,23 @@
 				return {i: nPip};
 			},
 
-			mark($elt, chirality, value) {
+			mark($elt, chirality, value, marker='X') {
 				const $pips = this.$pips($elt, chirality);
 
 				if (/0x/.test(value)) {
 					value = +value;
 					for (let i = 0, m = 1; i < $pips.length; ++i, m <<= 1) {
 						if (m & value) {
-							$pips.eq(i).addClass('X');
+							$pips.eq(i).addClass(marker);
 						} else {
-							$pips.eq(i).removeClass('X');
+							$pips.eq(i).removeClass(marker);
 						}
 					}
 				} else {
 					value = +value;
 
-					$pips.slice(0, value).addClass('X');
-					$pips.slice(value).removeClass('X');
+					$pips.slice(0, value).addClass(marker);
+					$pips.slice(value).removeClass(marker);
 				}
 			},
 
@@ -367,12 +367,12 @@
 			start() {
 			},
 
-			toggle(eltPip, chirality, iPip) {
+			toggle(eltPip, chirality, iPip, marker='X') {
 				let $eltPip = $(eltPip);
-				if ($eltPip.hasClass('X')) {
-					$eltPip.removeClass('X');
+				if ($eltPip.hasClass(marker)) {
+					$eltPip.removeClass(marker);
 				} else {
-					$eltPip.addClass('X');
+					$eltPip.addClass(marker);
 				}
 
 				this.recalc(eltPip.parentNode, chirality);
@@ -424,12 +424,16 @@
 			;
 		},
 
-		mark($elt, value) {
+		mark($elt, value, marker='X') {
 			value = +value;
 			let $pips = $elt.find('span');
-			$pips.slice(1, value+1).addClass('X');
-			$pips.slice(value+1).removeClass('X');
+			$pips.slice(1, value+1).addClass(marker);
+			$pips.slice(value+1).removeClass(marker);
 		},
+
+		markRe: memoize(function (marker='X') {
+			return new RegExp(`\b${marker}\b`);
+		}),
 
 		pippify($elt, {name, value=0}={}) {
 			if ($elt instanceof $) {
@@ -526,18 +530,18 @@
 			this.$context.find('input.dsf').prop('disabled', true);
 		},
 
-		toggle(eltPip) {
+		toggle(eltPip, marker='X') {
 			let $eltPip = $(eltPip);
-			if ($eltPip.hasClass('X')) {
-				$eltPip.removeClass('X');
+			if ($eltPip.hasClass(marker)) {
+				$eltPip.removeClass(marker);
 			} else {
-				$eltPip.addClass('X');
+				$eltPip.addClass(marker);
 			}
 		},
 
-		unpippify($elt, {value=0}={}) {
+		unpippify($elt, {value=0, marker='X'}={}) {
 			//$elt.text($elt.data('value'));
-			value ||= dsf.value($elt) || $elt.find('.X').length;
+			value ||= dsf.value($elt) || $elt.find('.' + marker).length;
 			$elt.empty();
 			$elt.text(value);
 		},
