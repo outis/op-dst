@@ -1536,22 +1536,8 @@
 		}),
 
 		standardize: memoize(function (name) {
-			const standardized = {
-				'artefact': 'artifact',
-				'artefacts': 'artifacts',
-				'bg': 'background',
-				'corups': 'corpus',
-				// TODO: design-what type should generic equipment have?
-				//'equipment': '',
-			};
-			name = name.toLowerCase();
-			if (name in standardized) {
-				return standardized[name];
-			}
-			if (name in this.aliases.simple) {
-				return this.aliases.simple[name];
-			}
-			return name;
+			name = words.standardize(name.toLowerCase());
+			return words.lookup(name, this.aliases.simple);
 		}),
 
 

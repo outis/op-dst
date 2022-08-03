@@ -21,6 +21,12 @@
 			'pathos': 'pathos',
 			'status': 'status',
 		},
+		_standards: {
+			'artefact': 'artifact',
+			'artefacts': 'artifacts',
+			'bg': 'background',
+			'xp': 'experience',
+		},
 		// filled from _pluralize
 		_plurals: {},
 		_singulize: {},
@@ -32,12 +38,19 @@
 		 */
 		correct(word) {
 			//let lower = word.toLowerCase();
-			return this._typos[word.toLowerCase()] || word;
+			return this.lookup(word, this._typos);
 		},
 		
 		is_plural(word) {
 			return (word in this._plurals)
 				|| (! (word in this._singles) && /s$/.test(word));
+		},
+
+		/**
+		 * Return entry for <var>word</var> from <var>thesaurus</var>, if any.
+		 */
+		lookup(word, thesaurus) {
+			return thesaurus[word.toLowerCase()] || word;
 		},
 
 		/**
@@ -68,6 +81,12 @@
 			// Intentionally doesn't singulize latin words, such as 'arcanoi' (rather than tranlating to 'arcanum').
 			return /* this._singulize[word] || */ word.replace(/ies\b/, 'y').replace(/s\b/, '');
 		},
+
+		standardize(word) {
+			return this.lookup(
+				this.correct(word),
+				this._standards);
+		},
 	};
 	//words._singulize = flipObject(words._pluralize);
 	for (let [single, plural] of Object.entries(words._pluralize)) {
@@ -76,7 +95,8 @@
 		words._singulize[plural] = single;
 	}
 	for (let [name, fn] of Object.entries(words)) {
-		if (is_function(fn)) {
+		// note: won't catch variadic functions in the 2nd argument
+		if (is_function(fn) && fn.length < 2) {
 			words[name] = memoize(fn.bind(words));
 		}
 	}
