@@ -6,6 +6,7 @@
 		_pluralize: {
 			'arcanum': 'arcanoi',
 			'obolus': 'oboli',
+			'money': 'money',
 			// should status be pluralized?
 			//'status': 'statuses',
 		},
@@ -20,6 +21,7 @@
 			'corpus': 'corpus',
 			'pathos': 'pathos',
 			'status': 'status',
+			'obolus': 'obolus',
 		},
 		_standards: {
 			'artefact': 'artifact',
