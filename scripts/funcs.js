@@ -12,7 +12,7 @@
 	const {breakString, halveString} = (function () {
 
 		/* helper functions */
-		function breaker(string, sep, matcher, opts={keep:1}) {
+		function breaker(string, sep, matcher, opts={include:1}) {
 			let i = matcher(string, sep),
 				parts = [string];
 			if (i) {
