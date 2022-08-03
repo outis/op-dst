@@ -417,7 +417,7 @@
 				if (udfs.exists(parsed.base)) {
 					return this.import.udfs(parsed, names);
 				}
-				let base = this.normalize(parsed.name);
+				let base = this.normalize(parsed.name ?? parsed.base ?? '');
 				if (dsf.exists(base)) {
 					parsed.base = base;
 					delete parsed.name;
