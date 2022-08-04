@@ -138,11 +138,14 @@
 	})();
 
 	function callAll(obj, keys, func, args) {
+		let results = [];
 		for (let key of keys) {
 			if (is_function(obj[key][func])) {
-				obj[key][fun](...args);
+				results[key] = obj[key][fun](...args);
+				results.push(results[key]);
 			}
 		}
+		return results;
 	}
 
 	function copy(thing) {
