@@ -187,7 +187,7 @@
 				let $pips = this.$pips(elt, chirality),
 					mask = 0;
 				// check whether there are any unmarked demi-pips preceding marked ones (skipping the "clear" box)
-				if ($(elt).find(`* + :not(.${marker}) + * + .${marker}`)) {
+				if ($(elt).find(`* + :not(.${marker}) + * + .${marker}`).length) {
 					for (let i = 0, m = 1; i < $pips.length; ++i, m <<= 1) {
 						if ($pips.eq(i).hasClass(marker)) {
 							mask |= m;
@@ -195,11 +195,10 @@
 					}
 					return '0x' + mask.toString(16);
 				} else {
-					const pips = $pips.toArray(),
-						  // ordinal to cardinal
-						  i = 1 + pips.findIndex(elt => pips.markRe(marker).test(elt.className));
-					// i == 0: none found, thus all marked
-					return i || pips.length;
+					const reMark = pips.markRe(marker),
+						_pips = $pips.toArray();
+					// ordinal to cardinal
+					return 1 + _pips.findLastIndex(elt => reMark.test(elt.className));
 				}
 			},
 
