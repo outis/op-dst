@@ -469,7 +469,7 @@
 					$tpl = udfs.$template(base);
 
 				if ($tpl) {
-					tpls = udfs.keyedFieldsFor(base, {$tpl});
+					let tpls = udfs.keyedFieldsFor(base, {$tpl});
 					this.import._udf(parsed, tpls);
 					/*
 					udfs.addDsa(tpls, parsed, base);
