@@ -9,7 +9,7 @@ function list() {
     done
 }
 
-for req in *.js ; do
+for req in $(ls *.js | sort --ignore-case) ; do
     req=${req%.js}
     #echo "  $req:"
     keys+=($req)
