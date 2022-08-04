@@ -273,6 +273,9 @@
 
 			_udf(parsed, names, base) {
 				base ||= parsed.base || words.pluralize(parsed.type);
+				if (parsed.description && ! names.description) {
+					parsed.name += ` (${parsed.description})`;
+				}
 				udfs.addDsa(names, parsed, base);
 				parsed.imported = base;
 			},
