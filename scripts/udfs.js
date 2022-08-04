@@ -477,8 +477,8 @@
 			};
 		},
 		
-		exists(name) {
-			return this.$context.find(`.${name} .udf`).length;
+		exists(name, $context) {
+			return ($context ?? this.$context).find(`.${name} .udf`).length;
 		},
 
 		/**
