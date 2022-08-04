@@ -509,6 +509,19 @@
 	$.fn.hasSomeClass = function (...classes) {
 		return classes.some(cls => this.hasClass(cls));
 	};
+	/**
+	 * Change the descendant selector for a delegated event.
+	 */
+	$.fn.redelegate = function(event, original, replacement) {
+		let elt = this[0],
+			handlers = ($._data(this[0], 'events') ?? {})[event] ?? [];
+		for (let handler of handlers) {
+			if (original == handler.selector) {
+				handler.selector = replacement;
+			}
+		}
+		return this;
+	};
 	if (! ('even' in $.fn)) {
 		// older version of jQuery
 		$.fn.even = function() {

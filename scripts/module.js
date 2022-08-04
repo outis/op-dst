@@ -132,6 +132,10 @@
 			}
 		},
 
+		loaded(module) {
+			return module in this.modules;
+		},
+
 		on(event, handler, id) {
 			if ('string' === typeof(handler)) {
 				[handler, id] = [id, handler];
@@ -211,4 +215,4 @@
 			}
 		},
 	};
-
+	module.loaded = module.loaded.bind(module);
