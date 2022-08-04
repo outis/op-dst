@@ -1832,7 +1832,7 @@
 		},
 
 		scrub: memoize(function (name) {
-			return name.replace(/ *\((cont('d|inued)?\.*|misc\.?|\.+)\)$/i, '');
+			return name.replace(/ *\((cont('d|inued)?\.*|misc\.?|\.+)\)/i, '');
 		}),
 
 		standardize: memoize(function (name) {
