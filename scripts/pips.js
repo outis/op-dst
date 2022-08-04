@@ -382,6 +382,7 @@
 				this.mark($eltField, chirality, nPip);
 			},
 
+			// hook called from pips.start(), in case pips.demi needs to perform any tasks when editing starts
 			start() {
 			},
 

@@ -43,8 +43,8 @@
 		},
 
 		id(elt) {
-			return elt &&
-				(   elt.id
+			return elt
+				&& (   elt.id
 				    ?? $(elt).find('.dsf').filter((i, elt) => /_name$/.test(elt.className)).text());
 		},
 

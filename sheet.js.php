@@ -7,8 +7,8 @@ $requires = [
 	'compatibility' => [ 'aliases', 'dsa', 'dsf', 'klass', 'module', 'range', 'ShorthandDict', 'udfs', 'words', ],
 	'dsa' => [ 'klass', 'nameGen', ],
 	'dsf' => [ 'klass', 'nameGen', ],
-	'editor' => [ 'dsf', 'op', ],
 	'edition' => [ 'dsa', 'dsf', 'klass', 'module', 'pips', 'range', 'udfs', ],
+	'editor' => [ 'dsf', 'op', ],
 	'funcs' => [ ],
 	'klass' => [ ],
 	'module' => [ ],
@@ -27,7 +27,9 @@ $requires = [
 	'words' => [ ],
 ];
 
-$required = ['module'=>1, 'funcs'=>1, 'version'=>1];
+$required = [
+	'module'=>1, 'funcs'=>1, 'version'=>1, // core dependencies
+];
 
 // convert to a structure more readily used by `add_requirements`
 foreach ($requires as $k => &$v) {

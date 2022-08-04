@@ -367,7 +367,7 @@
 					},
 
 					'bg{i}': function (theirs, name, env) {
-						if (dsa.exists(theirs + '_expanded1')
+						if (   dsa.exists(theirs + '_expanded1')
 							|| dsa.exists(theirs + '_expanded2')
 							|| dsa.exists(theirs + '_expanded3'))
 						{
