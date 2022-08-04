@@ -258,7 +258,7 @@
 
 		'parse.': {
 			old_wod_generic(values) {
-				return this.parse.outOf3(values);
+				return this.parse.stream(values);
 			},
 		},
 

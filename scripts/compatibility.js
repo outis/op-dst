@@ -1,3 +1,34 @@
+	/**
+	 * @internal
+	 * Create a parser for string tokens that either assigns a token as the itemm type, or assigns it to the first unset property with name from <var>names</var>.
+	 *
+	 * Used internally by {@link compatibility}
+	 */
+	function makeStringTokenParser(is_type, names=['name', 'description']) {
+		if (is_function(is_type.test)) {
+			let typeRe = is_type;
+			is_type = (value) => typeRe.test(value);
+			stringTokenParser.typeRe = typeRe;
+		}
+
+		function stringTokenParser(value, parsed) {
+			value = value.trim();
+			if (is_type(value)) {
+				parsed.type = value.toLowerCase();
+			} else {
+				for (let name of names) {
+					if (! parsed[name]) {
+						parsed[name] = value;
+						break;
+					}
+				}
+			}
+		};
+		stringTokenParser.is_type = is_type;
+
+		return stringTokenParser;
+	}
+
 	/***
 	 * DSFs from other DSs
 	 *
@@ -674,19 +705,137 @@
 				}
 			},
 
-			categorize(values, categories) {
-				let base = words.pluralize(this.normalize(values[0]));
+
+			/**
+			 * @typedef {Object} Prelim
+			 * @propery {string} Prelim.parser
+			 * @propery {string} Prelim.base
+			 * @propery {string} [Prelim.hint]
+			 *
+			 * @typedef {Object} Parsed Result of parsing a field from another sheet.
+			 * @propery {string} Parsed.base Base for DSF name(s) in this sheet.
+			 * @propery {string} [Parsed.type]
+			 * @propery {string} [Parsed.name] Display name.
+			 * @propery {string} [Parsed.description]
+			 * @propery {string} [Parsed.specialty]
+			 * @propery {string} Parsed.value Field value.
+			 * @propery {string} [Parsed.points]
+			 * @propery {string} [Parsed.charge]
+			 */
+
+			/*** parse by tokens ***/
+
+			_byTokens: {
+				abilities: {
+					string: ['name', 'specialty'],
+					number: ['value'],
+				},
+				arcanoi: {
+					string: ['name'],
+					number: ['value'],
+				},
+				associates: {
+					pre: function(parsed) {
+						if (udfs.exists(parsed.base, compatibility.$context.find('.associates'))) {
+							// set `type`, in case it's already been removed from tokens
+							parsed.type = parsed.base;
+						}
+					},
+					string: makeStringTokenParser(/^(?:all(y|ies)|contacts?)$/i),
+					number: ['value'],
+					post: function(parsed) {
+						if (parsed.type) {
+							// in case parsed.type is more specific (base might be 'associates')
+							parsed.base = words.pluralize(parsed.type);
+							parsed.type = words.singulize(parsed.type);
+						}
+					},
+				},
+				backgrounds: function(tokens, prelim) {
+					//debugger;
+					if (! prelim.hint) {
+						// DSF was categorized based on 'background' token; check if there's a more specific one
+						// TODO: handle things like 'artifact gun'
+						let {prelim:recategory, groups} = this.parse.categorizeFirst(tokens[0], this.parse._byTokens),
+							{parser, hint} = recategory || {};
+						// handle things like equipment by delegating to another by-token parser
+						if (parser && 'backgrounds' !== parser && this.parse._byTokens[parser]) {
+							// `rest` indicates `token` was split for categorization
+							if (groups.rest) {
+								tokens.splice(0, 1, groups.first, groups.rest);
+							}
+							return this.parse.dispatch(tokens, {...prelim, ...recategory});
+						}
+					}
+					let fields = {
+						string: ['name', 'description'],
+						number: ['value'],
+					};
+					return this.parse.tokens(tokens, fields, prelim);
+				},
+				equipment: {
+					string: makeStringTokenParser(/artifact|relic/i)/*function (value, parsed) {
+						if (/artifact|relic/i.test(value)) {
+							parsed.type = value.toLowerCase();
+						} else {
+							const names = ['name', 'description'];
+							for (let name of names) {
+								if (! parsed[name]) {
+									parsed[name] = value;
+									break;
+								}
+							}
+						}
+					}*/,
+					integer: ['points', 'charge'],
+					rational: ['charge'],
+					post: function (parsed) {
+						parsed.charge ??= 10;
+						// for BG value
+						parsed.value ||= parsed.points;
+
+						if ('equipment' !== parsed.base && ! parsed.type) {
+							parsed.type = parsed.base;
+						}
+						parsed.base = 'equipment';
+					},
+				},
+				generic: {
+					string: ['name', 'description'],
+					number: ['value'],
+				},
+				simple: {
+					string: ['name', 'value'],
+					number: ['value'],
+					post: function (parsed) {
+						if (('name' in parsed) && ! ('value' in parsed)) {
+							parsed.value = parsed.name;
+							delete parsed.name;
+						}
+					}
+				},
+				static: {
+					string: ['value'],
+					number: ['value'],
+				},
+			},
+
+			categorize(token, categories) {
+				let type = this.normalize(token),
+					base = words.pluralize(type);
+
+				// TODO? include token in result?
 				if (base in categories) {
-					return [base, base];
+					return {parser:base, base};
 				}
-				let type = this.normalize(base);
 				if (type in categories) {
-					return [type, type];
+					return {parser:type, base:type};
 				}
 
 				let section = dsf.sectionName(`.${base}`);
 				if (section in categories) {
-					return [section, base];
+					return {parser:section, base};
+					//return {parser:section, base:section, type:base};
 				}
 
 				const sections = {
@@ -699,83 +848,231 @@
 				}
 				if (section in categories) {
 					// use `type`, even though it may be singular; parser will correct
-					return [section, type];
+					return {parser:section, base:section, hint:type};
 				}
 
 				if (dsf.exists(type)) {
-					return ['simple', type];
+					return {parser:'static', base:type};
 				}
 				if (dsf.exists(base)) {
-					return ['simple', base];
+					return {parser:'static', base};
 				}
 
 				let advantage = this.advantage(type);
 				if (advantage) {
 					if (udfs.exists(type)) {
-						return [advantage, type];
+						return {parser:advantage, base:type};
 					}
 					if (udfs.exists(base)) {
-						return [advantage, base];
+						// allies & contacts
+						return {parser:advantage, base, hint:type};
 					}
 					if (advantage in categories) {
-						return [advantage, type];
+						return {parser:advantage, base:advantage, hint:type};
 					}
-					return ['generic', advantage];
+					return {parser:'generic', type:advantage};
 				}
 
 				if (udfs.exists(type)) {
-					return ['generic', type];
+					return {parser:'generic', base:type};
 				}
 				if (udfs.exists(base)) {
-					return ['generic', base];
+					return {parser:'generic', base};
 				}
 
-				// check for expanded backgrounds that contain misc. DFSs
-				for (let value of values) {
-					let parts = this.parse.split(value);
-					if (parts) {
-						base = this.normalize(parts.name);
-						if (dsf.exists(base)) {
-							return ['simple', base];
+				return; // no category
+			},
+
+			/**
+			 * Attempt to categorize the first word in the given token.
+			 */
+			categorizeFirst(token, categories) {
+				let match = token.match(/^(?<skip>(?<junk>\W*)(?<first>\w+)\W*)(?<rest>.*)/),
+					prelim;
+				if (match) {
+					token = match.groups.first;
+				} else {
+					match = [token, token, token];
+					match.groups = {
+						skip: token,
+						first: token,
+					};
+				}
+				if ((prelim = this.parse.categorize(token, categories))) {
+					return {prelim, match, groups:match.groups};
+				}
+				// no match
+				return {};
+			},
+
+			categorizeAny(tokens, categories) {
+				var prelim, groups;
+				for (let i=0; i < tokens.length; ++i) {
+					let token = tokens[i],
+						skipped = '';
+					while (token) {
+						// token may be compound;
+						if (({prelim, groups} = this.parse.categorizeFirst(token, categories))) {
+							// first part of token is recognized; split the token in `tokens`
+							let replacements = [];
+							// should match.junk be included in skipped?
+							if (skipped) {
+								replacements.push(skipped.trim());
+							}
+							replacements.push(groups.first);
+							if (groups.rest) {
+								replacements.push(groups.rest);
+							}
+							// skip if replacements.length == 1?
+							tokens.splice(i, 1, ...replacements);
+							if (skipped) {
+								// position of `first`
+								++i;
+							}
+							return {...prelim, i};
+						} else {
+							skipped += match.groups.skip;
+							token = match.groups.rest;
 						}
 					}
 				}
-
-				return ['generic', null];
+				// no match
+				return;
 			},
 
-			dispatch(values, categories) {
-				let [category, base] = this.parse.categorize(values, categories),
-					parsed = categories[category](base, values);
+			cleanToken(token) {
+				return token.replace(/^(\d*) *pts$/, '$1');
+			},
 
-				if (parsed) {
-					parsed.type ||= words.singulize(parsed.base);
-					if (is_real(parsed.value)) {
-						parsed.points ||= parsed.value;
+			dispatch(tokens, prelim) {
+				let parser = this.parse._byTokens[prelim.parser];
+				if (parser) {
+					if (is_function(parser)) {
+						return parser(tokens, prelim);
+					} else {
+						// parse.tokens mutates parser properties, so make a copy first
+						parser = copyAll(parser);
+						return this.parse.tokens(tokens, parser, prelim);
 					}
+				} else {
+					console.error(`compatibility.parse.dispatch: No token parser for '${category}'`);
+				}
+			},
+
+			prelim(tokens) {
+				let prelim = this.parse.categorizeAny(tokens, this.parse._byTokens);
+				if (prelim) {
+					let i = prelim.i
+					if (! prelim.hint) {
+						// remove the categorized token
+						++i;
+					}
+					// skip if i == 0?
+					tokens.splice(0, i);
+				}
+				return prelim;
+			},
+
+			streamType(value, fields) {
+				if (is_numeric(value)) {
+					return fields.integer ? 'integer' : 'number';
+				} else if (is_hex_rational(value)) {
+					return fields.rational ? 'rational' : 'number';
+				}
+				return 'string';
+			},
+
+			/**
+			 * Parse <var>values</var> as a stream.
+			 */
+			stream(values) {
+				let tokens = [...this.parse.tokenizeAll(values)],
+					prelim = this.parse.prelim(tokens),
+					{parser} = prelim ?? {};
+
+				if (parser && this.parse._byTokens[parser]) {
+					/* `i` is where hint was found, `tokens` the tokens after the 
+					 * hint. Replace up to the hint with the remaining tokens.
+					 */
+					return this.parse.dispatch(tokens, prelim);
+				} else {
+					console.error(`'${"','".join(values)}' categorized as ${parser}, but no parser found.`);
+				}
+			},
+
+			/**
+			 * Break up <var>value</var> into separate tokens.
+			 *
+			 * @param {string} value
+			 *
+			 * @returns {string[]}
+			 */
+			tokenize(value) {
+				let tokens = this.scrub(value.toString()).split(/ *(?:[:;()]+| -|- |((?:0x[\dA-F]+|\d+) *(?:pts?|\/ *(?:0x[\dA-F]+|\d+)))) *| *(\d+)$/g);
+				return tokens.filter(x => x);
+			},
+
+			/**
+			 * Break up <var>values</var> into separate tokens.
+			 *
+			 * @param {string[]} values
+			 *
+			 * @yields {string}
+			 */
+			*tokenizeAll(values) {
+				for (let value of values) {
+					yield* this.parse.tokenize(value);
+				}
+			},
+
+			/**
+			 * @param {string[]} tokens
+			 * @param {Object | function} fields
+			 * @param {Prelim} prelim
+			 *
+			 * @returns {Parsed}
+			 */
+			tokens(tokens, fields, prelim) {
+				// `base` might be hint/type or name, rather than base
+				let type, parsed = {base:prelim.base};
+				if (fields.pre) {
+					fields.pre(parsed);
+				}
+				for (let token of tokens) {
+					token = this.parse.cleanToken(token);
+					type = this.parse.streamType(token, fields);
+					if (type in fields) {
+						if (Array.isArray(fields[type])) {
+							// skip anything already set
+							while (parsed[fields[type][0]]) {
+								fields[type].shift();
+							}
+							if (fields[type].length) {
+								parsed[fields[type].shift()] = token;
+							} else {
+								parsed.unmatched ??= [];
+								parsed.unmatched.push(token)
+								console.warn(`parse.stream: out of fields for '${token}':'${type}'`);
+							}
+						} else if (is_function(fields[type])) {
+							let name = fields[type](token, parsed);
+							if (name) {
+								parsed[name] = token;
+							}
+						} else {
+							console.warn(`parse.stream: ${base} has unknown handler type for '${token}':'${type}'`);
+						}
+					} else {
+						console.warn(`parse.stream: ${base} has no way to handle '${token}':'${type}'`);
+					}
+				}
+				if (fields.post) {
+					fields.post(parsed);
 				}
 				return parsed;
 			},
 
-			/**
-			 * Parse a field from oWoD generic.
-			 */
-			outOf3(values) {
-				let [base, name] = halveString(this.scrub(values[0]) /* || '' */, /[-: ]+/);
-				// store scrubbed version
-				values[0] = this.normalizes(base);
-				//name &&= name.replace(/^ *\((.*)\) *$/g, '$1');
-				name &&= name.trim();
-				if (name) {
-					values.splice(1, 0, name);
-				} else if ('backgrounds' == values[0]) {
-					// replace 'backgrounds' to get more specific base
-					[values[0], values[1]] = halveString(values[1], /[-: ]+/);
-					// no need to scrub here
-					base = values[0];
-				}
-				return this.parse.dispatch(values, this.parse._byValues);
-			},
+			/*** /parse by tokens ***/
 
 			split(value, defaults={}) {
 				return this.parse.byPatterns(value, 'split', defaults);
@@ -1705,6 +2002,7 @@
 		compatibility.port.import,
 		compatibility.parse,
 		compatibility.parse._byValues,
+		compatibility.parse._byTokens,
 		compatibility['export.'],
 		compatibility['import.'],
 	]) {
