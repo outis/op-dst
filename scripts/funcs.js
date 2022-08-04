@@ -250,7 +250,7 @@
 
 	function filterObject(obj, pred) {
 		const filtered = {};
-		for (const [key, value] of object.entries(obj)) {
+		for (const [key, value] of Object.entries(obj)) {
 			if (pred(value, key)) {
 				filtered[key] = value;
 			}
