@@ -19,6 +19,7 @@ $requires = [
 	'range' => [ 'ResettableGenerator', ],
 	'reorder' => [ 'udfs', ],
 	'ResettableGenerator' => [ ],
+	'resolver' => [ ],
 	'shadow' => [ ],
 	'ShorthandDict' => [ 'klass', ],
 	'tabs' => [ ],
