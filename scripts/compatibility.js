@@ -362,7 +362,6 @@
 			},
 
 			categorize(parsed, categories) {
-				//console.info(`Choosing importer for ${parsed.base}.`);
 				let base = parsed.base;
 				if (base in categories) {
 					return [base, base];
@@ -375,7 +374,6 @@
 				let section = dsf.sectionName(`.${base}`);
 				if (section in categories) {
 					// catches abilities
-					//console.info(`chose ${section}`);
 					return [section, base];
 				}
 				if (dsf.exists(parsed.base)) {
@@ -388,7 +386,6 @@
 			},
 
 			dispatch(parsed, names) {
-				//console.info(`Choosing importer for ${parsed.base}.`);
 				try {
 				let [category, base] = this.import.categorize(parsed, this.import),
 					importer = this.import[category],
@@ -425,16 +422,6 @@
 					'charge': 'dyn_equipment_{i:02}_charge',
 				};
 				this.import._udf(parsed, names, 'equipment');
-				/*
-				udfs.addDsa({
-					'type': 'dyn_equipment_{i:02}_type',
-					'name': 'dyn_equipment_{i:02}_name',
-					'points': 'dyn_equipment_{i:02}_points',
-					'description': 'dyn_equipment_{i:02}_description',
-					'charge': 'dyn_equipment_{i:02}_charge',
-				}, parsed, 'equipment');
-				parsed.imported = 'equipment';
-				*/
 				/*
 				let bg = {
 					base: 'backgrounds',
@@ -517,176 +504,11 @@
 		// `this` will get bound to `compatibility`
 		parse: {
 			_patterns: {
-				ability: [
-					/^(?:(?<base>knowledge|skill|talent)s?[-: ]+)?(?<name>[^:()]+) +(?:\((?<specialty>[^)]*)\))?(?:[-: ]+\(?(?<value>\d+)(?: *pts?)?\)?)?$/i,
-					/* covers:
-					   /^(?<name>[^:()]+) +\((?<specialty>[^)]*)\)[-: ]+\(?(?<value>\d+)(?: *pts?)?\)?$/i,
-					   /^(?<name>[^:()]+)[-: ]+\(?(?<value>\d+)(?: *pts?)?\)?$/i,
-					   /^(?<name>[^:()]+) +\((?<specialty>[^)]*)\)$/i,
-					*/
-				],
-				arcanoi: [
-					/^(?:(?<type>arcan(?:oi|um))[-: ]+)?(?<name>[^:\/]+)[-: ]+\(?(?<value>(?:0x[\dA-F]+|\d+) *\/ *(?:0x[\dA-F]+|\d+))\)?$/i,
-					/^(?:(?<type>arcan(?:oi|um))[-: ]+)?(?<name>[^:\/]+)[-: ]+\(?(?<value>(?:\d+|0x[\dA-F]+)) *\)?$/i,
-					// value only
-					/^\W*(?<value>(?:\d+|0x[\dA-F]+)(?: *\/ *(?:\d+|0x[\dA-F]+))?)\W*$/i,
-				],
-				equipment: [
-					/^(?<points>\d+)(?: *pts?)?[-: ]+(?<name>[^-:\/]*\w) *(?:\((?<description>[^)]*)\)?)?(?:[-: ]+(?<charge>\d+(?: *\/ *\d+)?))?$/i,
-					/^(?:(?<type>(?:relic|art[ei]fact|equipment))[-: ]+)?\(?(?<name>[^:()]+\w)[-:) ]+\(?(?<description>[^:()]+\w)\)?[-: ]+\(?(?<points>\d+)(?: *pts?)?\)?[-,:; ]+\(?(?<charge>\d+(?: *\/ *\d+)?)\)?$/i,
-					// will this ever match if the previous fails?
-					/^(?:(?<type>(?:relic|art[ei]fact|equipment))[-: ]+)?\(?(?<name>[^:()]+\w)[-:) ]+(?:\((?<description>[^:()]+\w)\)[-: ]+)?\(?(?<points>\d+)(?: *pts?)?\)?[-,:; ]+\(?(?<charge>\d+(?: *\/ *\d+)?)\)?$/i,
-					/^(?:(?<type>(?:relic|art[ei]fact|equipment))[-: ]+)?\(?(?<name>[^:()]+\w)[-:) ]+(?:\((?<description>[^:()]+\w)\)[-: ]+)?\(?(?<points>\d*)(?: *pts?)?\)?[,; ]+\(?(?<charge>\d*(?: *\/ *\d+)?)\)?$/i,
-					/^(?:(?<type>(?:relic|art[ei]fact|equipment))[-: ]+)?\(?(?<name>[^:()]+\w)[-:) ]+(?:\((?<description>[^:()]+\w)\)[-: ]+)?\(?(?<charge>\d+ *\/ *\d+)\)?$/i,
-					/^(?:(?<type>(?:relic|art[ei]fact|equipment))[-: ]+)?\(?(?<name>[^:()]+\w)[-:) ]+(?:\((?<description>[^:()]+\w)\)[-: ]+)?\(?(?<value>\d+)\)?$/i,
-					/(?<name>[^()]*?[^ ()]+)\)? *\((?:(?<points>\d+)(?: pts?)?)\)(?:[-,:; ]+\(?(?<charge>\d+(?: *\/ *\d+)?))?\)?/,
-					/(?<name>.*)/ //default: all to name
-				],
-				generic: [
-					/^(?:(?:(?<base>fetter|passion)|(?<type>relic|art[ei]fact))s?[-: ]+)?(?<name>[^:]+)[-: ]+(?<value>(?:\d+|0x[\dA-F]+))?(?: *pts?)?[-:; ]+\(?(?<charge>(?:\d+|0x[\dA-F]+) *\/ *(?:\d+|0x[\dA-F]+))?\)?$/i,
-					/^(?:(?:(?<base>fetter|passion)|(?<type>relic|art[ei]fact))s?[-: ]+)?(?<name>[^:]+)[-: ]+\(?(?<value>(?:\d+|0x[\dA-F]+))(?: *pts?)?\)?$/i,
-					/^(?<value>\d+)[-: ]+(?<name>.*)$/i,
-					/^\W*(?<value>\d+)\W*$/,
-					/^\W*(?<name>.*\w)\W*$/,
-				],
-				simple: [
-					/^(?<name>[^-:]*)[-: ]+(?<value>.+)/,
-					/^\W*(?<value>\d+)\W*$/,
-				],
 				split: [
 					/^\W*(?<name>\b.*\w)\W*\( *(?<value>[-+]?\d+) *\) *$/,
 					/^\W*(?<name>\b[^-:*]*\w(?: *\([^)]*\))?)[-: ]+(?<value>[-+]?\d+)\W*$/,
 					/^\W*(?<name>\b.*?\w)\W*$/,
 				],
-			},
-
-			_byValues: {
-				abilities(base, values, defaults={}) {
-					/*
-					  values[0] should be ability & can be ignored in favor of 'base'
-					  values[1] should hold ability name, & maybe value
-					  values[2] may hold value
-					*/
-					defaults = { base:words.pluralize(base), ...defaults };
-					let parsed = this.parse.byPatterns(values[1], 'ability', defaults);
-					if (parsed) {
-						// in case base was pulled from values[1]
-						parsed.base = words.pluralize(parsed.base);
-						if (! parsed.value && is_real(values[2])) {
-							// in case rating is in separate field from name & specialty
-							parsed.points = parsed.value = values[2];
-						}
-					} else {
-						if (values.length > 2 && is_real(values[2])) {
-							parsed = mergeObjects({
-								name: values[1],
-								value: values[2],
-								points: values[2],
-							}, defaults);
-						}
-					}
-					return parsed;
-				},
-
-				arcanoi(base, values, defaults={}) {
-					if (/arcan(oi|um)\W*$/i.test(values[0])) {
-						values.shift();
-					}
-					let value = values[1];
-					if (! value) {
-						value = values[0];
-					}
-					let parsed = this.parse.byPatterns(value, 'arcanoi', defaults);
-					if (parsed) {
-						if (! parsed.name) {
-							// found levels, but not name
-							if (values[1]) {
-								// name is 1st, levels 2nd
-								parsed.name = base || words.singulize(values[0]);
-							} else {
-								// found value, but no name; what do?
-							}
-						}
-						parsed.base = 'arcanoi';
-					} else {
-						console.warn(`No name found for arcanoi in '${values}'.`);
-					}
-					return parsed;
-				},
-
-				associates(base, values, defaults={}) {
-					let parsed = this.parse._byValues.generic(base, values, defaults);
-					parsed.base = base;
-					return parsed;
-				},
-
-				backgrounds(base, values, defaults={}) {
-					let parsed = this.parse._byValues.generic(base, values, defaults),
-						section = dsf.sectionName(`.${base}`);
-					parsed.base = 'backgrounds';
-					/*if (section && ) {
-						parsed.base = base;
-					}*/
-					return parsed;
-				},
-
-				equipment(base, values, defaults={}) {
-					let charge = 10, parsed;
-
-					defaults = {...defaults, type:values[0], points:values[2], charge},
-					parsed = this.parse.byPatterns(values[1], 'equipment', defaults);
-					if (parsed) {
-						parsed.base = 'equipment';
-						parsed.type = this.normalize(parsed.type || base);
-						if (! parsed.value && parsed.charge <= 5) {
-							parsed.value = parsed.charge;
-							parsed.charge = charge;
-						}
-						// for BG value
-						parsed.value ||= parsed.points;
-					}
-					return parsed;
-				},
-
-				generic(base, values, defaults={}) {
-					if (! base) {
-						// base couldn't be determined by categorization, so guess a base based on 1st value
-						base = this.standardize(values[0].replace(/\W.*/, ''));
-					}
-					defaults = {
-						base,
-						type: this.normalize(values[0].replace(/\W.*/, '')),
-							...defaults
-					};
-					if (is_real(values[2])) {
-						defaults.points = values[2];
-					}
-					let parsed = this.parse.byPatterns(values[1], 'generic', defaults)
-						|| this.parse.byPatterns(values[0], 'generic', defaults);
-					if (parsed.name) {
-						parsed.name = parsed.name.trim().replace(/^\((.*)\)$/, '$1');
-					}
-					/*
-					// another round
-					base = this.parse.categorize(parsed.type);
-					*/
-					return parsed;
-				},
-
-				simple(base, values, defaults={}) {
-					defaults = {base, ...defaults};
-					let parsed = this.parse.byPatterns(values[1], 'simple', defaults)
-							  || this.parse.byPatterns(values[0], 'simple', defaults),
-						value = values[1] || values[0];
-					if (! parsed) {
-						parsed = mergeObjects({ value }, defaults);
-					}
-					// in case of `name: value`
-					if (parsed.name) {
-						parsed.name = this.normalize(parsed.name);
-					}
-					return parsed;
-				},
 			},
 
 			byPatterns(value, patterns, defaults) {
@@ -695,14 +517,10 @@
 				}
 				let parts, dbg = false;
 				if (patterns in this.parse._patterns) {
-					dbg = /^equipment/.test(patterns);
 					patterns = this.parse._patterns[patterns];
 				}
 				for (let pattern of patterns) {
 					if ((parts = value.match(pattern))) {
-						if (dbg) {
-							console.debug(`Matched ${value} to ${pattern}.`);
-						}
 						return mergeObjects(parts.groups, defaults);
 					}
 				}
@@ -1669,29 +1487,6 @@
 			data.last_dst = this.slug;
 		},
 
-		/*
-		import_equipment(type, value, points) {
-			let parsed = this.parse._byValues.equipment([type, value, points]);
-			return this.import.equipment(parsed);
-		},
-
-		import_equipments(type, value, points) {
-			type = this.standardize(type);
-			switch (type) {
-			case 'artifact':
-			case 'relic':
-				let values = value.split(/ *[,;] * /); // remove space if uncommented
-				for (let value of values) {
-					this.import_equipment(type, value, points);
-				}
-				break;
-			default:
-				this.import_equipment(type, value, points);
-				break;
-			}
-		},
-		*/
-
 		/** Convert index for one of their dynamic fields to mine. */
 		iMine(iTheirs, start) {
 			return (+iTheirs) - this.offset(start);
@@ -2004,7 +1799,6 @@
 		compatibility.port.export,
 		compatibility.port.import,
 		compatibility.parse,
-		compatibility.parse._byValues,
 		compatibility.parse._byTokens,
 		compatibility['export.'],
 		compatibility['import.'],
