@@ -1,6 +1,7 @@
 #!/bin/bash4
 echo $PWD
-declare -A reqs=()
+# keep an eye on ignore for editor,udfs
+declare -A reqs=() ignore=([version,dsa]=1 [editor,udfs]=1)
 declare -a keys
 
 function list() {
@@ -19,11 +20,14 @@ for req in $(ls *.js | sort --ignore-case) ; do
     # * pick up calls to `resettableGenerator(...)`
     for js in $(ack -il "\\b$req\\.[_a-z]|new $req|mixIn\\(\\w+, $req\\)") ; do
 	js=${js%.js}
-	if [ "$js" != "$req" ] ; then
+	#if [ "$js" != "$req" -a ! "${ignore[$js,$req]}" ] ; then
+	if [[ "$js" != "$req" && ! "${ignore[$js,$req]}" ]] ; then
 	    reqs[$js]+=" $req"
 	fi
     done
 done
+
+reqs[range]+='ResettableGenerator'
 
 #typeset -p reqs
 echo "\$requires = [";
