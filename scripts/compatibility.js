@@ -325,7 +325,7 @@
 					base: 'backgrounds',
 					name: parsed.type,
 					value: parsed.points || parsed.value,
-					specialty: parsed.name,
+					description: parsed.name,
 				};
 				this.import.backgrounds(bg);
 			},
