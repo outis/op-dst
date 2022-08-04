@@ -722,8 +722,8 @@
 				if ((prelim = this.parse.categorize(token, categories))) {
 					return {prelim, match, groups:match.groups};
 				}
-				// no match
-				return {};
+				// no category
+				return {match, groups:match.groups};
 			},
 
 			categorizeAny(tokens, categories) {
@@ -753,8 +753,8 @@
 							}
 							return {...prelim, i};
 						} else {
-							skipped += match.groups.skip;
-							token = match.groups.rest;
+							skipped += groups.skip;
+							token = groups.rest;
 						}
 					}
 				}
