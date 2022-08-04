@@ -282,7 +282,7 @@
 					return $elt.html();
 				},
 				default($elt) {
-					return $elt[0].dataset.value || $elt.data('value') || $elt.text();
+					return $elt[0].dataset.value ?? $elt.data('value') ?? $elt.text();
 				},
 			},
 
@@ -317,7 +317,7 @@
 				$elt.data('value', value);
 				return value;
 			}
-			let getter = this._dsf.getters[type] || this._dsf.getters.default;
+			let getter = this._dsf.getters[type] ?? this._dsf.getters.default;
 			return getter($elt);
 		},
 

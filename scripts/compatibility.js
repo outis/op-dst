@@ -74,11 +74,11 @@
 
 			// ?
 			//bindAll(this._aliases., this);
-			aliases.export.dst ||= {};
+			aliases.export.dst ??= {};
 			for (let [name, dst] of Object.entries(aliases.dst)) {
 				bindAll(dst.import, this);
 				Object.assign(aliases.import, dst.import);
-				aliases.export.dst[name] = dst.export || {};
+				aliases.export.dst[name] = dst.export ?? {};
 				if (is_function(dst.override)) {
 					this.import.dst[name] = dst.override;
 				}
@@ -90,7 +90,7 @@
 
 		_merge(port) {
 			// first, merge the main properties
-			this._aliases[port] ||= {};
+			this._aliases[port] ??= {};
 			bindAll(this._aliases[port], this);
 			// copy global port functions
 			Object.assign(this._aliases[port], this.port[port]);
@@ -99,7 +99,7 @@
 			if ((port+'.') in this._aliases) {
 				// check & merge dst separately so as not to either overwrite it or miss copying the properties
 				if ('dst' in this._aliases[port+'.']) {
-					this[port].dst ||= {};
+					this[port].dst ??= {};
 					Object.assign(this[port].dst, this._aliases[port+'.'].dst);
 				}
 				bindAll(this._aliases[port+'.'], this);
@@ -242,7 +242,7 @@
 			linked(mine, base) {
 				let perm = dsf.value('perm_' + mine),
 					curr = dsf.value('curr_' + mine);
-				this.export.simple(base || mine, `${curr} / ${perm}`);
+				this.export.simple(base ?? mine, `${curr} / ${perm}`);
 			},
 
 			paired(names, values, mine, options={}) {
@@ -258,7 +258,7 @@
 			simple(mine, value) {
 				// TODO: behavior-only rename certain aliased fields
 				// power -> pathos, curr_health -> corpus
-				let name = this.sesalia.simple[mine] || mine;
+				let name = this.sesalia.simple[mine] ?? mine;
 
 				if (Array.isArray(name)) {
 					name = name[0];
@@ -272,7 +272,7 @@
 			dst: {},
 
 			_udf(parsed, names, base) {
-				base ||= parsed.base || words.pluralize(parsed.type);
+				base ??= parsed.base ?? words.pluralize(parsed.type);
 				if (parsed.description && ! names.description) {
 					parsed.name += ` (${parsed.description})`;
 				}
@@ -292,7 +292,7 @@
 				let base = `dyn_${parsed.base}_{i:02}`;
 
 				names = {name: base + '_name', specialty: base + '_specialty', value: base};
-				parsed.value ||= parsed.points;
+				parsed.value ??= parsed.points;
 				this.import._udf(parsed, names);
 				/*
 				udfs.addDsa(names, parsed, parsed.base);
@@ -318,7 +318,7 @@
 					name: `dyn_${base}_{i:02}`,
 					notes:`dyn_${base}_{i:02}_notes`,
 				};
-				parsed.name ||= parsed.value
+				parsed.name ??= parsed.value
 				this.import._udf(parsed, names);
 				/*
 				udfs.addDsa(names, parsed, base);
@@ -327,7 +327,7 @@
 				let bg = {
 					base: 'backgrounds',
 					name: parsed.type,
-					value: parsed.points || parsed.value,
+					value: parsed.points ?? parsed.value,
 					description: parsed.name,
 				};
 				this.import.backgrounds(bg);
@@ -341,7 +341,7 @@
 					},
 					label = parsed.name,
 					values = {
-						value: parsed.value || parsed.points,
+						value: parsed.value ?? parsed.points,
 					};
 				if (parsed.type) {
 					//label = `${parsed.type} (${parsed.name})`;
@@ -760,7 +760,7 @@
 						// DSF was categorized based on 'background' token; check if there's a more specific one
 						// TODO: handle things like 'artifact gun'
 						let {prelim:recategory, groups} = this.parse.categorizeFirst(tokens[0], this.parse._byTokens),
-							{parser, hint} = recategory || {};
+							{parser, hint} = recategory ?? {};
 						// handle things like equipment by delegating to another by-token parser
 						if (parser && 'backgrounds' !== parser && this.parse._byTokens[parser]) {
 							// `rest` indicates `token` was split for categorization
@@ -795,7 +795,7 @@
 					post: function (parsed) {
 						parsed.charge ??= 10;
 						// for BG value
-						parsed.value ||= parsed.points;
+						parsed.value ??= parsed.points;
 
 						if ('equipment' !== parsed.base && ! parsed.type) {
 							parsed.type = parsed.base;
@@ -1902,7 +1902,7 @@
 		 * Differs from `nameFor` in that this method will return the original name if it's not aliased, while `nameFor` will only return the aliased field for the given name.
 		 */
 		resolve(name, aliases) {
-			return this.nameFor(name, aliases) || name;
+			return this.nameFor(name, aliases) ?? name;
 		},
 
 		/**
@@ -1957,7 +1957,7 @@
 				return Object.keys(als.templates).find(tpl => klass.matches(tpl, name))
 			}
 			return this.templateFor(name, this.aliases)
-				|| this.templateFor(name, this.sesalia);
+				?? this.templateFor(name, this.sesalia);
 		},
 
 		/**

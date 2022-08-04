@@ -27,7 +27,7 @@
 				if (   ! is_flag(elt, name, value)
 					&& this.is(elt, name, value)
 				) {
-					//const val = $elt.text() || elt.dataset.value || $elt.data('value');
+					//const val = $elt.text() ?? elt.dataset.value ?? $elt.data('value');
 					$elt.text('');
 					this.pippify($elt, {name, value});
 				}
@@ -343,7 +343,7 @@
 			 * Update marked pips.
 			 */
 			refresh($elt, value) {
-				value ||= this.value($elt);
+				value ??= this.value($elt);
 				this.mark($elt, 'left', value.left);
 				this.mark($elt, 'right', value.right);
 			},
@@ -457,7 +457,7 @@
 			} else {
 				$elt = $($elt);
 			}
-			name ||= dsf.name($elt[0]);
+			name ??= dsf.name($elt[0]);
 			// .readonly to disable DSF framework's click listener & field editor
 			$elt.addClass('pips readonly');
 			if (this.demi.is($elt)) {
@@ -557,7 +557,7 @@
 		unpippify($elt, {value=0, marker}={}) {
 			marker ??= this.marker;
 			//$elt.text($elt.data('value'));
-			value ||= dsf.value($elt) || $elt.find('.' + marker).length;
+			value ??= dsf.value($elt) ?? $elt.find('.' + marker).length;
 			$elt.empty();
 			$elt.text(value);
 		},

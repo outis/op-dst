@@ -242,7 +242,7 @@
 			old_wod_generic(names, values /*/ name, valueName, points /**/) {
 				for (const [i, name] of names.entries()) {
 					if (! values[i]) {
-						values[i] = dsa.data[name] || '';
+						values[i] = dsa.data[name] ?? '';
 					}
 				}
 				let parsed = this.parse.old_wod_generic(values);
@@ -755,7 +755,7 @@
 
 					equipment(names, values) {
 						let item = {
-							type: values.type || 'equipment',
+							type: values.type ?? 'equipment',
 							name: values.name,
 							value: values.points,
 						};
@@ -781,7 +781,7 @@
 					},
 
 					generic(base, ...args) {
-						this._addTheirItem(base, args[1] || args[0]);
+						this._addTheirItem(base, args[1] ?? args[0]);
 					},
 
 					health(names, values) {
@@ -924,7 +924,7 @@
 
 					arcanoi(names, values) {
 						let parts = values.value.match(pips.reDemi),
-							mine = names.value || Object.values(names)[0];
+							mine = names.value ?? Object.values(names)[0];
 						if (parts) {
 							let {left, right, lmask, rmask} = parts.groups;
 							if (lmask) {

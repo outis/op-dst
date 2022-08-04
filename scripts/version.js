@@ -20,7 +20,7 @@
 
 		dataVersion({version, data}={}) {
 			// don't use dsa.data, so as to avoid the dependency
-			data ||= dynamic_sheet_attrs;
+			data ??= dynamic_sheet_attrs;
 			if (version) {
 				this._version = version;
 				data[this.versionKey] = version;
@@ -47,7 +47,7 @@
 		},
 
 		register(version, updater) {
-			version = +(version.toString().match(/\d+(?:\.\d+)?/) || [version])[0];
+			version = +(version.toString().match(/\d+(?:\.\d+)?/) ?? [version])[0];
 			/*
 			if (version <= this.dataVersion()) {
 				return;
@@ -70,7 +70,7 @@
 		},
 
 		registerModule(module) {
-			for (let [version, updater] of Object.entries(module.updaters || {})) {
+			for (let [version, updater] of Object.entries(module.updaters ?? {})) {
 				let {name} = updater;
 				updater = updater.bind(module);
 				updater.name = name;
@@ -84,7 +84,7 @@
 		 * Doesn't require dataPreLoad to have fired, but updaters might. 
 		 */
 		update(data) {
-			data ||= dynamic_sheet_attrs;
+			data ??= dynamic_sheet_attrs;
 			let dataVersion = this.dataVersion({data}),
 				newVersion = 0;
 			if (this._resort) {

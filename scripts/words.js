@@ -52,7 +52,7 @@
 		 * Return entry for <var>word</var> from <var>thesaurus</var>, if any.
 		 */
 		lookup(word, thesaurus) {
-			return thesaurus[word.toLowerCase()] || word;
+			return thesaurus[word.toLowerCase()] ?? word;
 		},
 
 		/**
@@ -65,7 +65,7 @@
 				return word;
 			}
 			return this._pluralize[word]
-				|| word.replace(/s?$/, 's').replace(/ys\b/, 'ies');
+				?? word.replace(/s?$/, 's').replace(/ys\b/, 'ies');
 		},
 
 		/**
@@ -81,7 +81,7 @@
 				return word;
 			}
 			// Intentionally doesn't singulize latin words, such as 'arcanoi' (rather than tranlating to 'arcanum').
-			return /* this._singulize[word] || */ word.replace(/ies\b/, 'y').replace(/s\b/, '');
+			return /* this._singulize[word] ?? */ word.replace(/ies\b/, 'y').replace(/s\b/, '');
 		},
 
 		standardize(word) {

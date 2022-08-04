@@ -6,7 +6,7 @@
 	 * Based off of https://medium.com/@anywhichway/resetable-javascript-generators-ae233db71779
 	function ResettableGenerator(generator, self) {
 		function make(target, that, args) {
-			let items = target.apply(self || that, args),
+			let items = target.apply(self ?? that, args),
 				next = items.next.bind(items);
 			return {items, next};
 		}
@@ -30,7 +30,7 @@
 	globals.ResettableGenerator = ResettableGenerator;
 	*/
 	function resettableGenerator(generator, reset) {
-		reset ||= () => {};
+		reset ??= () => {};
 		
 		function Resettable(...args) {
 			let items;

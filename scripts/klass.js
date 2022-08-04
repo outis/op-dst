@@ -126,7 +126,7 @@
 		 * Get variable names from a templated class (e.g. 'item{i}') 
 		 */
 		vars: memoize(function (name) {
-			return name.match(/(?<={)[^:}]+(?=(:[^}]*)?})/g) || [];
+			return name.match(/(?<={)[^:}]+(?=(:[^}]*)?})/g) ?? [];
 			/*
 			let vars = name.match(this.reVars);
 			return vars.map(v => v.replace(/^{|}$/g, ''));

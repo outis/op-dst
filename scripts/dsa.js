@@ -22,7 +22,7 @@
 			}
 			return {
 				base: base
-					|| ((names.value || names[key]).match(/^dyn_(?<base>[^_]+)/) || [])[1],
+					?? ((names.value ?? names[key]).match(/^dyn_(?<base>[^_]+)/) ?? [])[1],
 				i: names.i,
 			};
 		},
@@ -41,7 +41,7 @@
 			//       rename(oldName, newName, {overwrite:false}={}) {},
 			//       renumber(tpl, oldIndex, newIndex, options={}) {},
 			//     }
-			fields ||= this;
+			fields ??= this;
 			
 			if (is_numeric(stop)) {
 				stop = {index: stop};
@@ -149,7 +149,7 @@
 		},
 		
 		exists(name, data) {
-			return name in (data || this.data);
+			return name in (data ?? this.data);
 		},
 
 		/**

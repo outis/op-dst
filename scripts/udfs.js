@@ -202,7 +202,7 @@
 
 		addItemControls(eltItem, $placeholder) {
 			let $controls = udfs.$itemControls.clone();
-			$placeholder ||= $(eltItem).find('.controls');
+			$placeholder ??= $(eltItem).find('.controls');
 			if ($placeholder.length) {
 				$placeholder.replaceWith($controls);
 			} else switch (eltItem.tagName) {
@@ -220,7 +220,7 @@
 
 		addListControls(eltList, $placeholder) {
 			let $controls = udfs.$listControls.clone();
-			$placeholder ||= $(eltList).find('+ .controls');
+			$placeholder ??= $(eltList).find('+ .controls');
 			if ($placeholder.length) {
 				$placeholder.replaceWith($controls);
 			} else switch (eltList.tagName) {
@@ -244,9 +244,9 @@
 		 */
 		base(eltList) {
 			return klass.param(eltList, 'list')
-				|| eltList.dataset.base
-				|| eltList.dataset.name
-				|| dsf.sectionName(eltList)
+				?? eltList.dataset.base
+				?? eltList.dataset.name
+				?? dsf.sectionName(eltList)
 			;
 		},
 		
@@ -305,7 +305,7 @@
 		},
 
 		countUdfItems(data) {
-			data ||= dsa.data;
+			data ??= dsa.data;
 			//debugger;
 			let counts = {},
 				uncounted = {},
@@ -357,7 +357,7 @@
 			if (Object.keys(uncounted).length) {
 				// some fields still don't have counts; scan all data
 				for (let name of Object.keys(data)) {
-					let {base, i} = this.parseName(name) || {};
+					let {base, i} = this.parseName(name) ?? {};
 					if (base && i) { // name is a UDF name
 						/* don't exclude UDFs with size fields (i.e. those not in `uncounted`; check their counts */
 						if (base in counts) {
@@ -381,7 +381,7 @@
 		 * @param {string} [options.base] Base name of dynamic list.
 		 */
 		createItemsFor(eltList, nItems, {base}) {
-			base ||= udfs.base(eltList);
+			base ??= udfs.base(eltList);
 			let $eltList = $(eltList),
 				$scion = this.newItem(eltList, {base}),
 				$clone;
@@ -426,7 +426,7 @@
 		 */
 		/*
 		dsfBase: memoize(function (name, fieldInfo) {
-			let {base} = this.udfField(name, fieldInfo) || {};
+			let {base} = this.udfField(name, fieldInfo) ?? {};
 			return base;
 		}),
 		*/
@@ -557,12 +557,12 @@
 		fieldsFor(eltList, {base, tpl, $tpl}={}) {
 			let resolved = this.resolve(eltList);
 			eltList = resolved.elt;
-			base ||= resolved.base
+			base ??= resolved.base
 			if (base in this.fieldsFor) { // memoize result for base
 				return this.fieldsFor[base];
 			}
 			// tpl may be a template node, or an actual node from eltList
-			$tpl ||= tpl ? $(tpl) : this.$templateItem(eltList);
+			$tpl ??= tpl ? $(tpl) : this.$templateItem(eltList);
 			let env = {base, name: base},
 				$dsfs = dsf.$dsfs($tpl),
 				// note: dsf.name removes 'dsf_' prefix
@@ -600,14 +600,14 @@
 			let fieldInfo = this.fieldInfo(),
 				base,
 				data = {};
-			dsfs ||= window.dynamic_sheet_attrs;
+			dsfs ??= window.dynamic_sheet_attrs;
 			for (let [name, value] of Object.entries(dsfs)) {
 				if ((base = this.dsfBase(name, fieldInfo))) {
 					// name is a UDF name
-					let {key, i} = this.parseName(name, base) || {};
-					data[udfField.base] ||= [];
-					data[udfField.base][+i] ||= {};
-					data[udfField.base][+i][key || ''] = value;
+					let {key, i} = this.parseName(name, base) ?? {};
+					data[udfField.base] ??= [];
+					data[udfField.base][+i] ??= {};
+					data[udfField.base][+i][key ?? ''] = value;
 				}
 			}
 			return data;
@@ -638,7 +638,7 @@
 
 		key(name, dflt='value') {
 			let {key} = this.parseName(name);
-			return key || dflt;
+			return key ?? dflt;
 		},
 
 		/**
@@ -691,9 +691,9 @@
 				iItem = eltList.children.length + 1,
 				$eltItem;
 			if ($tpl.length) {
-				env.base ||= this.base(eltList);
-				env.name ||= env.base;
-				env.i ||= iItem;
+				env.base ??= this.base(eltList);
+				env.name ??= env.base;
+				env.i ??= iItem;
 				$eltItem = $tpl.clone(true);
 				this.renameItem($eltItem, env);
 			} else {
@@ -749,7 +749,7 @@
 				}
 			}
 			$(eltItem).find('.dsf').each(function (_, dsf) {
-				let vars = (klass.vars(dsf.className) || []).filter(v => 1 == v.length);
+				let vars = (klass.vars(dsf.className) ?? []).filter(v => 1 == v.length);
 				if (vars.length) {
 					dsf.className = klass.eval(dsf.className, {[vars[0]]: i});
 				} else {
@@ -841,7 +841,7 @@
 		size(list) {
 			let {base, elt, $elt} = this.resolve(list),
 				size = this.sizeName(base);
-			return dsf.value(size) || dsa.data[size];
+			return dsf.value(size) ?? dsa.data[size];
 		},
 
 		/**
@@ -855,8 +855,8 @@
 		 * @returns {jQuery}
 		 */
 		$size(eltList, {base, $udf}={}) {
-			base ||= this.base(eltList);
-			$udf ||= $(eltList);
+			base ??= this.base(eltList);
+			$udf ??= $(eltList);
 			let $size = this.sizeField(eltList, {base, $udf});
 			if (! $size.length) {
 				$size = $(`<span class="dsf ${$size.name} readonly hidden nopips"></span>`);
@@ -883,8 +883,8 @@
 		 * @returns {jQuery}
 		 */
 		sizeField(eltList, {base, $udf}) {
-			base ||= this.base(eltList);
-			$udf ||= $(eltList);
+			base ??= this.base(eltList);
+			$udf ??= $(eltList);
 			let name = `dsf_${base}_size`,
 				$size = $udf.parent().find(`.${name}`);
 			$size.name = name;
@@ -968,7 +968,7 @@
 		},
 
 		$template(eltList) {
-			return $((this.template(eltList) || {}).children);
+			return $((this.template(eltList) ?? {}).children);
 		},
 
 		$templateItem(eltList) {
@@ -1022,6 +1022,6 @@
 		},
 
 		zeroPad(i, width) {
-			return i.toString().padStart(width || this.itemNumberWidth, '0')
+			return i.toString().padStart(width ?? this.itemNumberWidth, '0')
 		},
 	};

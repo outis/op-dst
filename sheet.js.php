@@ -342,7 +342,7 @@ function include_modules($modules) {
 	}
 	
 	// for debugging
-	window.mll_sheet = $.extend(window.mll_sheet || {}, globals);
+	window.mll_sheet = $.extend(window.mll_sheet ?? {}, globals);
 	window.mll_sheet.module = module;
 	if (dbg) {
 		$.extend(window, globals);

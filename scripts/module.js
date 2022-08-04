@@ -99,7 +99,7 @@
 		 * Answers whether some of the modules of a dependent haven't yet been invoked, and thus it should be delayed.
 		 */
 		delay(dependent, event, done) {
-			let dependencies = this.dependencies[event] || {};
+			let dependencies = this.dependencies[event] ?? {};
 			if (dependent in dependencies) {
 				return dependencies[dependent].some(m => ! (m in done));
 			}

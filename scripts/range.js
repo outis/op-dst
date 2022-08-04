@@ -136,14 +136,14 @@
 
 			for (let pre of ['', 'up', 'down']) {
 				if (`${pre}thru` in params) {
-					params[`${pre}through`] ||= params[`${pre}thru`];
+					params[`${pre}through`] ??= params[`${pre}thru`];
 				}
 			}
 			
 			if ('start' in params) {
-				params.from ||= params.start || 0;
+				params.from ??= params.start ?? 0;
 			} else {
-				params.from ||= 0;
+				params.from ??= 0;
 			}
 			if (is_undefined(params.to)) { // handles params passed as numbers
 				if ('through' in params) {

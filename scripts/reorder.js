@@ -45,7 +45,7 @@
 		id(elt) {
 			return elt &&
 				(   elt.id
-					|| $(elt).find('.dsf').filter((i, elt) => /_name$/.test(elt.className)).text());
+				    ?? $(elt).find('.dsf').filter((i, elt) => /_name$/.test(elt.className)).text());
 		},
 
 		insertBefore(elt, other) {
