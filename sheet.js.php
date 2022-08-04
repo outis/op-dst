@@ -63,7 +63,7 @@ foreach ($requires as $module => &$reqs) {
 }
 
 function has_comment($line) {
-	return preg_match('%//|/*%', $line);
+	return preg_match('%//|(?<!\\\\)/\*%', $line);
 }
 
 function strip_comments($line) {
@@ -111,6 +111,7 @@ function print_nonblank($text) {
 
 function print_skipping_comments($script, $line) {
 	$line = strip_comments($line);
+	// TODO: fix false positives ('/*' in regexes, strings). For now, avoid triggering if possible.
 	$parts = explode('/*', $line, 2);
 	if (count($parts) > 1) {
 		print_nonblank($parts[0]);
