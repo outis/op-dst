@@ -325,6 +325,17 @@
 				return $pips;
 			},
 
+			/**
+			 * Returns a value representing the currently marked pips of <var>$elt</var>.
+			 *
+			 * Differs from the likes of {@link this.value}, {@link this.recalc} and {@link this.refresh} in that it doesn't change <var>$elt</var> and calculates the value by examining which pips are marked (rather than any stored value).
+			 */
+			rating($elt) {
+				let left = this.countPips($elt, 'left'),
+					right = this.countPips($elt, 'right');
+				return this.unparse(left, right);
+			},
+
 			reassemble($elt) {
 				const nPips = 2 * pips.count($elt[0]),
 					  nKids = $(elt).children().length,
@@ -384,6 +395,23 @@
 				}
 
 				this.recalc(eltPip.parentNode, chirality);
+			},
+
+			/**
+			 * Returns a string encapsulating <var>left</var> & <var>right</var> pip values.
+			 *
+			 * Inverse of {@link this.parse}.
+			 *
+			 * @param {string|number} left Mask or count of left pips.
+			 * @param {string|number} right Mask or count of right pips.
+			 *
+			 * @returns {string}
+			 */
+			unparse(left, right) {
+				if (left == right) {
+					return left;
+				}
+				return `${left} / ${right}`;
 			},
 
 			value(field, value) {
