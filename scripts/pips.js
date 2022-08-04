@@ -186,8 +186,16 @@
 				marker ??= this.marker;
 				let $pips = this.$pips(elt, chirality),
 					mask = 0;
+				const reMark = pips.markRe(marker),
+					  _pips = $pips.toArray();
+				function marked(elt) {
+					return reMark.test(elt.className);
+				}
 				// check whether there are any unmarked demi-pips preceding marked ones (skipping the "clear" box)
-				if ($(elt).find(`* + :not(.${marker}) + * + .${marker}`).length) {
+				if (_pips.slice(1).find(
+					elt => marked(elt)
+						&& ! marked(elt.previousElementSibling.previousElementSibling)))
+				{
 					for (let i = 0, m = 1; i < $pips.length; ++i, m <<= 1) {
 						if ($pips.eq(i).hasClass(marker)) {
 							mask |= m;
@@ -195,8 +203,6 @@
 					}
 					return '0x' + mask.toString(16);
 				} else {
-					const reMark = pips.markRe(marker),
-						_pips = $pips.toArray();
 					// ordinal to cardinal
 					return 1 + _pips.findLastIndex(elt => reMark.test(elt.className));
 				}
