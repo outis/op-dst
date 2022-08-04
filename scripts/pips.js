@@ -446,7 +446,7 @@
 		},
 
 		markRe: memoize(function (marker='X') {
-			return new RegExp(`\b${marker}\b`);
+			return new RegExp(`\\b${marker}\\b`);
 		}),
 
 		pippify($elt, {name, value=0}={}) {
