@@ -164,6 +164,7 @@
 		demi: {
 			init($context) {
 				this.clicker = this.clicked.bind(this);
+				this.marker = pips.marker;
 			},
 
 			postLoad(opts, $context) {},
