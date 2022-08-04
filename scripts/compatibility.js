@@ -732,8 +732,9 @@
 					let token = tokens[i],
 						skipped = '';
 					while (token) {
-						// token may be compound;
-						if (({prelim, groups} = this.parse.categorizeFirst(token, categories))) {
+						// token may be compound; base categorization only on first word
+						({prelim, groups} = this.parse.categorizeFirst(token, categories));
+						if (prelim) {
 							// first part of token is recognized; split the token in `tokens`
 							let replacements = [];
 							// should match.junk be included in skipped?
