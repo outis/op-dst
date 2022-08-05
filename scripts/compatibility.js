@@ -763,7 +763,7 @@
 			},
 
 			cleanToken(token) {
-				return token.replace(/^(\d*) *pts$/, '$1');
+				return token.replace(/^(\d*) *pts?$/, '$1');
 			},
 
 			dispatch(tokens, prelim) {
