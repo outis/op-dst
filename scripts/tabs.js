@@ -23,7 +23,7 @@
 
 		/* */
 		groupName($tabGroup) {
-			this.name($tabGroup.parent()[0]);
+			return this.name($tabGroup.parent()[0]);
 		},
 
 		is(elt) {
