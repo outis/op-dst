@@ -460,6 +460,8 @@
 						dsa.data[parsed.base] = parsed.name + ': ' + parsed.value;
 					}
 					delete dsa.data[names[1]];
+				} else if (parsed.base && dsf.exists(parsed.base)) {
+					dsa.data[parsed.base] = parsed.value;
 				} else if (names[1]) {
 					// names[0] is the base, names[1] the value
 					dsa.rename(names[1], parsed.base);
