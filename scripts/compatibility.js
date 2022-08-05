@@ -812,13 +812,15 @@
 					prelim = this.parse.prelim(tokens),
 					{parser} = prelim ?? {};
 
-				if (parser && this.parse._byTokens[parser]) {
-					/* `i` is where hint was found, `tokens` the tokens after the 
-					 * hint. Replace up to the hint with the remaining tokens.
-					 */
-					return this.parse.dispatch(tokens, prelim);
-				} else {
-					console.error(`'${"','".join(values)}' categorized as ${parser}, but no parser found.`);
+				if (parser) {
+					if (this.parse._byTokens[parser]) {
+						/* `i` is where hint was found, `tokens` the tokens after the 
+						 * hint. Replace up to the hint with the remaining tokens.
+						 */
+						return this.parse.dispatch(tokens, prelim);
+					} else {
+						console.error(`'${values.join("','")}' categorized as ${parser}, but no parser found.`);
+					}
 				}
 			},
 
