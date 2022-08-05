@@ -611,6 +611,9 @@
 							// `rest` indicates `token` was split for categorization
 							if (groups.rest) {
 								tokens.splice(0, 1, groups.first, groups.rest);
+							} else {
+								// overwrite to reflect any modifications to the token
+								tokens[0] = groups.first;
 							}
 							return this.parse.dispatch(tokens, {...prelim, ...recategory});
 						}
@@ -747,6 +750,10 @@
 					};
 				}
 				if ((prelim = this.parse.categorize(token, categories))) {
+					// reflect any modifications to the token
+					if (prelim.hint) {
+						match.groups.first = prelim.hint;
+					}
 					return {prelim, match, groups:match.groups};
 				}
 				// no category
