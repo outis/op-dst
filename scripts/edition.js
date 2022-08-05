@@ -97,6 +97,15 @@
 								compact[base] = Math.max(env.i, compact[base] || 0);
 								dsa.rename(klass.eval(tplFrom.value, env), field);
 								delete dsa.data[entry[0]];
+
+								let field_specialty = field + '_specialty',
+									from_specialty = klass.eval(tplFrom.specialty, env),
+									match;
+								if (dsa.exists(from_specialty)) {
+									dsa.rename(from_specialty, field_specialty);
+								} else if ((match = ability.match(/\(([^)]+)\)/))) {
+									dsa.data[field_specialty] = match[1];
+								}
 							}
 						}
 					}
