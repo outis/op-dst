@@ -353,6 +353,7 @@
 						values.description = parsed.description;
 					}
 				}
+				this.parse.appendUnmatched(values, parsed.unmatched);
 				this.import._udf(values, names, 'backgrounds');
 				/*
 				udfs.addDsa(names, values, 'backgrounds');
@@ -491,6 +492,7 @@
 
 				if ($tpl) {
 					let tpls = udfs.keyedFieldsFor(base, {$tpl});
+					this.parse.appendUnmatched(parsed);
 					this.import._udf(parsed, tpls);
 					/*
 					udfs.addDsa(tpls, parsed, base);
@@ -509,6 +511,26 @@
 					/^\W*(?<name>\b[^-:*]*\w(?: *\([^)]*\))?)[-: ]+(?<value>[-+]?\d+)\W*$/,
 					/^\W*(?<name>\b.*?\w)\W*$/,
 				],
+			},
+
+			appendUnmatched(parsed, kwargs={}) {
+				let {to, unmatched} = kwargs;
+				if ('string' === typeof(kwargs)) {
+					to = kwargs;
+				} else if (Array.isArray(kwargs)) {
+					unmatched = kwargs;
+				}
+				unmatched ??= parsed.unmatched;
+				to ??= 'description';
+
+				if (unmatched && unmatched.string) {
+					let additional = unmatched.string.join('; ');
+					if (parsed[to]) {
+						parsed[to] += ` (${additional})`;
+					} else {
+						parsed[to] = additional;
+					}
+				}
 			},
 
 			byPatterns(value, patterns, defaults) {
@@ -879,6 +901,8 @@
 							} else {
 								parsed.unmatched ??= [];
 								parsed.unmatched.push(token)
+								parsed.unmatched[type] ??= [];
+								parsed.unmatched[type].push(token)
 								console.warn(`parse.stream: out of fields for '${token}':'${type}'`);
 							}
 						} else if (is_function(fields[type])) {
