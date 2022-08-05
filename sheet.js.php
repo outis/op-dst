@@ -6,6 +6,7 @@ $requires = [
 	'aliases' => [ 'compatibility', 'dsa', 'dsf', 'klass', 'module', 'pips', 'udfs', 'words', ],
 	'authorize' => [ ],
 	'compatibility' => [ 'aliases', 'dsa', 'dsf', 'klass', 'module', 'range', 'ShorthandDict', 'udfs', 'words', ],
+	'deluxe' => [ 'edition', 'editor', 'health', ],
 	'dsa' => [ 'klass', 'nameGen', ],
 	'dsf' => [ 'klass', 'nameGen', ],
 	'edition' => [ 'dsa', 'dsf', 'klass', 'module', 'pips', 'range', 'udfs', ],
