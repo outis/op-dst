@@ -1,7 +1,5 @@
 	/*** 
 	 * Supports hierarchical DSF names by operating on path components.
-	 * 
-	 * @requires dsf, klass
 	 */
 	let path = globals.path = {
 		_sep: '_',

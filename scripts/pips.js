@@ -2,8 +2,6 @@
 	 * Pipped fields 
 	 *
 	 * TODO: support different damage types for corpus: bashing (/), lethal (x), aggravated (*)
-	 *
-	 * @requires dsf, 
 	 */
 	let pips = globals.pips = {
 		reDemi: /(?<left>(?<lmask>0x)?[\dA-F]+) *\/ *(?<right>(?<rmask>0x)?[\dA-F]+)/i,

@@ -1,4 +1,5 @@
 	/*** Multi-variable sequences ranging over values. */
+	// @require ResettableGenerator
 	let range = globals.range = {
 		/**
 		 * @internal

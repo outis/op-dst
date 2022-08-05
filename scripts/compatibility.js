@@ -31,8 +31,6 @@
 
 	/***
 	 * DSFs from other DSs
-	 *
-	 * @requires dsf, klass, range, udfs
 	 */
 	let compatibility = globals.compatibility = {
 		/**

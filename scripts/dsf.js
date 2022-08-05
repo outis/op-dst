@@ -1,7 +1,5 @@
 	/*** 
 	 * Dynamic Sheet Fields 
-	 *
-	 * @requires field, klass, pips, aisleten
 	 */
 	let dsf = globals.dsf = {
 		/* DST event handlers */

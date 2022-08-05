@@ -2,8 +2,6 @@
 	 * Dynamic Sheet Attributes
 	 *
 	 * The DSA is the .
-	 *
-	 * @requires klass
 	 */
 	let dsa = globals.dsa = {
 		_next: {},

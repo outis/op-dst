@@ -1,7 +1,5 @@
 	/*** 
 	 * User-defined
-	 * 
-	 * @requires dfs, klass, pips, reorder
 	 */
 	const udfs = globals.udfs = {
 		//
