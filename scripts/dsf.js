@@ -97,7 +97,12 @@
 		},
 
 		exists(name) {
-			return this.$dsf(name).length;
+			try {
+				return this.$dsf(name).length;
+			} catch (err) {
+				console.error(err);
+				return false;
+			}
 		},
 		
 		isVolatile(node) {

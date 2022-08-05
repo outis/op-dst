@@ -91,10 +91,11 @@
 							envs = this.envs(base);
 						for (let entry of dsa.entries(tplFrom.name, envs, {continuous: true})) {
 							let env = klass.extract(tplFrom.name, entry[0]),
-								ability = entry[1].toLowerCase();
-							if (dsf.exists(ability)) {
+								ability = entry[1].toLowerCase(),
+								field = this.fieldName(ability);
+							if (dsf.exists(field)) {
 								compact[base] = Math.max(env.i, compact[base] || 0);
-								dsa.rename(klass.eval(tplFrom.value, env), ability);
+								dsa.rename(klass.eval(tplFrom.value, env), field);
 								delete dsa.data[entry[0]];
 							}
 						}
@@ -158,6 +159,13 @@
 			if (size) {
 				return range.keyed({i: {from: 1, through:size}});
 			}
+		},
+
+		/**
+		 * Convert the ability text (from a dynamic ability field) to a valid DSF name (which is also an HTML class).
+		 */
+		fieldName(ability) {
+			return ability.replace(/\([^)]*\)/, '').trim().replace(/\s+/, '_');
 		},
 		
 		foldArcanoi() {
