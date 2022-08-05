@@ -1661,7 +1661,7 @@
 		},
 
 		scrub: memoize(function (name) {
-			return name.replace(/ *\((cont('d|inued)?\.*|misc\.?|\.+)\)/i, '');
+			return name.replace(/<[^>]*>|click to edit| *\((cont('d|inued)?\.*|misc\.?|\.+)\)/gi, '');
 		}),
 
 		standardize: memoize(function (name) {
