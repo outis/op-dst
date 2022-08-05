@@ -80,6 +80,9 @@
 			'per': 'perception',
 			'int': 'intelligence',
 
+			// abilities
+			'craft': 'crafts',
+
 			// assets
 			'experiance': 'experience',
 			// jp12x_splat (nWoD Reloaded!)
@@ -96,6 +99,8 @@
 			'cash': 'money',
 
 			// old_wod_generic
+			/// bio
+			'sex': 'gender',
 			/// attributes
 			'strength_value': 'strength',
 			'dexterity_value': 'dexterity',
