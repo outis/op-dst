@@ -14,6 +14,7 @@
 			'corups': 'corpus',
 			// in case 'corups' has been singulized
 			'corup': 'corpus',
+			'memorium': 'memoriam',
 			'permenant': 'permanent',
 		},
 		// singles from _pluralize will be copied to here

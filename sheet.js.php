@@ -254,7 +254,8 @@ function include_modules($modules) {
 			'outrage', 'pandemonium', 'phantasm', 'puppetry', 'serendipity', 'usury'
 		], 1),
 		backgrounds: fillObject([
-			'ally', 'artifact', 'contact', 'eidolon', 'haunt', 'legacy', 'mentor', 'memorium', 'notoriety', 'relic', 'status',
+			'ally', 'artifact', 'contact', 'eidolon', 'haunt', 'legacy',
+			'mentor', 'memoriam', 'notoriety', 'relic', 'status',
 		], 1),
 	};
 
