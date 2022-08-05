@@ -20,6 +20,16 @@
 					knowledges: ['academics', 'technology'],
 				},
 			},
+			'': { // abilities from other sheets
+				abilities: {
+					talents: ['animalken'],
+					skills: ['security', 'socialize', 'survival'],
+					knowledges: ['weaponry'],
+				}
+			},
+		},
+		labels: {
+			'animalken': 'Animal Ken',
 		},
 
 		/* */
@@ -99,7 +109,7 @@
 						for (let name of names) {
 							if (dsa.data[name]) {
 								let item = dsa.nextName(tplTo);
-								dsa.data[item.name] = name.titleCase();
+								dsa.data[item.name] = this.label(name);
 								dsa.data[item.specialty] = dsa.data[name + '_specialty'];
 								dsa.data[item.value] = dsa.data[name];
 							}
@@ -158,6 +168,13 @@
 					dsa.data[name] = this.unify(parts.groups);
 				}
 			}
+		},
+
+		label(name) {
+			if (this.labels[name]) {
+				return this.labels[name];
+			}
+			return name.titleCase();
 		},
 
 		unify({left, right, lmask, rmask}) {
