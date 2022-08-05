@@ -56,6 +56,8 @@
 					} catch (err) {
 						if (err.delay) {
 							later.push(name);
+							// since it didn't finish, unmark as done
+							delete done[name];
 						} else if (err.missing) {
 							err.message = `Missing dependencies for ${name}.${func}: ${err.missing}.`;
 							console.log(err.message);
