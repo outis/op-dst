@@ -361,7 +361,7 @@
 							if (! parsed.imported) {
 								console.warn(`Could not import '${theirs}': '${label}'`, parsed);
 							}
-						} else {
+						} else if (false !== parsed) { // `false` means ignore this one
 							console.warn(`Could not parse '${theirs}': '${label}'`);
 						}
 					},
@@ -411,7 +411,7 @@
 								udfs.addDsa(names, parsed, 'backgrounds');
 							}
 							// 
-						} else {
+						} else if (false !== parsed) { // `false` means ignore this one
 							// couldn't parse
 							console.warn(`Could not parse '${theirs}': '${expanded}'`);
 						}
@@ -429,7 +429,7 @@
 								// 
 								console.warn(`Cannot import '${theirs}': '${value}'`, parsed);
 							}
-						} else {
+						} else if (false !== parsed) { // `false` means ignore this one
 							// TODO: can't parse theirs; what do?
 							console.warn(`Cannot parse '${theirs}': '${value}'`);
 						}

@@ -808,6 +808,9 @@
 			 * Parse <var>values</var> as a stream.
 			 */
 			stream(values) {
+				if (values.every(v => v.length < 2)) {
+					return false;
+				}
 				let tokens = [...this.parse.tokenizeAll(values)],
 					prelim = this.parse.prelim(tokens),
 					{parser} = prelim ?? {};
