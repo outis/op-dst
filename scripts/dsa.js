@@ -157,16 +157,24 @@
 		 *
 		 * Any values already present aren't overwritten.
 		 *
-		 * @param {string[]} names - attribute names.
-		 * @param {string[]} [values] - stores attribute values (inout parameter).
+		 * @param {string[]|object} names - attribute names.
+		 * @param {string[]|object} [values] - stores attribute values (inout parameter).
 		 *
-		 * @returns {string[]} values
+		 * @returns {string[]|object} values
 		 */
-		getAll(names, values=[]) {
-			for (const [i, name] of names.entries()) {
-				if (! values[i]) {
-					values[i] = dsa.data[name] ?? '';
-				}
+		getAll(names, values) {
+			let entries;
+			if (Array.isArray(names)) {
+				entries = names.entries();
+				values ??= new Array(names.length);
+			} else if (is_object(names)) {
+				entries = Object.entries(names);
+				values ??= {};
+			} else {
+				throw new TypeError(`dsa.getAll: Invalid argument type: ${typeof(names)}. Arguments must both be either arrays or simple objects.`);
+			}
+			for (const [i, name] of entries) {
+				values[i] ??= dsa.data[name] ?? '';
 			}
 			return values;
 		},
