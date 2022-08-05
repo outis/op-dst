@@ -50,6 +50,8 @@
 		 * @property {string} theirs DSF template for other DST
 		 * @property {string} env
 		 */
+		defaults: {
+		},
 		_aliases: null,
 		_sesalia: {},
 		get aliases() {
@@ -1514,6 +1516,8 @@
 				}
 			}
 
+			this.setDefaults(dsa.data);
+
 			data.last_dst = this.slug;
 		},
 
@@ -1747,6 +1751,26 @@
 		resolveToTheirs: memoize(function (name) {
 			return this.resolve(name, this.sesalia);
 		}),
+
+		/**
+		 * Set default values when importing.
+		 *
+		 * This is in case player left off a field, or the foreign sheet simply has no corresponding field.
+		 *
+		 * There should be a very short list of defaults.
+		 */
+		setDefaults(data) {
+			data ??= dsa.data;
+			for (let [k, v] of Object.entries(this.defaults)) {
+				if (! data[k]) {
+					if (v in data) {
+						data[k] = data[v];
+					} else {
+						data[k] = v;
+					}
+				}
+			}
+		},
 
 		/**
 		 * Generate pairs of simple aliases.

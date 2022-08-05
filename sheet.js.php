@@ -262,6 +262,11 @@ function include_modules($modules) {
 	if ('compatibility' in modules) {
 		compatibility.aliases = aliases;
 		compatibility.advantages = advantages;
+		compatibility.defaults = {
+			perm_health: 10,
+			perm_willpower: 5,
+			curr_willpower: 'perm_willpower',
+		};
 	}
 	
 	function edit() {
