@@ -51,8 +51,11 @@
 		},
 
 		savedTab($tabGroup) {
-			let groupName = this.groupName($tabGroup);
-			if ('tabs' in localStorage && groupName in localStorage.tabs) {
+			let groupName = this.groupName($tabGroup),
+				hash = window.location.hash.replace(/^#/, '');
+			if (hash && $tabGroup.find(`> .${hash}`).length) {
+				return hash;
+			} else if ('tabs' in localStorage && groupName in localStorage.tabs) {
 				return localStorage.tabs[groupName];
 			}
 		},
