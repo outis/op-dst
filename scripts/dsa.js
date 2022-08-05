@@ -153,6 +153,25 @@
 		},
 
 		/**
+		 * Get a list of character data, storing in the given <var>values</var> (or new one, if none passed in).
+		 *
+		 * Any values already present aren't overwritten.
+		 *
+		 * @param {string[]} names - attribute names.
+		 * @param {string[]} [values] - stores attribute values (inout parameter).
+		 *
+		 * @returns {string[]} values
+		 */
+		getAll(names, values=[]) {
+			for (const [i, name] of names.entries()) {
+				if (! values[i]) {
+					values[i] = dsa.data[name] ?? '';
+				}
+			}
+			return values;
+		},
+
+		/**
 		 * 
 		 */
 		/* defined in nameGen.nextName

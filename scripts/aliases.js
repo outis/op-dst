@@ -245,11 +245,7 @@
 		// copied to compatability.import
 		'import.': {
 			old_wod_generic(names, values /*/ name, valueName, points /**/) {
-				for (const [i, name] of names.entries()) {
-					if (! values[i]) {
-						values[i] = dsa.data[name] ?? '';
-					}
-				}
+				dsa.getAll(names, values);
 				let parsed = this.parse.old_wod_generic(values);
 				if (! parsed) {
 					return parsed;
