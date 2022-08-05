@@ -536,6 +536,7 @@
 			},
 
 			byPatterns(value, patterns, defaults) {
+				value = this.scrub(value);
 				if (! value) {
 					return;
 				}
