@@ -14,6 +14,13 @@
 			'X': 'L',
 			'*': 'A',
 		},
+		labels: {
+			' ': 'Bashing',
+			B: 'Bashing',
+			L: 'Lethal',
+			A: 'Aggravated',
+			X: '',
+		},
 
 		get $health() {
 			return dsf.$dsf('curr_health');
@@ -87,7 +94,10 @@
 		clicked(evt) {
 			if (evt.shiftKey) {
 				this.damage(evt.target);
-				this.shiftState(evt.target);
+				let state = this.shiftState(evt.target) || 'B';
+				if (this.labels[state]) {
+					$(evt.target).attr('title', this.labels[state]);
+				}
 			} else {
 				this.heal(evt.target);
 				return pips.clicker(evt);
@@ -100,6 +110,7 @@
 				pips.fill(pip.previousElementSibling);
 				// mark previously healthy pips with bashing damage (may be overriden by other types)
 				//$pip.nextAll().add(pip).addClass(this.classes.bashing);
+				$pip.nextAll().not('.L').not('.A').attr('title', this.labels.B);
 			}
 		},
 
@@ -110,7 +121,8 @@
 		 */
 		heal(pip) {
 			let {$elt:$pip} = this.resolve(pip);
-			$pip.prevAll().add(pip).removeClass(this.classes.all);
+			$pip.prevAll().add(pip).removeClass(this.classes.all).removeAttr('title');
+			$pip.nextAll().not('.L').not('.A').attr('title', this.labels.B);
 			//$pip.nextAll().addClass(this.classes.bashing);
 		},
 
@@ -166,11 +178,13 @@
 				[iState, state] = this.state($pip);
 			if (iState > -1) {
 				$pip.removeClass(state);
-				$pip.addClass(this.nextState(iState));
+				state = this.nextState(iState);
 			} else {
 				// No recognized state, which can happen for ' '.
-				$pip.addClass(this.classes.sequence[0]);
+				state = this.classes.sequence[0];
 			}
+			$pip.addClass(state);
+			return state;
 		},
 
 		state(pip) {
