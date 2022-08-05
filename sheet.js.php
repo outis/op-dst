@@ -10,6 +10,7 @@ $requires = [
 	'edition' => [ 'dsa', 'dsf', 'klass', 'module', 'pips', 'range', 'udfs', ],
 	'editor' => [ 'dsf', 'op', ],
 	'funcs' => [ ],
+	'health' => [ 'dsa', 'dsf', 'module', 'pips', 'resolver', ],
 	'klass' => [ ],
 	'module' => [ ],
 	'nameGen' => [ 'klass', ],
