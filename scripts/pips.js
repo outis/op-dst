@@ -34,9 +34,12 @@
 			}, this);
 
 			this.demi.postLoad(opts, $context);
-			// use delegate, as pipped fields likely haven't been pippified yet
-			//this.$context.on('click', '.pips.current > span', this.clickerInLimit);
-			this.$context.on('click', '.pips.current > span', this.clicker);
+
+			if (authorize.is_owner()) {
+				// use delegate, as pipped fields likely haven't been pippified yet
+				//this.$context.on('click', '.pips.current > span', this.clickerInLimit);
+				this.$context.on('click', '.pips.current > span', this.clicker);
+			}
 
 			for (const fn of this.postLoad.queue) {
 				fn();
