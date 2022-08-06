@@ -1717,7 +1717,7 @@
 					value: `dyn_${base}_{i:02}`,
 					specialty: `dyn_${base}_{i:02}_specialty`,
 				}, values = parts.groups;
-				values.value = rating;
+				values.value = dsa.data[rating];
 				udfs.addDsa(names, values, base);
 				/*
 				dsa.data[names[0]] = parts.groups.val;
