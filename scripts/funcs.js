@@ -625,6 +625,28 @@
 		}
 	}
 
+	if (! ('splice' in String.prototype)) {
+		/**
+		 * Replace a section of a string with another.
+		 *
+		 * Similar to Array.splice, but doesn't modify string in-place, and handles negative amounts differently.
+		 *
+		 * @param {number} start - Starting index. Negative amounts are relative to end of string.
+		 * @param {number} [deleteCount] - Count of characters to deltete. Negative amounts results in duplicate characters (counting back from `start`). By default, deletes through end of string.
+		 * @param {string} [items] - Replacement string.
+		 *
+		 * @returns {string} Modified string.
+		 */
+		String.prototype.splice = function(start, deleteCount, items='') {
+			if ('string' === typeof(deleteCount)) {
+				items = deleteCount;
+				deleteCount = null;
+			}
+			deleteCount ??= this.length;
+			return this.slice(0, start) + items + this.slice(start + deleteCount);
+		};
+	}
+
 	if (! ('bits' in Math)) {
 		Math.bits = function (x) {
 			return 1 + Math.floor(Math.log2(x));
