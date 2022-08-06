@@ -199,7 +199,7 @@
 						}
 						exporters[base](...copyAll(theirArgs));
 					} else {
-						console.warn(`Cannot export field to ${slug}: no exporter matching any of ${bases.join(',')}.`, args);
+						console.warn(`Cannot export field to ${slug}: no exporter matching any of ${bases}.`, args);
 					}
 				}
 			},

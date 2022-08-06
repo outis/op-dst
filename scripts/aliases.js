@@ -684,7 +684,7 @@
 									entries = entries.slice(iEntry);
 									entries[0][1] = entries[0][1].slice(iItem);
 									if (! sections.length) {
-										throw `Ran out of fields when exporting ${category} to old_wod_generic; could not export ${entries.map(entry => entry[0]).join(", ")}.`;
+										throw `Ran out of fields when exporting ${category} to old_wod_generic; could not export ${entries.map(entry => entry[0])}.`;
 									}
 									section = sections.shift();
 									maxI = this._max[section];
