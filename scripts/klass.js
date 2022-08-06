@@ -28,7 +28,7 @@
 		 *
 		 * @returns {string}
 		 */
-		eval(name, env, unbrace) {
+		eval(name, env, unbrace=false) {
 			return name.replace(
 				this.reVars,
 				function (match, key, fmt) {
@@ -46,6 +46,22 @@
 					}
 				}
 			)
+		},
+
+		/**
+		 * Replace vars with values on multiple name templates.
+		 *
+		 * @param {object|string[]} names - Name templates.
+		 * @param {object} env - Variable environment.
+		 * @param {boolean} [unbrace] - Whether to remove braces from unmatched variables.
+		 * @returns {object|string[]} Same type as <var>names</var>
+		 */
+		evalAll(names, env, unbrace=false) {
+			let results = new names.constructor();
+			for (let [k, name] of Object.entries(names)) {
+				results[k] = this.eval(name, env, unbrace);
+			}
+			return results;
 		},
 
 		*entries(obj, include) {
