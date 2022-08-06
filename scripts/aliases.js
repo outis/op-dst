@@ -859,10 +859,10 @@
 					},
 
 					'specialty_type_{i:02}': function (theirs, value, env) {
-						let parts = value.match(/^(?<attr>[^:]*): *(?<specialty>.*)/);
+						let parts = value.match(/^(?<attribute>[^:]*)(?:: *\(?| *\()(?<specialty>.*[^)])\)?$|^\s*(?<attr>[^- ]+)[- ]+(?<spec>[^- ]+)\s*$/);
 						if (parts) {
-							let attr = parts.groups.attr.trim(),
-								specialty = parts.groups.specialty.trim();
+							let attr = (parts.groups.attribute ?? parts.groups.attr).trim().toLowerCase(),
+								specialty = (parts.groups.specialty ?? parts.groups.spec).trim();
 							if (attr in aliases.simple) {
 								attr = aliases.simple[attr];
 							}
