@@ -843,26 +843,10 @@
 					},
 
 					'equipment_name_{i:02}': function (theirs, value, env) {
-						let values = {},
-							fromTpls = {
-								name: 'equipment_name_{i:02}',
-								description: 'equipment_tootip_{i:02}',
-							},
-							from = klass.evalAll(fromTpls, env),
-							toTpls = {
-								// name must come first, as it's guaranteed to be present for all items, so thot dsa.add can find the existing items
-								name: 'dyn_equipment_{i:02}_name',
-								type: 'dyn_equipment_{i:02}_type',
-								description: 'dyn_equipment_{i:02}_description',
-							};
-						dsa.getAll(from, values);
-						let type = words.standardize(value);
-						if (/artifact|relic/i.test(type)) {
-							values.type = type;
-							values.name = values.description;
-							delete values.description;
-						}
-						this.import._udf(values, toTpls, 'equipment');
+						let parsed = this.import.stream(
+							['equipment', value],
+							[klass.eval('equipment_{i:02}', env), theirs, klass.eval('equipment_tootip_{i:02}', env)]
+						);
 					},
 				},
 

@@ -416,8 +416,9 @@
 			equipment(parsed, names) {
 				this.import.backgrounds(parsed);
 				names = {
-					'type': 'dyn_equipment_{i:02}_type',
+					// name must come first, as it's the most common field for all items, so that dsa.add can find the existing items
 					'name': 'dyn_equipment_{i:02}_name',
+					'type': 'dyn_equipment_{i:02}_type',
 					'points': 'dyn_equipment_{i:02}_points',
 					'description': 'dyn_equipment_{i:02}_description',
 					'charge': 'dyn_equipment_{i:02}_charge',
