@@ -43,7 +43,7 @@
 			//let lower = word.toLowerCase();
 			return this.lookup(word, this._typos);
 		},
-		
+
 		is_plural(word) {
 			return (word in this._plurals)
 				|| (! (word in this._singles) && /s$/.test(word));

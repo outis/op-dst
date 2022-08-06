@@ -5,15 +5,15 @@
 		count(tpl) {
 			return this.last(tpl).i;
 		},
-		
+
 		/**
 		 * Get the last name & index from the item matching the given name template.
 		 */
 		last(tpl) {
 			let base, i=1, name, last;
-			
+
 			({base, tpl} = klass._varify(tpl, '_{i:02}'));
-			
+
 			if (tpl in this._next) {
 				// start at the previous non-existent item index
 				i = this._next[tpl];
@@ -39,8 +39,19 @@
 		next(tpl, start=1) {
 			return start + this.count(tpl);
 		},
-		
+
 		/**
+		 * Generate names for a collection of name templates that follow the last item matching the templates.
+		 *
+		 * Can pass name templates in an array, an object, or separately:
+		 *
+		 *    nameGen.nextName(['base_{i:02}_name', 'base_{i:02}']);
+		 *    nameGen.nextName({name:'base_{i:02}_name', value:'base_{i:02}'});
+		 *    nameGen.nextName('base_{i:02}_name', 'base_{i:02}');
+		 *
+		 * Note that only the first template is used when searching for existing items, so be sure to pass one that will be present for all items.
+		 *
+		 * @param {string[]|object} tpls - Name templates.
 		 */
 		nextName(...tpls) {
 			let i, opts = {start:1},

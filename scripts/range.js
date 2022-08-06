@@ -68,7 +68,7 @@
 		 * @property {number => boolean} continue Whether the loop should continue at the given index.
 		 * @property {number => boolean} done Whether the loop should stop at the given index.
 		 */
-		
+
 		/**
 		 * Normalize arguments to loop parameters.
 		 *
@@ -108,7 +108,7 @@
 				}
 			};
 			let cond = conds.to;
-			
+
 			if (is_numeric(params)) {
 				if (arguments.length == 1) {
 					return {
@@ -140,7 +140,7 @@
 					params[`${pre}through`] ??= params[`${pre}thru`];
 				}
 			}
-			
+
 			if ('start' in params) {
 				params.from ??= params.start ?? 0;
 			} else {
@@ -208,7 +208,7 @@
 				}
 			}
 		},
-		
+
 		/**
 		 * Generate a keyed sequence over a single key & sequence.
 		 *
@@ -303,7 +303,7 @@
 			case 1:
 				// optimization
 				return yield* range.entry(entries[0][0], entries[0][1], obj);
-				
+
 			default:
 				entry = entries[0];
 				// need a copy to prevent recursive call from modifying local for subsequent calls
@@ -340,7 +340,7 @@
 			('reset' in this.args[0]) && this.args[0].reset();
 		}),
 
-		
+
 		forVar(v, {lower=1, step, upper={}}={}) {
 			let xs;
 			if (v in upper) {
@@ -364,7 +364,7 @@
 			*/
 			return xs;
 		},
-		
+
 		forVars(vars, opts={}) {
 			let ranges = {};
 			for (let v of vars) {
@@ -373,7 +373,7 @@
 			return range.keyed(ranges);
 		},
 
-		/** 
+		/**
 		 * Generate pairs of a string broken at successive separators.
 		 *
 		 * Example:
@@ -445,7 +445,7 @@
 				('reset' in iter && iter.reset());
 			}
 		}),
-		
+
 		/**
 		 * Generate a keyed sequence with key `key` and values ranging from `from` to `to`.
 		 *
@@ -465,9 +465,9 @@
 				}
 			}
 		}),
-		
-		/* *
-		 * Generate a keyed sequence with keys from `keys` and values ranging from `from` to `to`. 
+
+		/**
+		 * Generate a keyed sequence with keys from `keys` and values ranging from `from` to `to`.
 		 *
 		 * @param {string[]} keys Keys of result object to hold sequence values.
 		 * @param {LoopParams} params Loop parameters.
@@ -483,7 +483,7 @@
 			case 1:
 				yield* this.keyOver(keys[0], params);
 				break;
-				
+
 			default:
 				key = keys[0];
 				keys = keys.slice(1);
@@ -553,7 +553,7 @@
 						return next;
 					}
 				},
-				
+
 				reset() {
 					i = params.from;
 				},

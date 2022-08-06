@@ -601,7 +601,6 @@
 					//debugger;
 					if (! prelim.hint) {
 						// DSF was categorized based on 'background' token; check if there's a more specific one
-						// TODO: handle things like 'artifact gun'
 						let {prelim:recategory, groups} = this.parse.categorizeFirst(tokens[0], this.parse._byTokens),
 							{parser, hint} = recategory ?? {};
 						// handle things like equipment by delegating to another by-token parser
@@ -1282,7 +1281,7 @@
 
 
 		/**
-		 * For templated aliases, return a collection of field names matching those templates. 
+		 * For templated aliases, return a collection of field names matching those templates.
 		 */
 		/*
 		expandMine(theirs, mine, options={}) {
@@ -1311,7 +1310,7 @@
 		*/
 
 		/**
-		 * For templated aliases, return a collection of field names matching those templates. 
+		 * For templated aliases, return a collection of field names matching those templates.
 		 */
 		/*
 		expandTheirs(theirs, mine, options={}) {
@@ -1446,13 +1445,12 @@
 		},
 
 		/**
-		 * Get aliased DSFs. 
+		 * Get aliased DSFs.
 		 *
 		 * @returns {{theirs, mine, value}}: their name, my name, field value
 		 */
 		extract(data) {
 			let entries = [], mine;
-			// 
 			for (let [theirs, value] of Object.entries(data)) {
 				// check this.aliases.simple, this.aliases.templates
 				if ((mine = this.myNameFor(theirs))) {
@@ -1463,7 +1461,7 @@
 		},
 
 		/**
-		 * Get aliased DSFs for the given `aliases`. 
+		 * Get aliased DSFs for the given `aliases`.
 		 *
 		 *
 		 */
@@ -1743,7 +1741,7 @@
 		},
 
 		/**
-		 * Convert a DSF name to one on my sheet by resolving the alias (if any). 
+		 * Convert a DSF name to one on my sheet by resolving the alias (if any).
 		 *
 		 * Differs from `nameForMine` in that this method will return the original name if it's not aliased (and thus presumably is on this sheet), while `nameForMine` will only return .
 		 */

@@ -5,11 +5,11 @@
 		active: [],
 		itemClass: 'item',
 		itemSel: '.item',
-	
+
 		/* DST event handlers */
 		postLoad(opts, $context) {
 			this.$context = $context;
-			
+
 			this.starter = this.started.bind(this);
 			this.dragger = this.dragged.bind(this);
 			this.stopper = this.stopped.bind(this);
@@ -17,9 +17,9 @@
 			this.swapStarter = this.swapStarted.bind(this);
 			this.swapCanceller = this.swapCancelled.bind(this);
 			this.swapEnder = this.swapEnded.bind(this);
-			
+
 			this.keyChecker = this.keyCheck.bind(this);
-			
+
 			let $udf = this.$context.find('.udf');
 			$udf.find('li').prop('draggable', true).addClass(this.itemClass);
 			$udf.find('tr').prop('draggable', true).addClass(this.itemClass);
@@ -67,7 +67,7 @@
 				break;
 			}
 		},
-		
+
 		makeDraggable(elt) {
 			let $elt;
 			if (elt instanceof $) {
@@ -115,7 +115,7 @@
 
 		swapEnded(evt) {
 			//console.log('end swap.', evt.target);
-			
+
 			let other = reorder.target(evt.target),
 				elt = $(evt.delegateTarget).data('payload');
 			reorder.insertBefore(elt, other);
@@ -126,11 +126,11 @@
 		swapOff(evt, {keepActive=true}={}) {
 			// prevent trigger of other controls
 			evt.stopPropagation();
-			
+
 			if (keepActive) {
 				this.active = this.active.filter(elt => elt !== evt.delegateTarget);
 			}
-			
+
 			let elt = $(evt.delegateTarget).data('payload');
 			$(elt).removeClass('swapping');
 
@@ -138,7 +138,7 @@
 			$(evt.delegateTarget).removeClass('busy');
 			$(evt.delegateTarget).on('click', '.drag', this.swapStarter);
 			$(evt.delegateTarget).off('click', this.itemSel, this.swapEnder);
-			
+
 			$(document).off('click', this.swapCanceller);
 			$(document).off('keydown', this.keyChecker);
 		},
@@ -159,7 +159,7 @@
 			$(document).on('click', this.swapCanceller);
 			$(document).on('keydown', this.keyChecker);
 		},
-		
+
 		target(elt) {
 			return $(elt).closest(this.itemSel)[0];
 		},

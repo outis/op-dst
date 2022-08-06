@@ -1,5 +1,19 @@
 	/*** 
-	 * Dynamic Sheet Fields 
+	 * Dynamic Sheet data versioning.
+	 *
+	 * Supports changes to character data between sheet versions through update functions defined by modules. The main loader, sheet.js, registers modules that have updaters by calling {@link this.registerModule()}. The main loader also initiates the updates by calling {@link this.update()}.
+	 *
+	 * The simplest updates are name changes. For example, if a field were named 'foo' in earlier versions but was changed to 'bar', the updater would check for 'foo' in the character data and change the key to 'bar'.
+	 *
+	 * To supply updaters, a module must have an 'updaters' property, with updater functions indexed by version:
+	 *     {
+	 *         updaters: {
+	 *             [ver]: function(data) { … },
+	 *             [ver]: function(data) { … },
+	 *         }
+	 *     };
+	 *
+	 * These updaters are called in version order, starting with the version defined in the sheet data (which defaults to the lowest version if missing), and are passed the character data (same as <var>dynamic_sheet_attrs</var>). Each update function should make whatever changes are necessary to the data (which is an in-out parameter).
 	 */
 	let version = globals.version = {
 		_byver: {},

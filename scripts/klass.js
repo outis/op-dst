@@ -1,4 +1,11 @@
-	/*** HTML class ops */
+	/**
+	 * Name templates - useful to generate class names.
+	 *
+	 * In templates, braces surround variables to be replaced. Variables can optionally be followed by a colon and then formatting information. For example:
+	 *     name_{var}_{i:02}
+	 *
+	 * Currently, the only supported formatting information is a padding character and field width.
+	 */
 	let klass = globals.klass = {
 		reVar: /{(?<name>[^:}]+)(?::(?<fmt>[^}]*))?}/,
 
@@ -8,7 +15,19 @@
 			return this.eval(toTpl, env);
 		},
 
-		/* Replace vars with values */
+		/**
+		 * Replace vars with values.
+		 *
+		 * Any variable in the template that's present in the environment is replaced with the value. In other words, each substring matching `{name(:format)?}`, where 'name' is a property of <var>env</var>, is replaced with <var>env.name</var>.
+		 *
+		 * Unmatched template variables are handled in two different ways, depending on <var>unbrace</var>. If false, variables are left as-is. If true, the braces (and format) are removed, leaving the name.
+		 *
+		 * @param {string} name - A name template.
+		 * @param {object} env - Variable environment.
+		 * @param {boolean} [unbrace] - Whether to remove braces from unmatched variables.
+		 *
+		 * @returns {string}
+		 */
 		eval(name, env, unbrace) {
 			return name.replace(
 				this.reVars,
@@ -42,7 +61,7 @@
 				}
 			}
 		},
-		
+
 		/* Get values from a class */
 		extract(tpl, name) {
 			let match = this.matches(tpl, name);
@@ -59,6 +78,9 @@
 			return filtered;
 		},
 
+		/**
+		 * Apply a format to a value.
+		 */
 		format(value, fmt) {
 			let width = +fmt,
 				padChar = ' ';
@@ -92,7 +114,7 @@
 				return matches[0];
 			}
 		},
-		
+
 		/**
 		 * Get a named parameter ('name_value').
 		 */
@@ -121,7 +143,7 @@
 			let quant = allowEmpty ? '*' : '+';
 			return new RegExp('\\b' + tpl.replace(this.reVars, `(?<$1>[^ _]${quant}?)`) + '\\b');
 		},
-	
+
 		/**
 		 * Get variable names from a templated class (e.g. 'item{i}') 
 		 */

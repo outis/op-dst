@@ -1,5 +1,5 @@
-	/*** 
-	 * Dynamic Sheet Fields 
+	/***
+	 * Dynamic Sheet Fields
 	 */
 	let dsf = globals.dsf = {
 		/* DST event handlers */
@@ -8,7 +8,7 @@
 			this.sheetId = containerId;
 			this.slug = slug;
 		},
-		
+
 		postLoad(opts, $context) {
 			this.each(function (elt, $elt, name, value) {
 				// strip 'Click to edit' text?
@@ -26,7 +26,7 @@
 		addPrefix(name) {
 			return name.replace(/^(?:dsf_)?/, 'dsf_');
 		},
-		
+
 		/** Remove the value set on a DSF node. */
 		clear(eltDsf) {
 			delete eltDsf.dataset.value;
@@ -36,7 +36,7 @@
 				$eltDsf.empty();
 			}
 		},
-		
+
 		count(tpl) {
 			return this.last(tpl).i;
 		},
@@ -102,7 +102,7 @@
 				return false;
 			}
 		},
-		
+
 		isVolatile(node) {
 			return /(?:\b|_)curr_|\bcurrent\b/.test(node.className);
 		},
@@ -116,7 +116,7 @@
 				last = entries[entries.length - 1],
 				name = last && last[0];
 			return {name, i};
-			
+
 			// can't simply grab last element, as it might not match tpl
 			/*
 			tpl = dsf.addPrefix(tpl);
@@ -136,7 +136,7 @@
 					return name.replace(/(^|_)extra_/, '$1');
 				}
 			},
-			
+
 			bases(name) {
 				let bases = [], base;
 				if (this.isExtra(name)) {
@@ -148,7 +148,7 @@
 					}
 				}
 			},
-			
+
 			curr(name) {
 				if (this.isExtra(name)) {
 					return name.replace(/(^|_)extra_/, '$1curr_');
@@ -160,13 +160,13 @@
 					return name.replace(/(^|_)(perm|curr)_/, '$1extra_');
 				}
 			},
-			
+
 			perm(name) {
 				if (this.isExtra(name)) {
 					return name.replace(/(^|_)extra_/, '$1perm_');
 				}
 			},
-			
+
 			isBase(name) {
 				return /(^|_)(perm|curr)_/.test(name);
 			},
@@ -174,7 +174,7 @@
 			isCurr(name) {
 				return /(^|_)curr_/.test(name);
 			},
-			
+
 			isExtra(name) {
 				return /(^|_)extra_/.test(name);
 			},
@@ -216,7 +216,7 @@
 		stripPrefix(name) {
 			return name.replace(/^dsf_/, '');
 		},
-		
+
 		name(elt) {
 			if (elt instanceof $) {
 				elt = elt[0];

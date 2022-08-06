@@ -13,10 +13,10 @@
 				Object.defineProperty(this, key, descriptor);
 				return true;
 			},
-			
+
 			/**
 			 * Deletes the entry matching the given key, including removing it from the shorthand.
-			 * 
+			 *
 			 * If `entry` or `matches` are overridden, deletion may remove more than is wanted.
 			 */
 			deleteProperty(target, key) {
@@ -36,7 +36,7 @@
 			/**
 			 * If the given key matches `full`, returns the dict entry.
 			 *
-			 * Overridable to allow . 
+			 * Overridable to allow alternate ways of comparing & building the entry (such as if the full entry is a list, which must be searched to find the exact value).
 			 *
 			 * @param {string} full actual key
 			 * @param {string} key approximate key
@@ -69,7 +69,7 @@
 				return ShorthandDict.prototype;
 				// return target.constructor.prototype
 			},
-			
+
 			getOwnPropertyDescriptor(target, key) {
 				let entry = this.resolve(target, key);
 				return Object.getOwnPropertyDescriptor(target.full, key);

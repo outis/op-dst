@@ -1,7 +1,5 @@
-	/*** 
-	 * Pipped fields 
-	 *
-	 * TODO: support different damage types for corpus: bashing (/), lethal (x), aggravated (*)
+	/***
+	 * Pipped fields
 	 */
 	let pips = globals.pips = {
 		reDemi: /(?<left>(?<lmask>0x)?[\dA-F]+) *\/ *(?<right>(?<rmask>0x)?[\dA-F]+)/i,
@@ -264,7 +262,6 @@
 			},
 
 			parse(value) {
-				// TODO: handle numeric & undefined value
 				switch (typeof(value)) {
 				case 'string':
 					let values = value.match(pips.reDemi),
@@ -605,7 +602,7 @@
 				return this.demi.value(elt, val);
 			}
 			if (val) {
-				
+
 			}
 			return +dsf.value(elt) || 0;
 		},

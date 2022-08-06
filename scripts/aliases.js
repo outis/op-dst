@@ -268,14 +268,15 @@
 		 *     [slug]: {
 		 *         // called if last_dst was slug instead of main import function
 		 *         override(data) { … }
-		 *         
-		 *         // functions called on foreign fields in the dynamic sheet data
+		 *
+		 *         // Functions called on foreign fields in the dynamic sheet data.
+		 *         // Native fields are added to the data.
 		 *         import: { // destined for aliases.import
 		 *		       // `this` will get bound to compatability module
 		 *             [UDF name template]: function(theirs, value, env) { … },
 		 *		   }
-		 *         
-		 *         // functions to export fields by creating 
+		 *
+		 *         // Functions to export fields by creating foreign DSFs & setting the values.
 		 *         export: { // destined for aliases.export.dst[slug]
 		 *		       // `this` isn't rebound
 		 *             [DSF name]: function(value) { … },
@@ -411,7 +412,6 @@
 								};
 								udfs.addDsa(names, parsed, 'backgrounds');
 							}
-							// 
 						} else if (false !== parsed) { // `false` means ignore this one
 							// couldn't parse
 							console.warn(`Could not parse '${theirs}': '${expanded}'`);
@@ -427,36 +427,12 @@
 						let parsed = this.import.old_wod_generic([theirs], [value]);
 						if (parsed) {
 							if (! parsed.imported) {
-								// 
 								console.warn(`Cannot import '${theirs}': '${value}'`, parsed);
 							}
 						} else if (false !== parsed) { // `false` means ignore this one
 							// TODO: can't parse theirs; what do?
 							console.warn(`Cannot parse '${theirs}': '${value}'`);
 						}
-
-						// old
-						/*
-						let parts = value.match(/^(?<type>(?:relic|art[ei]facts?)|[^-:]+(?=[-:]))/i),
-							type;
-						if (parts) {
-							type = parts[1].toLowerCase().replace('artefact');
-							if (type in {'artifact':1, 'artifacts':1, 'equipment':1}) {
-								this.import_equipments(type, value);
-							} else {
-								// if , check for arcanoi
-								for (let base in this.advantages) {
-									if (type in this.advantages[base]) {
-										// type is base
-										break;
-									}
-								}
-							}
-						} else {
-							// TODO: can't parse theirs; what do?
-							console.warn(`Cannot parse '${theirs}': '${value}'`);
-						}
-						*/
 					},
 				},
 
@@ -866,6 +842,7 @@
 							if (attr in aliases.simple) {
 								attr = aliases.simple[attr];
 							}
+							// TODO: detect dynamic abilities, rather than assuming attr is the base
 							dsa.data[`${attr}_specialty`] = specialty;
 						}
 					},
@@ -1019,7 +996,7 @@
 						/**/
 						/*
 						  let theirs = dsf.nextName(, {start:0});
-						  
+
 						  compatibility.export.dynamicField(theirs.name, name, {mine});
 						  compatibility.export.dynamicField(theirs.value, value, {mine});
 						*/

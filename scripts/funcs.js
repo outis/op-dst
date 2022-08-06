@@ -49,7 +49,7 @@
 				return matchString;
 			}
 		}
-		
+
 		/**
 		 * Break a string into parts.
 		 *
@@ -71,7 +71,7 @@
 		 *     # ['foo', 'bar', 'baz', 'bam']
 		 *     breakString('foo_bar_baz_bam', /_/, {include: 0, limit: 3});
 		 *     # ['foo', '_', 'bar', '_', 'baz_bam']
-		 *     
+		 *
 		 *     breakString('a 7 / 10 solution', / *(\d+) *\\\/ *(\d+) *\/);
 		 *     # ['a', '7', '10', ' solution']
 		 *     breakString('a 7 / 10 solution', / *(\d+) *\\\/ *(\d+) *\/, {include:0});
@@ -82,7 +82,7 @@
 		 *     # ['a', '7', '10', 'solution is', '80', 'effective'];
 		 *
 		 * @param {string} string
-		 * @param {string | RegExp} sep 
+		 * @param {string | RegExp} sep
 		 * @param {Object} [options]
 		 * @param {number} [options.limit] If provided, sets the limit on the number of breaks.
 		 * @property {boolean|number} [options.include=1] Whether to include any matched groups from the separator. By default, includes all capturing groups (but not entire match) for RegExp separators, and excludes the match for string separators.
@@ -101,7 +101,7 @@
 				// regex: include from 1; string: include from 0
 				include = include ? (sep instanceof RegExp) : Infinity;
 			}
-			
+
 			let all = (is_undefined(limit)),
 				parts = [string],
 				halves, matcher;
@@ -183,7 +183,7 @@
 	/**
 	 * Replace properties referring to other properties with those property values.
 	 *
-	 * Allows methods to be duplicated: 
+	 * Allows methods to be duplicated:
 	 *     obj = derefProperties({
 	 *         foo() { return 'foobar'; },
 	 *         bar: 'foo',
@@ -200,7 +200,7 @@
 	}
 
 	/**
-	 * Add a value to an object property. 
+	 * Add a value to an object property.
 	 *
 	 * Instead of overwriting existing properties, they're converted to arrays (if necessary) and the new value is added to the array.
 	 *

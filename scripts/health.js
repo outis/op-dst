@@ -1,4 +1,6 @@
 	/**
+	 * Extra functionality for health:
+	 * + More extensive damage types.
 	 */
 	var health = globals.health = {
 		classes: {
@@ -69,7 +71,7 @@
 				this.$context.redelegate('click', '.pips.current > span', '.pips.current:not(.health) > span');
 				this.$context.on('click', '.page.stats .pips.health.current > span', this.clicker);
 			}
-			
+
 			if (dsa.data.health_details) {
 				this.details = dsa.data.health_details;
 			}
@@ -151,7 +153,7 @@
 		nextState(iState) {
 			return this.classes.sequence[this.nextStateIndex(iState)];
 		},
-		
+
 		nextStateIndex(iState) {
 			return (iState + 1) % this.classes.sequence.length;
 		},

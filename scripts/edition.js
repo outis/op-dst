@@ -40,7 +40,7 @@
 			aliases;
 		},
 		*/
-		
+
 		preLoad(opts, $context) {
 			module.tarryFor('compatibility');
 			module.tarryFor('abilities'); // so specialties have been separated from dynamic abilities
@@ -61,7 +61,7 @@
 		/* */
 		export() {
 		},
-		
+
 		import() {
 			let sheetEd = dsf.value('edition');
 			if (dsa.data.edition != sheetEd) {
@@ -127,7 +127,7 @@
 						}
 					}
 				}
-				
+
 				this.each(
 					into_current.bind(this),
 					from_other.bind(this)
@@ -177,7 +177,7 @@
 		fieldName(ability) {
 			return ability.replace(/\([^)]*\)/, '').trim().replace(/\s+/, '_');
 		},
-		
+
 		foldArcanoi() {
 			let envs = this.envs('arcanoi');
 			for (let [name, value] of dsa.entries('dyn_arcanoi_{i:02}', envs, {continuous: true})) {

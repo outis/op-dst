@@ -20,7 +20,7 @@
 		preLoad({slug}, $context) {
 			module.tarryFor('compatibility');
 			module.tarryFor('edition');
-			
+
 			this.slug = slug;
 			this._createControls();
 			this._subscribeListeners();
@@ -34,8 +34,6 @@
 
 		/* Update old versions */
 		updaters: {
-			//'1.1': function () { console.log('v1.1'); },
-			//'2.5': function () { console.log('v2.5'); },
 			'1': function (data) {
 				//console.log('v1');
 				let parts;
@@ -46,7 +44,6 @@
 					}
 				}
 			},
-			//'2.1': function () { console.log('v2.5'); },
 		},
 
 
@@ -81,7 +78,7 @@
 			}
 			dsa.rename(name, newName, {data});
 		},
-		
+
 		/*  */
 		/**
 		 */
@@ -89,7 +86,7 @@
 			$(eltList).append(item);
 			$(eltList).trigger('mll.udfs.add', item);
 		},
-		
+
 		/**
 		 * Creates list & item controls.
 		 */
@@ -236,7 +233,7 @@
 				break;
 			}
 		},
-		
+
 		/**
 		 * Return the base portion of a UDF name, given a list node.
 		 */
@@ -247,7 +244,7 @@
 				?? dsf.sectionName(eltList)
 			;
 		},
-		
+
 		/**
 		 * Return a list of the base field name for all UDFs.
 		 */
@@ -289,13 +286,13 @@
 					};
 				}
 			}
-			
+
 			if (dsa.exists(sizeName) && is_numeric(dsa.data[sizeName])) {
 				stop = dsa.data[sizeName]
 			}
 
 			let size = dsa.compact(tpls, stop);
-			
+
 			if (dsa.exists(sizeName) && is_numeric(size)) {
 				dsa.data[sizeName] = size;
 			}
@@ -474,7 +471,7 @@
 				yield this.entry(item);
 			};
 		},
-		
+
 		exists(name, $context) {
 			return ($context ?? this.$context).find(`.${name} .udf`).length;
 		},
@@ -519,13 +516,14 @@
 			*/
 			/*
 			fieldInfo.entry = function (full, key) {
+				// returns the first matching item
 				let value = klass.matchesAny(this.full[full], key);
 				if (value) {
 					return {key: full, value};
 				}
 			};
 			*/
-			
+
 			this.$udfs.each(function (i, udf) {
 				let base = udfs.base(udf),
 					$udf = $(udf),
@@ -618,7 +616,7 @@
 		isName(name) {
 			return /^(dsf_)?dyn_/.test(name);
 		},
-		
+
 		isTemplate(name) {
 			return /^(dsf_)?dyn_.*\{.*\}/.test(name);
 		},
@@ -775,7 +773,7 @@
 				this.renumberItem(eltItem, iItem++, {addl});
 			}
 		},
-		
+
 		/**
 		 * Update item numbers in DSF field names for all items in a dynamic list.
 		 *
@@ -869,7 +867,7 @@
 			}
 			return $size;
 		},
-		
+
 		/**
 		 * Returns the DSF that holds the size of the given list, if it exists.
 		 *
@@ -909,12 +907,12 @@
 				let item = doc.content.firstElementChild;
 				udfs.addItemControls(item);
 			});
-		
+
 			// add list controls to UDFs
 			this.$udfs.each(function(i, eltList) {
 				let $list = $(eltList),
 					$controls = $list.find('+ .controls');
-				
+
 				if ($controls.length && $controls[0].childElementCount) {
 					$controls.show();
 				} else {
@@ -944,7 +942,7 @@
 		stripPrefix(name) {
 			return name.replace(/^(dsf_)?dyn_/, '');
 		},
-		
+
 		template(eltList) {
 			let $eltList;
 			if ('string' == typeof eltList) {

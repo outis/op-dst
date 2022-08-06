@@ -10,7 +10,7 @@
 				next = items.next.bind(items);
 			return {items, next};
 		}
-	
+
 		const proxy = new Proxy(generator, {
 			apply(target, that, args) {
 				let {items, next} = make(...arguments);
@@ -24,14 +24,14 @@
 				return items;
 			},
 		});
-	
+
 		return proxy;
 	};
 	globals.ResettableGenerator = ResettableGenerator;
 	*/
 	function resettableGenerator(generator, reset) {
 		reset ??= () => {};
-		
+
 		function Resettable(...args) {
 			let items;
 

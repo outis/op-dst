@@ -5,7 +5,7 @@
 		get app() {
 			return aisleten.characters;
 		},
-		
+
 		/**/
 		trigger(name, ...args) {
 			if (args.length == 1 && Array.isArray(args[0])) {

@@ -1,7 +1,7 @@
-	/*** 
+	/***
 	 * Dynamic Sheet Attributes
 	 *
-	 * The DSA is the .
+	 * The DSA is the character data used as transport between the database and DST.
 	 */
 	let dsa = globals.dsa = {
 		_next: {},
@@ -40,7 +40,7 @@
 			//       renumber(tpl, oldIndex, newIndex, options={}) {},
 			//     }
 			fields ??= this;
-			
+
 			if (is_numeric(stop)) {
 				stop = {index: stop};
 			}
@@ -68,7 +68,7 @@
 					},
 				};
 			}
-			
+
 			i=0; j=0, n=0;
 			do { // stops at 1st nonexistent item
 				++i; ++j;
@@ -145,7 +145,7 @@
 			let data = this.data;
 			yield* Object.entries(data).filter(([name, value]) => klass.matches(tpl, name));
 		},
-		
+
 		exists(name, data) {
 			return name in (data ?? this.data);
 		},
@@ -213,7 +213,7 @@
 			return tpls;
 		},
 		*/
-		
+
 		rename(oldName, newName, {overwrite=false}={}) {
 			if (   this.exists(oldName)
 				&& (   overwrite

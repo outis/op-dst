@@ -1,7 +1,7 @@
 	/**
 	 * Extracts specialties from abilities.
 	 *
-	 * TODO: refactor-find better name
+	 * TODO: add management methods (so as to prevent duplicate dynamic abilities & ease altering them).
 	 */
 	const abilities = globals.abilities = {
 		abilities: ['talents', 'skills', 'knowledges'],

@@ -1,7 +1,9 @@
 	/**
-	 * Prototype object for modules. 
+	 * Prototype object for modules.
 	 *
 	 * Mostly stubs so modules don't have to define certain functions.
+	 *
+	 * TODO: see whether waitFor & tarryFor can be implemented using async functions
 	 */
 	let module = {
 		modules: {},
@@ -29,7 +31,7 @@
 		 * WARNING: while this method guards against infinite loops caused by
 		 * circular dependencies, it won't invoke the handlers when there's
 		 * a circular dependency.
-		 * 
+		 *
 		 * WARNING: can't be called recursively, else will get confused as to 
 		 * which modules' handlers have already been invoked.
 		 */
@@ -84,9 +86,9 @@
 			} finally {
 				this._current = {};
 			}
-			
+
 			this.fire(func, args);
-			
+
 			switch (Object.keys(errs).length) {
 			case 0:
 				break;
@@ -111,7 +113,7 @@
 		fire(func, args=[]) {
 			let errs = {};
 			this._current = { func };
-			
+
 			if (func in this.handlers) {
 				for (let id in this.handlers[func]) {
 					try {
@@ -121,7 +123,7 @@
 					}
 				}
 			}
-			
+
 			this._current = {};
 
 			switch (Object.keys(errs).length) {
@@ -198,7 +200,7 @@
 				throw {delay: true, 'for': names};
 			}
 		},
-		
+
 		/**
 		 * Wait to invoke a handler until after the handlers for the named modules have been invoked.
 		 *
