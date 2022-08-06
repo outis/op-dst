@@ -17,6 +17,7 @@ $requires = [
 	'klass' => [ ],
 	'module' => [ ],
 	'nameGen' => [ 'klass', ],
+	'notes' => [ ],
 	'op' => [ ],
 	'path' => [ 'dsf', ],
 	'pips' => [ 'authorize', 'dsf', 'module', ],
@@ -302,7 +303,7 @@ function include_modules($modules) {
 		$context.containerId = opts.containerId;
 
 		// init, so updaters have $context
-		module.all('init', $context, slug);
+		module.all('init', $context, slug, opts.isEditable);
 		// update before preLoad
 		version.update();
 		module.all('preLoad', opts, $context);
