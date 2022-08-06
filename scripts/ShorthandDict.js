@@ -127,6 +127,7 @@
 			},
 
 			search(candidates, key, target) {
+				let entry;
 				for (let full of candidates) {
 					if ((entry = this.entry(full, key, target))) {
 						return entry;
