@@ -241,6 +241,18 @@
 
 		// copied to compatability.import
 		'import.': {
+			tryStream(values, names) {
+				let parsed = this.import.stream(values, names);
+				if (parsed) {
+					if (! parsed.imported) {
+						console.warn(`Could not import ${names}: '${values.join("','")}'`, parsed);
+					}
+				} else if (false !== parsed) { // `false` means ignore this one
+					// TODO: can't parse theirs; what do?
+					console.warn(`Could not parse ${names}: '${values.join("','")}'`);
+				}
+				return parsed;
+			},
 		},
 
 		'parse.': {
@@ -341,14 +353,7 @@
 					'other_trait_{i}': function (theirs, label, env) {
 						let valueTpl = `other{i}_value`,
 							valueName = klass.eval(valueTpl, env),
-							parsed = this.import.stream([label], [theirs, valueName]);
-						if (parsed) {
-							if (! parsed.imported) {
-								console.warn(`Could not import '${theirs}': '${label}'`, parsed);
-							}
-						} else if (false !== parsed) { // `false` means ignore this one
-							console.warn(`Could not parse '${theirs}': '${label}'`);
-						}
+							parsed = this.import.tryStream([label], [theirs, valueName]);
 					},
 
 					'bg{i}': function (theirs, name, env) {
@@ -407,15 +412,7 @@
 					*/
 
 					'misc{i}': function(theirs, value, env) {
-						let parsed = this.import.stream([value], [theirs]);
-						if (parsed) {
-							if (! parsed.imported) {
-								console.warn(`Cannot import '${theirs}': '${value}'`, parsed);
-							}
-						} else if (false !== parsed) { // `false` means ignore this one
-							// TODO: can't parse theirs; what do?
-							console.warn(`Cannot parse '${theirs}': '${value}'`);
-						}
+						let parsed = this.import.tryStream([value], [theirs]);
 					},
 				},
 
@@ -843,7 +840,7 @@
 					},
 
 					'equipment_name_{i:02}': function (theirs, value, env) {
-						let parsed = this.import.stream(
+						let parsed = this.import.tryStream(
 							['equipment', value],
 							[klass.eval('equipment_{i:02}', env), theirs, klass.eval('equipment_tootip_{i:02}', env)]
 						);
