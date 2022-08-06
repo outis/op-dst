@@ -244,23 +244,9 @@
 
 		// copied to compatability.import
 		'import.': {
-			old_wod_generic(names, values /*/ name, valueName, points /**/) {
-				dsa.getAll(names, values);
-				let parsed = this.parse.old_wod_generic(values);
-				if (! parsed) {
-					return parsed;
-				}
-				if (! parsed.base) {
-					debugger;
-				}
-				return this.import.dispatch(parsed, names);
-			},
 		},
 
 		'parse.': {
-			old_wod_generic(values) {
-				return this.parse.stream(values);
-			},
 		},
 
 		/**
@@ -358,7 +344,7 @@
 					'other_trait_{i}': function (theirs, label, env) {
 						let valueTpl = `other{i}_value`,
 							valueName = klass.eval(valueTpl, env),
-							parsed = this.import.old_wod_generic([theirs, valueName], [label]);
+							parsed = this.import.stream([label], [theirs, valueName]);
 						if (parsed) {
 							if (! parsed.imported) {
 								console.warn(`Could not import '${theirs}': '${label}'`, parsed);
@@ -396,7 +382,7 @@
 							valueTpl = `bg{i}_value`,
 							baseName = klass.eval(baseTpl, env),
 							valueName = klass.eval(valueTpl, env),
-							parsed = this.import.old_wod_generic([baseName, theirs, valueName], [undefined, expanded, undefined]);
+							parsed = this.import.stream([undefined, expanded, undefined], [baseName, theirs, valueName]);
 
 						// check whether there's a `.${base} > .udf`
 
@@ -424,7 +410,7 @@
 					*/
 
 					'misc{i}': function(theirs, value, env) {
-						let parsed = this.import.old_wod_generic([theirs], [value]);
+						let parsed = this.import.stream([value], [theirs]);
 						if (parsed) {
 							if (! parsed.imported) {
 								console.warn(`Cannot import '${theirs}': '${value}'`, parsed);

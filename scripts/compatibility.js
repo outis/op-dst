@@ -472,6 +472,19 @@
 				return parsed;
 			},
 
+			stream(values, names) {
+				dsa.getAll(names, values);
+				let parsed = this.parse.stream(values);
+				if (! parsed) {
+					return parsed;
+				}
+				// for debugging
+				window.parses ??= {};
+				window.parses[names[1] ?? names[0]] = {from: [values], ...parsed};
+
+				return this.import.dispatch(parsed, names);
+			},
+
 			split(value, names, base) {
 				let parsed = this.parse.split(value, {base});
 				if (parsed) {
