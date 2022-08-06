@@ -257,6 +257,7 @@
 		}
 		return filtered;
 	}
+	globals.filterObject = filterObject;
 	/**
 	 * Exchange keys & values.
 	 *
@@ -312,6 +313,7 @@
 		}
 
 		_memoized.original = f;
+		f.results = results;
 
 		return _memoized;
 	}
