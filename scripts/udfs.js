@@ -58,9 +58,17 @@
 				// check for named subfields; if mid doesn't have any, 0 iterations
 				for (let [base, sub] of range.halves(parts.groups.mid, '_')) {
 					base = base.dromedaryCase();
-					if (this.$udf(base).length) {
-						sub &&= sub.dromedaryCase();
-						return {base, sub, i: parts.groups.i};
+					let $udf = this.$udf(base);
+					if ($udf.length) {
+						let fields = this.fieldsFor($udf),
+							newName = `dyn_${base}_{i:02}`;
+						if (sub) {
+							sub = sub.dromedaryCase();
+							newName += '_' + sub;
+						}
+						if (fields.indexOf(newName) > -1) {
+							return {base, sub, i: parts.groups.i, updated:newName};
+						}
 					}
 				}
 			}
@@ -71,12 +79,14 @@
 			return name.replace(/^(dyn_)?(thorn|dark_passion)(_|$)/, '$1$2s$3');
 		},
 
-		renameField(data, name, {base, sub, i}) {
-			let newName = `dyn_${base}_${i}`;
-			if (sub) {
-				newName += '_' + sub;
+		renameField(data, name, {base, sub, i, updated}) {
+			if (! updated) {
+				updated = `dyn_${base}_${i}`;
+				if (sub && sub !== 'value') {
+					updated += '_' + sub;
+				}
 			}
-			dsa.rename(name, newName, {data});
+			dsa.rename(name, updated, {data});
 		},
 
 		/*  */
