@@ -27,7 +27,7 @@ $requires = [
 	'shadow' => [ ],
 	'ShorthandDict' => [ 'klass', ],
 	'tabs' => [ ],
-	'udfs' => [ 'dsa', 'dsf', 'klass', 'module', 'path', 'pips', 'range', 'reorder', 'ShorthandDict', ],
+	'udfs' => [ 'dsa', 'dsf', 'klass', 'module', 'path', 'pips', 'reorder', 'ShorthandDict', 'words', ],
 	'version' => [ 'module', ],
 	'words' => [ ],
 ];

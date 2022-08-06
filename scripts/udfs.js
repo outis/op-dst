@@ -38,8 +38,8 @@
 				//console.log('v1');
 				let parts;
 				for (let name in data) {
-					parts = this.parseOld(this.pluralize(name));
-					if (parts.base) {
+					parts = this.parseOld(name);
+					if (parts) {
 						this.renameField(data, name, parts);
 					}
 				}
@@ -49,42 +49,22 @@
 
 		/** Determines whether the given field name uses an old format ({base}_{}_{i}). */
 		parseOld(name) {
-			let parts = name.match(/^(?:dsf_)?(?<dyn>dyn_)?(?<mid>\w+)_(?<i>\d+)$/);
-			if (parts && ! parts.groups.dyn) {
-				let mid = parts.groups.mid.dromedaryCase();
-				if (this.$udf(mid).length) {
-					return {base: mid, i: parts.groups.i};
-				}
-				// check for named subfields; if mid doesn't have any, 0 iterations
-				for (let [base, sub] of range.halves(parts.groups.mid, '_')) {
-					base = base.dromedaryCase();
-					let $udf = this.$udf(base);
-					if ($udf.length) {
-						let fields = this.fieldsFor($udf),
-							newName = `dyn_${base}_{i:02}`;
-						if (sub) {
-							sub = sub.dromedaryCase();
-							newName += '_' + sub;
-						}
-						if (fields.indexOf(newName) > -1) {
-							return {base, sub, i: parts.groups.i, updated:newName};
-						}
-					}
-				}
+			const parts = name.match(/^(?:dsf_)?(?<base>(?:thorn|dark_passion|attribute)s?)(?:_(?<sub>\w+))?_(?<i>\d+)$/);
+			return (parts ?? {}).groups;
+		},
+
+		renameField(data, name, {base, sub, i}) {
+			const rename = {
+				'label': 'name',
+				'value': '',
+			};
+			base = words.pluralize(base.dromedaryCase());
+			let updated = `dyn_${base}_${i}`;
+			if (rename[sub]) {
+				sub = rename[sub];
 			}
-			return {};
-		},
-
-		pluralize(name) {
-			return name.replace(/^(dyn_)?(thorn|dark_passion)(_|$)/, '$1$2s$3');
-		},
-
-		renameField(data, name, {base, sub, i, updated}) {
-			if (! updated) {
-				updated = `dyn_${base}_${i}`;
-				if (sub && sub !== 'value') {
-					updated += '_' + sub;
-				}
+			if (sub) {
+				updated += '_' + sub;
 			}
 			dsa.rename(name, updated, {data});
 		},
