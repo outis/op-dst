@@ -469,6 +469,14 @@
 			;
 		},
 
+		/**
+		 * Report whether the given pip is marked.
+		 */
+		isMarked(elt) {
+			let $elt = $(elt);
+			return $elt.hasClass(this.marker);
+		},
+
 		mark($elt, value, marker) {
 			marker ??= this.marker;
 			value = +value;
