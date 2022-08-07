@@ -34,6 +34,7 @@
 			for (let i = 1; i < $pips.length; ++i) {
 				state += this.marker($pips[i]);
 			}
+			return state;
 		},
 
 		set details(details) {
