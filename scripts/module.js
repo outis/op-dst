@@ -167,6 +167,7 @@
 		 */
 		register(name, mod) {
 			this.modules[name] = mod;
+			mod.__name = name;
 			mixIn(mod, this.base);
 		},
 
