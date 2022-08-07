@@ -62,7 +62,7 @@
 
 		preLoad() {
 			if (! dsf.exists('health_details')) {
-				$details = $('<span class="dsf dsf_health_details readonly hidden"></span>');
+				$details = $('<span class="dsf dsf_health_details readonly hidden volatile"></span>');
 				this.$health.after($details);
 			}
 		},
@@ -75,8 +75,9 @@
 				this.$context.on('click', '.page.stats .pips.health.current > span', this.clicker);
 			}
 
-			if (dsa.data.health_details) {
-				this.details = dsa.data.health_details;
+			const details = dsf.override('health_details', dsa.data.health_details);
+			if (details) {
+				this.details = details;
 			}
 		},
 
@@ -105,8 +106,9 @@
 				}
 			} else {
 				this.heal(evt.target);
-				return pips.clicker(evt);
+				pips.clicker(evt);
 			}
+			dsf.update(dsf.$dsf('health_details')[0], this.details, 'health_details');
 		},
 
 		damage(pip) {
