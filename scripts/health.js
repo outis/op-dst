@@ -97,7 +97,7 @@
 		},
 
 		clicked(evt) {
-			if (evt.shiftKey) {
+			if (evt.shiftKey || evt.altKey || evt.ctrlKey || evt.metaKey) {
 				this.damage(evt.target);
 				let state = this.shiftState(evt.target) || 'B';
 				if (this.labels[state]) {
