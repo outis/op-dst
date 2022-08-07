@@ -56,6 +56,8 @@
 		init($context) {
 			this.$context = $context;
 			this.clicker = this.clicked.bind(this);
+
+			module.registerDependency('pips', 'preSave', ['health']);
 		},
 
 		preLoad() {
