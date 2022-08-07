@@ -100,10 +100,7 @@
 		clicked(evt) {
 			if (evt.shiftKey || evt.altKey || evt.ctrlKey || evt.metaKey) {
 				this.damage(evt.target);
-				let state = this.shiftState(evt.target) || 'B';
-				if (this.labels[state]) {
-					$(evt.target).attr('title', this.labels[state]);
-				}
+				this.shiftState(evt.target);
 			} else {
 				this.heal(evt.target);
 				pips.clicker(evt);
@@ -128,7 +125,7 @@
 		 */
 		heal(pip) {
 			let {$elt:$pip} = this.resolve(pip);
-			$pip.prevAll().add(pip).removeClass(this.classes.all).removeAttr('title');
+			this.markUndamaged($pip.prevAll().add(pip));
 			$pip.nextAll().not('.L').not('.A').attr('title', this.labels.B);
 			//$pip.nextAll().addClass(this.classes.bashing);
 		},
@@ -155,6 +152,16 @@
 			return ' ';
 		},
 
+		markDamaged($pips, state) {
+			$pips.addClass(state)
+				.attr('title', this.labels[state || 'B']);
+		},
+
+		markUndamaged($pips, state) {
+			$pips.removeClass(this.classes.all)
+				.removeAttr('title')
+		},
+
 		nextState(iState) {
 			return this.classes.sequence[this.nextStateIndex(iState)];
 		},
@@ -166,8 +173,8 @@
 		_setDetails(details, $pips, classer) {
 			classer ??= x => x;
 			for (let i = 0; i < details.length; ++i) {
-				if (' ' !== details[i]) {
-					$pips.eq(i+1).addClass(classer(details[i]));
+				if (! pips.isMarked($pips[i+1])) { //  ' ' !== details[i]
+					this.markDamaged($pips.eq(i+1), classer(details[i]));
 				}
 			}
 		},
@@ -190,7 +197,7 @@
 				// No recognized state, which can happen for ' '.
 				state = this.classes.sequence[0];
 			}
-			$pip.addClass(state);
+			this.markDamaged($pip, state);
 			return state;
 		},
 
