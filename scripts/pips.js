@@ -421,7 +421,7 @@
 					//value = {left: 0, right: 0, value: '0 / 0'};
 				} else if (value || 0 == value) { // also handles '' == value
 					value = this.parse(value);
-					dsf.update(field, name, value.value);
+					dsf.update(field, value.value, name);
 					Object.assign(field.dataset, value);
 				} else if (! ('left' in field.dataset)) {
 					Object.assign(field.dataset, this.parse(field.dataset.value));
@@ -555,7 +555,7 @@
 			{
 				value = nPip + parts[1];
 			}
-			dsf.update(eltField, name, value);
+			dsf.update(eltField, value, name);
 			this.mark($field, nPip);
 
 			this.blockCurr(name, nPip);
