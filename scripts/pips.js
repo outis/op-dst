@@ -503,6 +503,8 @@
 				if (+pips) {
 					$elt[0].dataset.pips = +pips;
 				}
+				// ensure value is stored in data attribute
+				dsf.update($elt[0], value, name);
 			}
 			this.assemble($elt);
 			this.mark($elt, value);
