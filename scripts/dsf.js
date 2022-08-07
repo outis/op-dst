@@ -104,7 +104,7 @@
 		},
 
 		isVolatile(node) {
-			return /(?:\b|_)curr_|\bcurrent\b/.test(node.className);
+			return /(?:\b|_)curr_|\bcurrent\b|\bvolatile\b/.test(node.className);
 		},
 
 		/**
