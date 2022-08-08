@@ -36,7 +36,7 @@
 		dragged(evt) {
 			let draggable = $(evt.delegateTarget).data('payload'),
 				target = reorder.target(evt.target);
-			evt.dataTransfer.dropEffect = evt.dataTransfer.effectAllowed;
+			(evt.dataTransfer ?? {}).dropEffect = evt.dataTransfer?.effectAllowed;
 			//console.info('dragged: dataTransfer', evt.originalEvent.dataTransfer);
 			reorder.insertBefore(draggable, target);
 			//console.info('evt', evt);
@@ -81,7 +81,7 @@
 		},
 
 		started(evt) {
-			evt.dataTransfer.effectAllowed = "move";
+			(evt.dataTransfer ?? {}).effectAllowed = "move";
 			let elt = reorder.target(evt.target);
 			elt.style.opacity = 0.5;
 			$(evt.delegateTarget).data('payload', elt);
