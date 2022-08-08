@@ -22,7 +22,7 @@
 					Object.defineProperty(authorize, 'owner', {
 						configurable: false,
 						writeable: false,
-						enumerable: false,
+						enumerable: true,
 						value: owner,
 					});
 				} else {
@@ -37,7 +37,7 @@
 		user: {
 			configurable: false,
 			writeable: false,
-			enumerable: false,
+			enumerable: true,
 			value: $('head meta#current-user-login').attr('content'),
 		},
 		is_owner: {
