@@ -2,11 +2,10 @@
 	 * Section notes.
 	 */
 	let notes = globals.notes = {
-		init($context, slug, editable) {
+		postLoad({isEditable}) {
 			this.$context = $context;
-			if (! editable) {
-				$context.find('H3.tipped > .tip:empty').parent().addClass('notip');
-				$context.find('H4.tipped > .tip:empty').parent().addClass('notip');
+			if (! isEditable) {
+				$context.find(':not(.help) .tipped > .tip:empty').parent().addClass('notip').removeClass('tipped');
 			}
 		},
 	};
