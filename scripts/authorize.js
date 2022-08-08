@@ -2,9 +2,17 @@
 	 * Basic protection.
 	 */
 	const authorize = globals.authorize = {
-		init($context) {
+		init($context, slug, isEditable) {
 			this.$context = $context;
 			this.set_owner();
+			Object.defineProperties(this, {
+				isEditable: {
+					configurable: false,
+					writeable: false,
+					enumerable: true,
+					value: isEditable,
+				},
+			});
 		},
 
 		set_owner() {
@@ -40,6 +48,14 @@
 				return this.owner && this.user === this.owner;
 			}
 		},
+		can_edit: {
+			configurable: false,
+			writeable: false,
+			enumerable: false,
+			value: function() {
+				return this.isEditable || this.is_owner();
+			}
+		}
 	});
 	$(function() {
 		authorize.set_owner();

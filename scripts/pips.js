@@ -31,7 +31,7 @@
 
 			this.demi.postLoad(opts, $context);
 
-			if (authorize.is_owner()) {
+			if (authorize.can_edit()) {
 				// use delegate, as pipped fields likely haven't been pippified yet
 				//this.$context.on('click', '.pips.current > span', this.clickerInLimit);
 				this.$context.on('click', '.pips.current > span', this.clicker);

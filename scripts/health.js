@@ -70,7 +70,7 @@
 		postLoad() {
 			module.waitFor('pips');
 
-			if (authorize.is_owner()) {
+			if (authorize.can_edit()) {
 				this.$context.redelegate('click', '.pips.current > span', '.pips.current:not(.health) > span');
 				this.$context.on('click', '.page.stats .pips.health.current > span', this.clicker);
 			}
