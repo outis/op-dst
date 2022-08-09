@@ -78,7 +78,9 @@
 			for (let [name, dst] of Object.entries(aliases.dst)) {
 				bindAll(dst.import, this);
 				Object.assign(aliases.import, dst.import);
-				aliases.export.dst[name] = dst.export ?? {};
+				if (dst.export) {
+					aliases.export.dst[name] = dst.export ?? { partial:true };
+				}
 				if (is_function(dst.override)) {
 					this.import.dst[name] = dst.override;
 				}
@@ -198,7 +200,7 @@
 							theirArgs = genArgs;
 						}
 						exporters[base](...copyAll(theirArgs));
-					} else {
+					} else if (! exporters.partial) {
 						console.warn(`Cannot export field to ${slug}: no exporter matching any of ${bases}.`, args);
 					}
 				}

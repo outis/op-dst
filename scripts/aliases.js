@@ -313,6 +313,8 @@
 					_start() {
 						compatibility.exportField('powers_value', 'Arcanoi');
 					},
+					// prevent "Cannot export" warning
+					partial: true,
 				},
 			},
 
