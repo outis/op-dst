@@ -344,7 +344,7 @@
 		/* Volatile & UDFs are currently incompatible (as reordering changes field name, but localStorage isn't updated) */
 		update(eltField, value, name) {
 			name ??= this.name(eltField);
-			eltField.dataset.value = value;
+			eltField.dataset.value = value ?? '';
 			if (this.isVolatile(eltField)) {
 				name = this.sku(dsf.stripPrefix(name));
 				localStorage[name] = value;
