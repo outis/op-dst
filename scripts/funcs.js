@@ -137,6 +137,28 @@
 		return {breakString, halveString};
 	})();
 
+	/**
+	 * Apply methods of a collection of objects.
+	 *
+	 * Equivalent to the following, if it were valid in JS:
+	 *     obj[...keys][func](..args);
+	 *
+	 * @param {object} obj - Collection of objects.
+	 * @param {string[]} keys - Property names of <var>obj</var>.
+	 * @param {string} func - Method name.
+	 * @returns {mixed[]} Return values of each function, indexed by object name.
+	 */
+	function applyAll(obj, keys, func, args=[]) {
+		let results = [];
+		for (let key of keys) {
+			if (is_function(obj[key][func])) {
+				results[key] = obj[key][func](...args);
+				results.push(results[key]);
+			}
+		}
+		return results;
+	}
+
 	function callAll(obj, keys, func, ...args) {
 		let results = [];
 		for (let key of keys) {
