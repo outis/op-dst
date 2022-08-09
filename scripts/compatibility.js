@@ -76,9 +76,11 @@
 			//bindAll(this._aliases., this);
 			aliases.export.dst ??= {};
 			for (let [name, dst] of Object.entries(aliases.dst)) {
+				derefProperties(dst.import);
 				bindAll(dst.import, this);
 				Object.assign(aliases.import, dst.import);
 				if (dst.export) {
+					derefProperties(dst.export);
 					aliases.export.dst[name] = dst.export ?? { partial:true };
 				}
 				if (is_function(dst.override)) {
