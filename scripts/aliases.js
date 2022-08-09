@@ -776,6 +776,9 @@
 							compatibility.export.dynamicField(theirs, `${name}: ${value}`, {mine});
 						}
 					},
+
+					// handled via aliases, so NOOP
+					willpower() {},
 				}, // /export
 			}, // /old_wod_generic
 
