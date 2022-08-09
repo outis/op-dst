@@ -17,7 +17,7 @@ for req in $(ls *.js | sort --ignore-case) ; do
     reqs[$req]+=""
     # TODO:
     # * filter out matches in comments
-    # * pick up calls to `resettableGenerator(...)`
+    # * allow for optionally required modules ('@includes'?)
     for js in $(ack -il "^[^a-z]*requires? $req$|@requires? .*\\b$req\\b|\\b$req\\.[_a-z]|new $req|mixIn\\(\\w+, $req\\)") ; do
 	js=${js%.js}
 	#if [ "$js" != "$req" -a ! "${ignore[$js,$req]}" ] ; then

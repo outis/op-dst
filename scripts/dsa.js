@@ -2,6 +2,8 @@
 	 * Dynamic Sheet Attributes
 	 *
 	 * The DSA is the character data used as transport between the database and DST.
+	 *
+	 * @mixes nameGen
 	 */
 	let dsa = globals.dsa = {
 		_next: {},

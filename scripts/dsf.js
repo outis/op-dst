@@ -1,5 +1,7 @@
 	/***
 	 * Dynamic Sheet Fields
+	 *
+	 * @mixes nameGen
 	 */
 	let dsf = globals.dsf = {
 		/* DST event handlers */

@@ -158,9 +158,27 @@
 			return nPips + nExtra;
 		},
 
+		/**
+		 * Count pips up to the given pip.
+		 *
+		 * Differs from {@link this.demi.countPips} in that this method takes a pip, the other a pipped DSF.
+		 *
+		 * @param {HTMLElement} pip - Pip to count to.
+		 *
+		 * @returns {number}
+		 */
 		countPips: nodeIndex,
 
 		demi: {
+			/**
+			 * Serialized value for a demi-pipped DSF.
+			 *
+			 * Has the format 'v' or 'l / r', where 'l' represents the left demi-pips and 'r' the right. If 'l' and 'r' are the same, then only a single value is used ('v') with no '/' separator. Each is either a decimal number (which represents a count) or a hexadecimal number (which represtents a mask of which pips are filled).
+			 *
+			 * @typedef {string} DemiPip
+			 */
+
+			/* DSF event handlers */
 			init($context) {
 				this.clicker = this.clicked.bind(this);
 				this.marker = pips.marker;
@@ -168,6 +186,7 @@
 
 			postLoad(opts, $context) {},
 
+			/* */
 			assemble($elt) {
 				const nPips = 2 * pips.count($elt[0]);
 				for (let i = 0; i <= nPips; ++i) {
@@ -179,7 +198,11 @@
 			/**
 			 * Calculate the value for the given chirality of pips.
 			 *
+			 * Differs from {@link pips.countPips} in that this method takes a pipped DSF, the other a pip.
+			 *
 			 * @param {HTMLElement} elt The DSF node.
+			 *
+			 * @returns {number}
 			 */
 			countPips(elt, chirality, marker) {
 				marker ??= this.marker;
@@ -327,6 +350,10 @@
 			 * Returns a value representing the currently marked pips of <var>$elt</var>.
 			 *
 			 * Differs from the likes of {@link this.value}, {@link this.recalc} and {@link this.refresh} in that it doesn't change <var>$elt</var> and calculates the value by examining which pips are marked (rather than any stored value).
+			 *
+			 * @param {jQuery} $elt - demi-pipped DSF
+			 *
+			 * @returns {DemiPip}
 			 */
 			rating($elt) {
 				let left = this.countPips($elt, 'left'),
@@ -404,7 +431,7 @@
 			 * @param {string|number} left Mask or count of left pips.
 			 * @param {string|number} right Mask or count of right pips.
 			 *
-			 * @returns {string}
+			 * @returns {DemiPip}
 			 */
 			unparse(left, right) {
 				if (left == right) {
@@ -571,6 +598,9 @@
 			this.blockCurr(name, nPip);
 		},
 
+		/**
+		 * Enable editing.
+		 */
 		start() {
 			this.$context.find('input.dsf').prop('disabled', false);
 			/* delegated handler, to catch UDFs */
@@ -580,6 +610,9 @@
 			this.demi.start();
 		},
 
+		/**
+		 * Disable editing.
+		 */
 		stop() {
 			this.$context.find('.mll_sheet')
 				.off('click', '.pips:not(.current) > span', this.clicker);

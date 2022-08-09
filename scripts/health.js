@@ -1,6 +1,8 @@
 	/**
 	 * Extra functionality for health:
 	 * + More extensive damage types.
+	 *
+	 * @mixes resolver
 	 */
 	var health = globals.health = {
 		classes: {

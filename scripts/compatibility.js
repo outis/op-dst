@@ -212,6 +212,17 @@
 				this.export.generic('equipment', ...arguments);
 			},
 
+			/**
+			 * Export a value to a foreign DSF and mark it as a dynamic DSF.
+			 *
+			 * DSFs are marked as dynamic with the 'dyn' class.
+			 *
+			 * Calls {@link this.exportField}.
+			 *
+			 * @param {string} theirs - DSF name ('dsf_' prefix is optional).
+			 * @param {*} value - Value to store in DSF.
+			 * @param {object} [extra] - Keyword parameters for {@link this.createField}.
+			 */
 			dynamicField(theirs, value, extra={}) {
 				if (extra.classes) {
 					extra.classes += 'dyn';
@@ -221,6 +232,29 @@
 				return this.exportField(theirs, value, extra);
 			},
 
+			/**
+			 * Export a dynamic DSF with a generated name.
+			 *
+			 * This method is for exporting dynamic foreign DSFs without the caller specifying the exact field name. Instead, the caller provides a name template that is used to generate an unused name by {@link dsf.nextName}.
+			 *
+			 * Note that this method only works on a single DSF that has no related DSFs, as each time the new name is generated with a higher index. If this method were called for related DSFs, each created DSF would have different indices. An example of how this can result in bugs:
+			 *
+			 *     foo = [
+			 *        {name: 'Bar'},
+			 *        {name: 'Baz', description: 'The bazzest.'},
+			 *     ];
+			 *     // the following will export foo[1].description as 'foo_0_description'
+			 *     for (let [i, field] of foo.entries()) {
+			 *         for (let [key, value] of Object.entries(field)) {
+			 *             compatibility.export.field('foo_{i}_name', value, `dyn_baz_${i+1}_${key}`);
+			 *         }
+			 *     }
+			 *
+			 * @param {string} theirs - DSF name template ('dsf_' prefix is optional).
+			 * @param {*} value - Value to store in DSF.
+			 * @param {string} [mine] - Native DSF(s) being exported.
+			 * @param {object} [options] - Keyword parameters for {@link this.createField}.
+			 */
 			field(name, value, mine, options={}) {
 				if (! options && is_object(mine)) {
 					options = mine;
@@ -249,6 +283,16 @@
 				this.export.simple(base ?? mine, `${curr} / ${perm}`);
 			},
 
+			/**
+			 * Export to a dynamic field with multiple DSFs.
+			 *
+			 * Properties of <var>names</var> and <var>values</var> with the same keys are paired. This method generates names for the fields, then exports to a DSF for each `name[key], value[key]` pair.
+			 *
+			 * @param {object} names - Foreign DSF name templates.
+			 * @param {object} values - DSF values.
+			 * @param {string} [mine] - Native DSFs that were the source of the values.
+			 * @param {object} [options] - Options for {@link dsf.nextName}
+			 */
 			paired(names, values, mine, options={}) {
 				if (! options && is_object(mine)) {
 					options = mine;
@@ -1086,6 +1130,21 @@
 				&& slug_a.replace(reEd, '') == slug_b.replace(reEd, '');
 		},
 
+		/**
+		 * Create a DSF for a foreign sheet if it doesn't exist.
+		 *
+		 * If a DSF already exists with the given name <var>theirs</var>, this method:
+		 * + marks it as the foreign DSF for native DSF <var>mine</var>
+		 * + adds classes (if any)
+		 *
+		 * @param {string} theirs - Foreign DSF name ('dsf_' prefix is optional).
+		 * @param {object} [extra] - Keyword arguments
+		 * @param {string} [mine] - Native DSF(s) being exported.
+		 * @param {string} [extra.attrs] - Additional attributes for the DSF element.
+		 * @param {string} [extra.classes] - Additional HTML classes for the DSF element.
+		 *
+		 * @returns {jQuery} The foreign DSF.
+		 */
 		createField(theirs, {mine, attrs='', classes=''}={}) {
 			theirs = dsf.addPrefix(theirs);
 			if (mine) {
@@ -1406,8 +1465,14 @@
 				if ($elt.length) {
 					fn(dsf.value(elt));
 				} else if (($elt = udfs.$udf(base)).length) {
-					// TODO: behavior-skip more general exporters when there's a more specific exporter
+					/* TODO:
+					 * + behavior-skip more general exporters when there's a more specific exporter
+					 * + skip related fields (e.g. BGs for equipment)
+					 */
 					for (let entry of udfs.entries($elt)) {
+						/* TODO:
+						 * + figure out way of passing UDF base (e.g. 'skills') for section exporters (e.g. 'abilities')
+						 */
 						fn(entry.names, entry.values);
 					};
 				}
@@ -1460,6 +1525,15 @@
 			}
 		},
 
+		/**
+		 * Create a field and set its value.
+		 *
+		 * Note that this method can be called for dynamic fields, but the field name must be fully generated; as far as this method is concerned, the field name is static.
+		 *
+		 * @param {string} theirs - DSF name ('dsf_' prefix is optional).
+		 * @param {*} value - Value to store in DSF.
+		 * @param {object} [extra] - Keyword parameters for {@link this.createField}.
+		 */
 		exportField(theirs, value, extra={}) {
 			this.createField(theirs, extra);
 			dsf.value(theirs, value);

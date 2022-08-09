@@ -134,7 +134,7 @@ function readscript($path) {
 	readfile($path);
 	return;
 	*/
-	
+
 	if (($script = fopen($path, 'r'))) {
 		while (($line = fgets($script)) !== FALSE) {
 			do {
@@ -231,12 +231,12 @@ function include_modules($modules) {
 		pippedKinds = ['attributes', 'abilities', 'advantages', 'arcanoi'];
 
 
-	
+
 	<?php
 	foreach ($required as $module => $_) {
 		readscript("scripts/${module}.js");
 	}
-	
+
 	$modules = get_modules();
 	$included = include_modules($modules);
 	?>
@@ -271,7 +271,7 @@ function include_modules($modules) {
 			curr_willpower: 'perm_willpower',
 		};
 	}
-	
+
 	function edit() {
 		pips.start();
 		udfs.start();
@@ -311,7 +311,7 @@ function include_modules($modules) {
 
 	listeners.PostLoad = function dataPostLoad(opts) {
 		module.all('postLoad', opts, $context);
-		
+
 		if (opts.isEditable) {
 			edit();
 		} else {
@@ -323,7 +323,7 @@ function include_modules($modules) {
 		let dsfName = dsf.addPrefix(opts.fieldName);
 
 		module.all('change', opts, $context);
-		
+
 		if (dsf.linked.isExtra(opts.fieldName)) {
 			let base = dsf.linked.base(opts.fieldName),
 				$base = $(`.dsf.pips.${base}`);
@@ -343,7 +343,7 @@ function include_modules($modules) {
 			window[`${slug}_data${evt}`] = listeners[evt];
 		}
 	}
-	
+
 	if (slug) {
 		registerListeners();
 	} else {
@@ -355,7 +355,7 @@ function include_modules($modules) {
 			}
 		});
 	}
-	
+
 	// for debugging
 	window.mll_sheet = $.extend(window.mll_sheet ?? {}, globals);
 	window.mll_sheet.module = module;

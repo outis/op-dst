@@ -1,10 +1,27 @@
 	/**
-	 * Mixin.
+	 * Generate a name for an item that doesn't yet exist.
+	 *
+	 * The primary method, {@link this.nameGen}, scans existing items (checking with {@link this.exists}) until it finds an index not yet used, and returns the name for that index.
+	 *
+	 * Client objects must supply an {@link this.exists} method.
+	 *
+	 *
+	 * @mixin
 	 */
 	let nameGen = {
 		count(tpl) {
 			return this.last(tpl).i;
 		},
+
+		/**
+		 * @function exists
+		 *
+		 * Report whether an item with the given name exists.
+		 *
+		 * @param {string} name - Item name to check.
+		 *
+		 * @returns boolean
+		 */
 
 		/**
 		 * Get the last name & index from the item matching the given name template.
@@ -36,6 +53,14 @@
 			return {name, i};
 		},
 
+		/**
+		 * Return an index for the next available (i.e. non-existent) item.
+		 *
+		 * @param {string} tpl - Name template. Must include an '{i}' variable.
+		 * @param {string} [start] - starting index for scanning.
+		 *
+		 * @returns number
+		 */
 		next(tpl, start=1) {
 			return start + this.count(tpl);
 		},
@@ -52,6 +77,8 @@
 		 * Note that only the first template is used when searching for existing items, so be sure to pass one that will be present for all items.
 		 *
 		 * @param {string[]|object} tpls - Name templates.
+		 * @param {object} [options] - Keyword arguments.
+		 * @param {number} [options.start=1] - Index to start scanning from.
 		 */
 		nextName(...tpls) {
 			let i, opts = {start:1},

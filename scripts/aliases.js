@@ -856,7 +856,10 @@
 
 				export: {
 					// nWoD Reloaded!
-					// TODO: check that createTemplatedFields doesn't create any fields that are handled by compatibility.export.paired
+					/* TODO:
+					 * + check that createTemplatedFields doesn't create any fields that are handled by compatibility.export.paired
+					 * + export ability specialties (replace template alias?)
+					 */
 
 					_flavor(names, values) {
 						compatibility.export.flavor(
@@ -979,7 +982,7 @@
 
 					passions: 'splat',
 
-					// TODO: investigate "Object" values it traits_*_{i}
+					// TODO: investigate "Object" values in traits_*_{i}
 					splat(name, value, mine, opts={}) {
 						/** /
 						this.simple(names.value, values.name, values.value, opts);
