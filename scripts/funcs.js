@@ -213,7 +213,7 @@
 	 *     obj.bar(); // 'foobar'
 	 */
 	function derefProperties(obj) {
-		for (let [name, value] of Object.entries(obj)) {
+		for (let [name, value] of Object.entries(obj ?? {})) {
 			while (value in obj) {
 				value = obj[name] = obj[value];
 			}
