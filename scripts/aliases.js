@@ -293,7 +293,8 @@
 		 * Ultimately, these functions should add DSFs to the sheet (as children of {@link compatibility.$aliases}) and set their values, which can be done with the likes of:
 		 * + {@link compatibility.export.all}
 		 * + {@link compatibility.export.dynamicField}
-		 * + {@link compatibility.export.exportField}
+		 * + {@link compatibility.export.field}
+		 * + {@link compatibility.exportField}
 		 *
 		 */
 		dst: {
@@ -310,7 +311,7 @@
 			cWoD_Revised: {
 				export: {
 					_start() {
-						compatibility.export.exportField('powers_value', 'Arcanoi');
+						compatibility.exportField('powers_value', 'Arcanoi');
 					},
 				},
 			},
