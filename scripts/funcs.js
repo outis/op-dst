@@ -143,7 +143,7 @@
 	 * Equivalent to the following, if it were valid in JS:
 	 *     obj[...keys][func](..args);
 	 *
-	 * Different from {@link callAll} in that this takes an array for arguments, while the other is variadic in <var>args</var>.
+	 * Different from {@link callForAll} in that this takes an array for arguments, while the other is variadic in <var>args</var>.
 	 *
 	 * @param {object} obj - Collection of objects.
 	 * @param {string[]} keys - Property names of <var>obj</var>.
@@ -152,7 +152,7 @@
 	 *
 	 * @returns {*[]} Return values of each function, indexed by object name.
 	 */
-	function applyAll(obj, keys, func, args=[]) {
+	function applyForAll(obj, keys, func, args=[]) {
 		let results = [];
 		for (let key of keys) {
 			if (is_function(obj[key][func])) {
@@ -169,7 +169,7 @@
 	 * Equivalent to the following, if it were valid in JS:
 	 *     obj[...keys][func](..args);
 	 *
-	 * Different from {@link applyAll} in that this is variadic in <var>args</var>, while the other takes an array for arguments.
+	 * Different from {@link applyForAll} in that this is variadic in <var>args</var>, while the other takes an array for arguments.
 	 *
 	 * @param {object} obj - Collection of objects.
 	 * @param {string[]} keys - Property names of <var>obj</var>.
@@ -178,7 +178,7 @@
 	 *
 	 * @returns {*[]} Return values of each function, indexed by object name.
 	 */
-	function callAll(obj, keys, func, ...args) {
+	function callForAll(obj, keys, func, ...args) {
 		let results = [];
 		for (let key of keys) {
 			if (is_function(obj[key][func])) {
