@@ -521,6 +521,10 @@
 				return parsed;
 			},
 
+			static(parsed, names) {
+				dsa.data[parsed.base ?? parsed.type ?? parsed.name] = parsed.value;
+			},
+
 			stream(values, names) {
 				dsa.getAll(names, values);
 				let parsed = this.parse.stream(values);

@@ -138,6 +138,20 @@
 	})();
 
 	/**
+	 * Apply a collection of functions, returning non-`undefine`d results.
+	 *
+	 * Different from {@link callAllFunctions} in that this is variadic in <var>args</var>, while the other takes an array for arguments.
+	 *
+	 * @param {Function[]} funcs - functions to call
+	 * @param {*[]} [args] - arguments to pass to functions
+	 *
+	 * @returns {*[]}
+	 */
+	function applyAllFunctions(funcs, args) {
+		return funcs.map(f => f(...args)).filter(r => ! is_undefined(r));
+	}
+
+	/**
 	 * Apply methods of a collection of objects.
 	 *
 	 * Equivalent to the following, if it were valid in JS:
@@ -161,6 +175,20 @@
 			}
 		}
 		return results;
+	}
+
+	/**
+	 * Call a collection of functions, returning non-`undefine`d results.
+	 *
+	 * Different from {@link applyAllFunctions} in that this is variadic in <var>args</var>, while the other takes an array for arguments.
+	 *
+	 * @param {Function[]} funcs - functions to call
+	 * @param {*[]} [args] - arguments to pass to functions
+	 *
+	 * @returns {*[]}
+	 */
+	function callAllFunctions(funcs, ...args) {
+		return funcs.map(f => f(...args)).filter(r => ! is_undefined(r));
 	}
 
 	/**
@@ -339,6 +367,19 @@
 			Object.assign(result, mapped);
 		}
 		return result;
+	}
+
+	/**
+	 * Picks properties from an object based on property names.
+	 *
+	 * Similar to {@link filterObject}, but filters by selecting properties that match the given names.
+	 *
+	 * @param {string[]} keys - Property names to retrieve.
+	 *
+	 * @returns {Object}
+	 */
+	function pickObject(obj, keys) {
+		return Object.fromEntries(keys.map(k => [k, obj[k]]));
 	}
 
 	/**
