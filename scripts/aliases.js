@@ -926,26 +926,35 @@
 					},
 
 					equipment(names, values) {
-						let theirs = dsf.nextName('equipment_name_{i:02}', {start:0}),
-							line = [];
+						let line = [],
+							theirs = {
+								name: 'equipment_name_{i:02}',
+								description: 'equipment_tootip_{i:02}'
+							},
+							theirValues = {};
 						if (values.type) {
 							line.push(`${values.type}: `);
 						}
-						line.push(`${values.name}`);
-						if (values.description) {
-							line.push(` (${values.description})`);
-						}
-						line.push(`: `);
+						line.push(`${values.name}: `);
 						if (values.points) {
 							line.push(`${values.points}`);
 							if (values.charge) {
 								line.push('; ');
 							}
 						}
+						// TODO: evaluate whether this format will allow charge to be correctly reimported (after switching to NWoD Reloaded! and back) if points is missing
 						if (values.charge) {
 							line.push(`${values.charge}`);
 						}
-						compatibility.export.dynamicField(theirs, line.join(''), compatibility.aliasFor(names));
+						theirValues.name = line.join('');
+						if (values.description) {
+							theirValues.description = values.description;
+						} else {
+							delete theirs.description;
+						}
+						compatibility.export.paired(
+							theirs, theirValues,
+							compatibility.aliasFor(names), {start:0});
 					},
 
 					flaws(names, values) {
