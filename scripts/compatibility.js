@@ -1534,7 +1534,13 @@
 			for (let [tpl, fn] of Object.entries(this.aliases.import)) {
 				let {envs, options} = this.loopVars(tpl);
 				for (let [name, value, env] of dsa.entries(tpl, envs)) {
-					fn.call(this, name, value, env);
+					try {
+						fn.call(this, name, value, env);
+					} catch (err) {
+						console.error(`Error importing ${name} (${value}): ${err}`);
+						// let import continue with other fields
+						//throw err;
+					}
 				}
 			}
 
