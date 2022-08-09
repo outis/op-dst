@@ -137,11 +137,11 @@
 		return {breakString, halveString};
 	})();
 
-	function callAll(obj, keys, func, args) {
+	function callAll(obj, keys, func, ...args) {
 		let results = [];
 		for (let key of keys) {
 			if (is_function(obj[key][func])) {
-				results[key] = obj[key][fun](...args);
+				results[key] = obj[key][func](...args);
 				results.push(results[key]);
 			}
 		}
