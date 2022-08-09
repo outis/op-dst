@@ -744,8 +744,8 @@
 						this._addTheirItem(base, args[1] ?? args[0]);
 					},
 
-					health(names, values) {
-						compatibility.exportField('humanity_value', values.value, {mine: 'health'});
+					health(name, value) {
+						compatibility.exportField('humanity_value', values.value ?? value, {mine: 'health'});
 					},
 
 					merits(names, values) {
@@ -756,7 +756,7 @@
 						this._addTheirItem('passions', values, names);
 					},
 
-					simple(mine, name, value) {
+					simple(name, value, mine) {
 						let theirs = dsf.nextName({name: 'other_trait_{i}', value: 'other{i}_value'});
 
 						if (theirs.i <= 7) {
@@ -967,14 +967,13 @@
 					passions: 'splat',
 
 					// TODO: investigate "Object" values it traits_*_{i}
-					splat(mine, name, value, opts={}) {
+					splat(name, value, mine, opts={}) {
 						/** /
 						this.simple(names.value, values.name, values.value, opts);
 						/*/
-						if (! value && is_object(mine)) {
+						if (! mine && is_object(name)) {
 							/* (names, values) */
-							mine = mine.value;
-							({name, value} = name);
+							[{name, value}, mine] = [value, name.value];
 						}
 						let theirs = {
 							name: 'traits_type_{i:02}',
@@ -992,7 +991,7 @@
 						*/
 					},
 
-					simple(mine, name, value, opts={}) {
+					simple(name, value, mine, opts={}) {
 						/** /
 						let theirs = {
 							name: 'traits_type_{i:02}',
@@ -1002,7 +1001,7 @@
 							theirs, {name, value}, mine, {...opts, start:0}
 						);
 						/*/
-						this.splat(mine, name, value, opts);
+						this.splat(name, value, mine, opts);
 						/**/
 					},
 

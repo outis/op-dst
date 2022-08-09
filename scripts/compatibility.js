@@ -267,7 +267,7 @@
 				if (Array.isArray(name)) {
 					name = name[0];
 				}
-				this.export.each([mine, 'simple'], mine, name, value);
+				this.export.each([mine, 'simple'], name, value, mine);
 			},
 		},
 
