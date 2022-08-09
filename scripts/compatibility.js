@@ -1001,6 +1001,9 @@
 						} else {
 							continue;
 						}
+						if (bases[0] == bases[1]) {
+							bases.pop();
+						}
 						let exporter = function () {
 							// Woo-hoo! let
 							this.export.each(bases, ...arguments);
