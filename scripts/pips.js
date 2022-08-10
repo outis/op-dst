@@ -352,12 +352,13 @@
 			 * Differs from the likes of {@link this.value}, {@link this.recalc} and {@link this.refresh} in that it doesn't change <var>$elt</var> and calculates the value by examining which pips are marked (rather than any stored value).
 			 *
 			 * @param {jQuery} $elt - demi-pipped DSF
+			 * @param {string} [marker=this.marker] - HTML class for filled pips
 			 *
 			 * @returns {DemiPip}
 			 */
-			rating($elt) {
-				let left = this.countPips($elt, 'left'),
-					right = this.countPips($elt, 'right');
+			rating($elt, marker) {
+				let left = this.countPips($elt, 'left', marker),
+					right = this.countPips($elt, 'right', marker);
 				return this.unparse(left, right);
 			},
 
