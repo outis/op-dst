@@ -1030,6 +1030,7 @@
 		/* DST event handlers */
 		init($context) {
 			this.$context = $context;
+			module.waitFor('dsf');
 			if (! dsf.exists('last_dst')) {
 				this.$sheet.append($('<span class="hidden dsf dsf_last_dst"></span>'));
 			}
