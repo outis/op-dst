@@ -550,6 +550,22 @@
 			}
 		},
 
+		/**
+		 * Calculate the value for the given pipped DSF.
+		 *
+		 * @param {jQuery} $elt - pipped DSF
+		 * @param {string} [marker=this.marker] - HTML class for filled pips
+		 *
+		 * @returns {number}
+		 */
+		rating($elt, marker) {
+			if (this.demi.is($elt)) {
+				return this.demi.rating($elt);
+			}
+			marker ??= this.marker;
+			return $elt.find(`.${marker}`).length;
+		},
+
 		ready(fn) {
 			if (this.postLoad.done) {
 				fn.bind(this)();
