@@ -463,7 +463,9 @@
 		},
 
 		exists(name, $context) {
-			return ($context ?? this.$context).find(`.${name} .udf`).length;
+			if (name) {
+				return ($context ?? this.$context).find(`.${name} .udf`).length;
+			}
 		},
 
 		/**

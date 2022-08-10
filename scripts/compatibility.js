@@ -737,7 +737,10 @@
 			categorize(token, categories) {
 				let type = this.normalize(token),
 					base = words.pluralize(type);
-
+				// edge case: token is possessive suffix "'s"
+				if (! type) {
+					return;
+				}
 				// TODO? include token in result?
 				if (base in categories) {
 					return {parser:base, base};
