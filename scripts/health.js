@@ -155,7 +155,8 @@
 		},
 
 		markDamaged($pips, state) {
-			$pips.addClass(state)
+			$pips.removeClass(this.classes.all)
+				.addClass(state)
 				.attr('title', this.labels[state || 'B']);
 		},
 
