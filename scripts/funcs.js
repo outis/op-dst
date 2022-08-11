@@ -382,6 +382,72 @@
 		return Object.fromEntries(keys.map(k => [k, obj[k]]));
 	}
 
+
+	/**
+	 * Run code that awaits this function before the next repaint.
+	 *
+	 * Async version of `requestAnimationFrame()`. Helps you avoid callback hell. Note that since this only guarantees to run following code before the next repaint, if you need to separate two pieces of code by a frame, this can't guarantee that; instead, use {@link animationPost()}.
+	 *
+	 * @yields {DOMHighResTimeStamp} resumption time
+	 */
+	function animationFrame() {
+		return new Promise(resolve => {
+			let reqId = requestAnimationFrame((...args) => {
+				resolve(...args);
+			});
+		});
+	}
+	globals.animationFrame = animationFrame;
+
+	/**
+	 * Ensures at least one animation frame occurs before continuing.
+	 *
+	 * Asynchronous; you must await this function.
+	 */
+	function animationPost() {
+		return new Promise(resolve => {
+			requestAnimationFrame(() => {
+				// could also use `await wait(0)`
+				setTimeout(resolve, 0);
+			});
+		});
+	}
+	globals.animationPost = animationPost;
+
+	/**
+	 * Await an event.
+	 *
+	 * Async equivalent to a one-time event handler.
+	 *
+	 * @param {HTMLElement | jQuery} elt - elements to listen for event on
+	 * @param {string} name - event name
+	 * @param {string} [selector] - selector to filter the descendents of <var>elt</var> that trigger the event
+	 * @param {*} [data] - data to be passed via event.data
+	 *
+	 * @yields event
+	 */
+	function waitOn(elt, name, selector, data) {
+		let $elt = $(elt);
+		return new Promise(resolve => {
+			$elt.one(name, selector, data, resolve);
+		});
+	}
+	globals.waitOn = waitOn;
+
+	/**
+	 * Wait for the given number of milliseconds.
+	 *
+	 * Async version of `setTimeout()`.
+	 *
+	 * @param {number} time - Time to wait, in milliseconds.
+	 */
+	function wait(time) {
+		return new Promise(resolve => {
+			setTimeout(resolve, time);
+		});
+	}
+	globals.wait = wait;
+
 	/**
 	 */
 	function memoize(f) {
@@ -534,6 +600,9 @@
 		};
 		return this.pushStack($candidates);
 		//return $candidates;
+	};
+	$.fn.waitOn = async function (name) {
+		await waitOn(this, name);
 	};
 
 	if ($.event.fixHooks) {
