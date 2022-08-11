@@ -212,6 +212,7 @@ function include_modules($modules) {
 	?>
 	for (let name in modules) {
 		if (name in globals && 'object' == typeof(globals[name])) {
+			modules[name] = globals[name];
 			module.register(name, globals[name]);
 			if ('updaters' in globals[name]) {
 				version.registerModule(globals[name]);
