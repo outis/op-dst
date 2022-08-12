@@ -4,6 +4,7 @@
 	let pips = globals.pips = {
 		reDemi: /(?<left>(?<lmask>0x)?[\dA-F]+) *\/ *(?<right>(?<rmask>0x)?[\dA-F]+)/i,
 		marker: 'X',
+		blocked: 'D',
 
 		/* DST event handlers */
 		init($context) {
@@ -91,11 +92,12 @@
 		},
 
 		/* Mark pips as being "blocked" off. */
-		block($elt, value) {
+		block($elt, value, blocker) {
+			blocker ??= this.blocked;
 			value = +value;
 			const $pips = $elt.find('span');
-			$pips.slice(1, value+1).removeClass('D');
-			$pips.slice(value+1).addClass('D');
+			$pips.slice(1, value+1).removeClass(blocker);
+			$pips.slice(value+1).addClass(blocker);
 		},
 
 		/* Mark current pips beyond permanent pips as "blocked". */
