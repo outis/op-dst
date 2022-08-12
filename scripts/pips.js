@@ -65,11 +65,16 @@
 		 * @param {jQuery} $elt DSF containing pips.
 		 * @param {int} delta Amount to change pips by.
 		 */
-		adjust($elt, delta) {
+		adjust($elt, delta, blocker) {
 			const $kids = $elt.children();
 			if (delta > 0) {
+				let attrs='';
+				blocker ??= this.blocked;
+				if (dsf.linked.isCurr(dsf.name($elt))) {
+					attrs = ` class="${blocker}"`;
+				}
 				for (let i = 0; i < delta; ++i) {
-					$elt.append($(`<span></span>`));
+					$elt.append($(`<span${attrs}></span>`));
 				}
 				this.refresh($elt);
 			} else if (delta < 0) {
