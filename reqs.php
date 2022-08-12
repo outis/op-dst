@@ -7,6 +7,7 @@ $requires = [
 	'authorize' => [ ],
 	'compatibility' => [ 'aliases', 'dsa', 'dsf', 'klass', 'module', 'range', 'ShorthandDict', 'udfs', 'words', ],
 	'deluxe' => [ 'abilities', 'edition', 'editor', 'health', 'notes', 'tabs' ],
+	'demipips' => [ 'dsf', 'pips', ],
 	'dsa' => [ 'klass', 'nameGen', ],
 	'dsf' => [ 'klass', 'nameGen', ],
 	'edition' => [ 'dsa', 'dsf', 'klass', 'module', 'pips', 'range', 'udfs', ],
