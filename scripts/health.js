@@ -54,6 +54,10 @@
 			}
 		},
 
+		get $details() {
+			return dsf.$dsf('health_details');
+		},
+
 		/* DST event handlers */
 		init($context) {
 			this.$context = $context;
@@ -107,7 +111,7 @@
 				this.heal(evt.target);
 				pips.clicker(evt);
 			}
-			dsf.update(dsf.$dsf('health_details')[0], this.details, 'health_details');
+			dsf.update(this.$details[0], newDetails, 'health_details');
 		},
 
 		damage(pip) {
