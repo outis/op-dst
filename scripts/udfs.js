@@ -74,7 +74,7 @@
 		 */
 		_appendItem(eltList, item) {
 			$(eltList).append(item);
-			$(eltList).trigger('mll.udfs.add', item);
+			$(eltList).trigger('add.mll.udfs', item);
 		},
 
 		/**
