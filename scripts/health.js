@@ -184,6 +184,7 @@
 					this.markDamaged($pips.eq(i+1), classer(details[i]));
 				}
 			}
+			dsf.update(this.$details[0], details, 'health_details');
 		},
 
 		setClassDetails(details, $pips) {
