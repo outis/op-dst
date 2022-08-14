@@ -42,11 +42,11 @@
 		set details(details) {
 			let $pips = this.$health.children();
 			switch (this.classifyDetails(details)) {
-			case 'class':
+			case 'letter':
 				this.setClassDetails(details, $pips);
 				break;
-			case 'marked':
-				this.setMarkedDetails(details, $pips);
+			case 'symbol':
+				this.setSymbolDetails(details, $pips);
 				break;
 			default:
 				console.error(`Could not parse health details: '${details}'`);
@@ -95,10 +95,10 @@
 
 		classifyDetails(details) {
 			if (/[BLA]+|^(X* *)$/.test(details)) {
-				return 'class';
+				return 'letter';
 			}
 			if (/[*\/]+|^ +x/i.test(details)) {
-				return 'marked';
+				return 'symbol';
 			}
 			return;
 		},
@@ -191,7 +191,7 @@
 			this._setDetails(details, $pips, x => x);
 		},
 
-		setMarkedDetails(details, $pips) {
+		setSymbolDetails(details, $pips) {
 			this._setDetails(details, $pips, x => this.classes[x]);
 		},
 
