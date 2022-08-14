@@ -179,10 +179,20 @@
 
 		_setDetails(details, $pips, classer) {
 			classer ??= x => x;
+			let collisions = [], iCollisions = [], collision = false;
 			for (let i = 0; i < details.length; ++i) {
+				let mark = classer(details[i]);
 				if (! pips.isMarked($pips[i+1])) { //  ' ' !== details[i]
-					this.markDamaged($pips.eq(i+1), classer(details[i]));
+					this.markDamaged($pips.eq(i+1), mark);
+					collisions[i] = ' ';
+				} else if (' ' != mark) {
+					collision = true;
+					collisions[i] = mark;
+					iCollisions.push(i);
 				}
+			}
+			if (collision) {
+				console.warn(`Some undamaged pips are marked for damage: ${iCollisions}; '${collisions.join("")}'. Ignoring damage markers.`);
 			}
 			dsf.update(this.$details[0], details, 'health_details');
 		},
