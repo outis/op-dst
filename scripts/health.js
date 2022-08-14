@@ -15,7 +15,7 @@
 			// alternate string markers
 			' ': 'X',
 			'/': ' ',
-			'X': 'L',
+			'x': 'L',
 			'*': 'A',
 		},
 		labels: {
@@ -97,7 +97,7 @@
 			if (/[BLA]+|^(X* *)$/.test(details)) {
 				return 'class';
 			}
-			if (/[*\/]+|^ +X/.test(details)) {
+			if (/[*\/]+|^ +x/i.test(details)) {
 				return 'marked';
 			}
 			return;
