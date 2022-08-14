@@ -5,6 +5,26 @@
 	 * @mixes resolver
 	 */
 	var health = globals.health = {
+		/**
+		 * Detailed damage types, encoded as a string.
+		 *
+		 * Each character index corresponds to a pip index; each character specifies a type of damage. There are two types of damage specifiers: symbols and letters. Symbols are:
+		 *    '/': bashing
+		 *    'x': lethal
+		 *    '*': aggravated
+		 *
+		 * Letters use the first letter of each damage type. Spaces indicate no damag; with letters, 'X' can also indicate a filled-in (i.e. undamaged) pip.
+		 *
+		 * Letters are used internally, and are the preferred format.
+		 *
+		 * @typedef {string} DamageMarks
+		 *
+		 * Changes to length.
+		 *
+		 * @typedef {Object} LengthChange
+		 * @property {number} length - new length
+		 * @property {number} delta - how much the length is changing by
+		 */
 		classes: {
 			// 'B' is there so it can be removed
 			all: 'L A B',
@@ -58,6 +78,11 @@
 			return dsf.$dsf('health_details');
 		},
 
+		get length() {
+			// -1 for clear box
+			return this.$health.children().length - 1;
+		},
+
 		/* DST event handlers */
 		init($context) {
 			this.$context = $context;
@@ -80,6 +105,8 @@
 				this.$context.redelegate('click', '.pips.current > span', '.pips.current:not(.health) > span');
 				this.$context.on('click', '.page.stats .pips.health.current > span', this.clicker);
 			}
+			this.adjuster = this.adjusted.bind(this);
+			this.$health.on('adjust.pips', this.adjuster);
 
 			const details = dsf.override('health_details', dsa.data.health_details);
 			if (details) {
@@ -92,6 +119,10 @@
 		},
 
 		/* */
+
+		adjusted(evt, change) {
+			this.tamp(change);
+		},
 
 		classifyDetails(details) {
 			if (/[BLA]+|^(X* *)$/.test(details)) {
@@ -112,6 +143,23 @@
 				pips.clicker(evt);
 			}
 			dsf.update(this.$details[0], newDetails, 'health_details');
+		},
+
+		/**
+		 * Fit a damage detail string into the given length by shortening if necessary.
+		 *
+		 * Conditionally {@link this.repack repack}s the given string, doing so only if the new length is smaller than the current length.
+		 *
+		 * @param {DamageMarks} details - detailed damage types for pips
+		 * @param {LengthChange} change - changes to length
+		 *
+		 * @returns {string}
+		 */
+		compact(details, change) {
+			if (change.delta < 0) {
+				return this.repack(details, change);
+			}
+			return details;
 		},
 
 		damage(pip) {
@@ -175,6 +223,81 @@
 
 		nextStateIndex(iState) {
 			return (iState + 1) % this.classes.sequence.length;
+		},
+
+		normalizeDetails(details) {
+			if ('symbol' == this.classifyDetails(details)) {
+				return details.replace(/[*\/]/, m => this.classes[m]);
+			}
+			return details;
+		},
+
+		/**
+		 * Reorder marks and shorten a damage detail string.
+		 *
+		 * If the length of the string already fits into the given length, nothing is done. Otherwise, fits a damage detail string into the given length by removing non-marks. Also {@link this.rerank reranks} the marks.
+		 *
+		 * @param {DamageMarks} details - detailed damage types for pips
+		 * @param {LengthChange} change - changes to length
+		 *
+		 * @returns {string}
+		 */
+		realign(details, {length, delta}) {
+			if (delta < 0) {
+				return this.rerank(details).padStart(length);
+			} else {
+				return this.normalizeDetails(details);
+			}
+		},
+
+		/**
+		 * Resize a string of damage markers, placing marks at end.
+		 *
+		 * Fits a damage detail string into the given length by shifting marks to the end of the string and padding (or trimming, as necessary) with blanks.
+		 *
+		 * @param {DamageMarks} details - detailed damage types for pips
+		 * @param {LengthChange} change - changes to length
+		 *
+		 * @returns {string}
+		 */
+		repack(details, {length, delta}) {
+			return details.replace(/ +/g, '').padStart(length);
+		},
+
+		/**
+		 * Reorder marks by severity, placing more severe marks later.
+		 *
+		 * Also {@link this.normalizeDetails converts} marks to letter notation.
+		 *
+		 * @param {DamageMarks} details - detailed damage types for pips
+		 *
+		 * @returns {string}
+		 */
+		rerank(details) {
+			details = this.normalizeDetails(details);
+			let nMark = {'L': 0, 'A': 0};
+			for (let m of details) {
+				++nMark[m];
+			}
+			delete nMark.B;
+			details = '';
+			for (let [mark, nMarks] of Object.entries(nMark)) {
+				details += mark.repeat(nMarks);
+			}
+			return details;
+		},
+
+		/**
+		 * Move damage markers to fit if a pipped field shrinks.
+		 *
+		 * @param {LengthChange} change
+		 */
+		tamp(change) {
+			const details = dsf.value(this.$details),
+				  newDetails = this.compact(details, change);
+			if (newDetails !== details) {
+				this.details = newDetails;
+			}
 		},
 
 		_setDetails(details, $pips, classer) {

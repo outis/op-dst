@@ -64,7 +64,10 @@
 		 */
 		adjust($elt, delta, blocker) {
 			const $kids = $elt.children();
+			// -1 for clear box
+			let length = $kids.length - 1;
 			if (delta > 0) {
+				length += delta;
 				let attrs='';
 				blocker ??= this.blocked;
 				if (dsf.linked.isCurr(dsf.name($elt))) {
@@ -76,9 +79,12 @@
 				this.refresh($elt);
 			} else if (delta < 0) {
 				// don't remove 1st child
-				delta = Math.max(delta, 1-$kids.length);
-				$kids.slice($kids.length + delta).remove();
+				delta = Math.max(delta, -length);
+				length += delta;
+				// 1 for clear box
+				$kids.slice(length + 1).remove();
 			}
+			$elt.trigger('adjust.pips', {length, delta});
 		},
 
 		assemble($elt) {
