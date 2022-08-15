@@ -32,18 +32,14 @@
 			if (! opts.sticky) {
 				//duration ||= this.duration(msg) ?? this.defaultDuration;
 				duration || (duration = this.duration(msg) || this.defaultDuration);
-				$alert.data('timer', setTimeout(
-					() => this.fadeAlert($alert),
-					duration * 1000));
+				transitions.after($alert, duration).then(async () => this.fadeAlert($alert));
 			}
 			return $alert;
 		},
 
 		cancelFade($alert) {
-			clearTimeout($alert.data('timer'));
-			$alert.css({transition: 'none'})
-				.off('transitionend')
-				.removeClass('fade-out shorten shortened');
+			transitions.cancelFade($alert);
+			transitions.cancelWipe($alert);
 		},
 
 		clickedClose(evt) {
@@ -91,22 +87,12 @@
 		async fadeAlert($alert) {
 			// Chained transitions
 			// fade-out
-			$alert.css({transition: ''}) // in case a previous fade was cancelled
-				.addClass('fade-out');
+			await transitions.fade($alert);
 
-			await $alert.waitOn('transitionend');
-			// fade-out done; shorten
-			$alert.addClass('shorten');
+			// fade-out done; wipe-out
+			await transitions.wipe($alert, {prepare: false});
 
-			await animationFrame();
-			$alert.css({height: $alert.css('height')}); // explicit height, so transition will trigger
-
-			await animationFrame();
-			// trigger shortening
-			$alert.addClass('shortened');
-
-			await $alert.waitOn('transitionend');
-			// shorten done
+			// wipe done
 			this.closeAlert($alert);
 		},
 
