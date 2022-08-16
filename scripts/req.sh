@@ -24,7 +24,7 @@ for req in $(ls *.js | sort --ignore-case) ; do
     # TODO:
     # * filter out matches in comments
     # * allow for optionally required modules ('@includes'?)
-    for js in $(ack -il "^[^a-z]*requires? $req$|@requires? .*\\b$req\\b|\\b$req\\.[_a-z]|new $req|mixIn\\(\\w+, $req\\)") ; do
+    for js in $(ack -il "^[^a-z]*requires? $req$|@requires? .*\\b$req\\b|[^.]\\b$req\\.[_a-z]|new $req|mixIn\\(\\w+, $req\\)") ; do
 	js=${js%.js}
 	#if [ "$js" != "$req" -a ! "${ignore[$js,$req]}" ] ; then
 	if [[ "$js" != "$req" && ! "${ignore[$js,$req]}" ]] ; then
