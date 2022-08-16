@@ -36,7 +36,9 @@
 		dragged(evt) {
 			let draggable = $(evt.delegateTarget).data('payload'),
 				target = reorder.target(evt.target);
-			(evt.dataTransfer ?? {}).dropEffect = evt.dataTransfer?.effectAllowed;
+			//evt.dataTransfer ??= {};
+			evt.dataTransfer || (evt.dataTransfer = {});
+			evt.dataTransfer.dropEffect = evt.dataTransfer.effectAllowed;
 			//console.info('dragged: dataTransfer', evt.originalEvent.dataTransfer);
 			reorder.insertBefore(draggable, target);
 			//console.info('evt', evt);
@@ -45,7 +47,7 @@
 		id(elt) {
 			return elt
 				&& (   elt.id
-				    ?? $(elt).find('.dsf').filter((i, elt) => /_name$/.test(elt.className)).text());
+				    /*??*/|| $(elt).find('.dsf').filter((i, elt) => /_name$/.test(elt.className)).text());
 		},
 
 		insertBefore(elt, other) {
@@ -81,7 +83,7 @@
 		},
 
 		started(evt) {
-			(evt.dataTransfer ?? {}).effectAllowed = "move";
+			(evt.dataTransfer /*??*/|| {}).effectAllowed = "move";
 			let elt = reorder.target(evt.target);
 			elt.style.opacity = 0.5;
 			$(evt.delegateTarget).data('payload', elt);

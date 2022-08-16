@@ -716,7 +716,7 @@
 
 					equipment(names, values) {
 						let item = {
-							type: values.type ?? 'equipment',
+							type: values.type /*??*/|| 'equipment',
 							name: values.name,
 							value: values.points,
 						};
@@ -742,11 +742,11 @@
 					},
 
 					generic(base, ...args) {
-						this._addTheirItem(base, args[1] ?? args[0]);
+						this._addTheirItem(base, args[1] /*??*/|| args[0]);
 					},
 
 					health(name, value) {
-						compatibility.exportField('humanity_value', values.value ?? value, {mine: 'health'});
+						compatibility.exportField('humanity_value', values.value /*??*/|| value, {mine: 'health'});
 					},
 
 					merits(names, values) {
@@ -824,8 +824,8 @@
 					'specialty_type_{i:02}': function (theirs, value, env) {
 						let parts = value.match(/^(?<attribute>[^:]*)(?:: *\(?| *\()(?<specialty>.*[^)])\)?$|^\s*(?<attr>[^- ]+)[- ]+(?<spec>[^- ]+)\s*$/);
 						if (parts) {
-							let attr = (parts.groups.attribute ?? parts.groups.attr).trim().toLowerCase(),
-								specialty = (parts.groups.specialty ?? parts.groups.spec).trim();
+							let attr = (parts.groups.attribute /*??*/|| parts.groups.attr).trim().toLowerCase(),
+								specialty = (parts.groups.specialty /*??*/|| parts.groups.spec).trim();
 							if (attr in aliases.simple) {
 								attr = aliases.simple[attr];
 							}
@@ -899,7 +899,7 @@
 
 					arcanoi(names, values) {
 						let parts = values.value.match(pips.reDemi),
-							mine = names.value ?? Object.values(names)[0];
+							mine = names.value /*??*/|| Object.values(names)[0];
 						if (parts) {
 							let {left, right, lmask, rmask} = parts.groups;
 							if (lmask) {

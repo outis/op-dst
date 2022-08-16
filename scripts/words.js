@@ -53,7 +53,7 @@
 		 * Return entry for <var>word</var> from <var>thesaurus</var>, if any.
 		 */
 		lookup(word, thesaurus) {
-			return thesaurus[word.toLowerCase()] ?? word;
+			return thesaurus[word.toLowerCase()] /*??*/|| word;
 		},
 
 		/**
@@ -66,7 +66,7 @@
 				return word;
 			}
 			return this._pluralize[word]
-				?? word.replace(/s?$/, 's').replace(/ys\b/, 'ies');
+				/*??*/|| word.replace(/s?$/, 's').replace(/ys\b/, 'ies');
 		},
 
 		/**

@@ -42,7 +42,8 @@
 		 * @returns {number}
 		 */
 		countPips(elt, chirality, marker) {
-			marker ??= this.marker;
+			//marker ??= this.marker;
+			marker || (marker = this.marker);
 			let $pips = this.$pips(elt, chirality),
 				mask = 0;
 			const reMark = pips.markRe(marker),
@@ -101,7 +102,10 @@
 		},
 
 		mark($elt, chirality, value, marker) {
-			marker ??= this.marker;
+			//marker ??= this.marker;
+			marker || (marker = this.marker);
+			//marker ??= this.marker;
+			marker || (marker = this.marker);
 			const $pips = this.$pips($elt, chirality);
 
 			if (/0x/.test(value)) {
@@ -223,7 +227,8 @@
 		 * Update marked pips.
 		 */
 		refresh($elt, value) {
-			value ??= this.value($elt);
+			//value ??= this.value($elt);
+			value || (value = this.value($elt));
 			this.mark($elt, 'left', value.left);
 			this.mark($elt, 'right', value.right);
 		},
@@ -251,7 +256,8 @@
 		},
 
 		toggle(eltPip, chirality, iPip, marker) {
-			marker ??= this.marker;
+			//marker ??= this.marker;
+			marker || (marker = this.marker);
 			let $eltPip = $(eltPip);
 			if ($eltPip.hasClass(marker)) {
 				$eltPip.removeClass(marker);

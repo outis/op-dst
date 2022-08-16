@@ -15,7 +15,7 @@
 
 			this.$tabGroups.each(function (i, elt) {
 				let $elt = $(elt),
-					name = tabs.savedTab($elt) ?? tabs.name(elt.children[0]);
+					name = tabs.savedTab($elt) /*??*/|| tabs.name(elt.children[0]);
 				tabs.select($elt, name);
 			});
 		},

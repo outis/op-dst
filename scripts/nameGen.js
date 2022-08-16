@@ -84,7 +84,7 @@
 			let i, opts = {start:1},
 				names = {};
 			if (is_object(tpls[0])) {
-				opts = {...opts, ...(tpls[1] ?? {})};
+				opts = {...opts, ...(tpls[1] /*??*/|| {})};
 				tpls = tpls[0];
 				const first = Object.values(tpls)[0];
 				i = this.next(first, opts.start);
@@ -93,7 +93,7 @@
 				}
 			} else {
 				if (Array.isArray(tpls[0])) {
-					opts = {...opts, ...(tpls[1] ?? {})};
+					opts = {...opts, ...(tpls[1] /*??*/|| {})};
 					tpls = tpls[0];
 				} else if (is_object(tpls[tpls.length - 1])) {
 					opts = {...opts, ...tpls.pop()};

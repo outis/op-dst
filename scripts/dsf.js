@@ -287,7 +287,7 @@
 					return $elt.html();
 				},
 				default($elt) {
-					return $elt[0].dataset.value ?? $elt.data('value') ?? $elt.text();
+					return $elt[0].dataset.value /*??*/|| $elt.data('value') /*??*/|| $elt.text();
 				},
 			},
 
@@ -322,7 +322,7 @@
 				$elt.data('value', value);
 				return value;
 			}
-			let getter = this._dsf.getters[type] ?? this._dsf.getters.default;
+			let getter = this._dsf.getters[type] /*??*/|| this._dsf.getters.default;
 			return getter($elt);
 		},
 
@@ -345,8 +345,9 @@
 
 		/* Volatile & UDFs are currently incompatible (as reordering changes field name, but localStorage isn't updated) */
 		update(eltField, value, name) {
-			name ??= this.name(eltField);
-			eltField.dataset.value = value ?? '';
+			//name ??= this.name(eltField);
+			name || (name = this.name(eltField));
+			eltField.dataset.value = value || '';
 			if (this.isVolatile(eltField)) {
 				name = this.sku(dsf.stripPrefix(name));
 				localStorage[name] = value;

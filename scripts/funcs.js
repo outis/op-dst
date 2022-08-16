@@ -129,7 +129,8 @@
 
 		function halveString(string, sep, opts={include:1}) {
 			let matcher = chooseMatcher(sep);
-			opts.include ??= 1;
+			//opts.include ??= 1;
+			opts.include || (opts.include = 1);
 			return breaker(string, sep, matcher, opts);
 		}
 		globals.halveString = halveString;
@@ -260,7 +261,7 @@
 	 *     obj.bar(); // 'foobar'
 	 */
 	function derefProperties(obj) {
-		for (let [name, value] of Object.entries(obj ?? {})) {
+		for (let [name, value] of Object.entries(obj /*??*/|| {})) {
 			while (value in obj) {
 				value = obj[name] = obj[value];
 			}
@@ -667,7 +668,7 @@
 	 */
 	$.fn.redelegate = function(event, original, replacement) {
 		let elt = this[0],
-			handlers = ($._data(this[0], 'events') ?? {})[event] ?? [];
+			handlers = ($._data(this[0], 'events') /*??*/|| {})[event] /*??*/|| [];
 		for (let handler of handlers) {
 			if (original == handler.selector) {
 				handler.selector = replacement;
@@ -793,7 +794,8 @@
 				items = deleteCount;
 				deleteCount = null;
 			}
-			deleteCount ??= this.length;
+			//deleteCount ??= this.length;
+			deleteCount || (deleteCount = this.length);
 			return this.slice(0, start) + items + this.slice(start + deleteCount);
 		};
 	}

@@ -15,7 +15,8 @@
 		/* */
 
 		separateSpecialty(tpls, env, name, value) {
-			value ??= dsa.data[name] ?? '';
+			//value ??= dsa.data[name] ?? '';
+			value || (value = dsa.data[name] || '');
 			let match = value.toString().match(/\(([^)]+)\)/);
 			if (match) {
 				let specialty = klass.eval(tpls.specialty, env);
@@ -27,7 +28,8 @@
 		},
 
 		separateSpecialties_range(abilities) {
-			abilities ??= this.abilities;
+			//abilities ??= this.abilities;
+			abilities || (abilities = this.abilities);
 			const env = {},
 				  tpls = {
 					  name: 'dyn_{base}_{i:02}_name',
@@ -41,7 +43,8 @@
 		},
 
 		separateSpecialties_for(abilities) {
-			abilities ??= this.abilities;
+			//abilities ??= this.abilities;
+			abilities || (abilities = this.abilities);
 			const env = {},
 				  tpls = {
 					  name: 'dyn_{base}_{i:02}_name',
@@ -64,7 +67,8 @@
 		},
 
 		separateSpecialties(abilities) {
-			abilities ??= this.abilities;
+			//abilities ??= this.abilities;
+			abilities || (abilities = this.abilities);
 			//this.separateSpecialties_range();
 			this.separateSpecialties_for(abilities);
 		},

@@ -22,7 +22,7 @@
 			}
 			return {
 				base: base
-					?? ((names.value ?? names[key]).match(/^dyn_(?<base>[^_]+)/) ?? [])[1],
+					/*??*/|| ((names.value /*??*/|| names[key]).match(/^dyn_(?<base>[^_]+)/) /*??*/|| [])[1],
 				i: names.i,
 			};
 		},
@@ -41,7 +41,8 @@
 			//       rename(oldName, newName, {overwrite:false}={}) {},
 			//       renumber(tpl, oldIndex, newIndex, options={}) {},
 			//     }
-			fields ??= this;
+			//fields ??= this;
+			fields || (fields = this);
 
 			if (is_numeric(stop)) {
 				stop = {index: stop};
@@ -149,7 +150,7 @@
 		},
 
 		exists(name, data) {
-			return name in (data ?? this.data);
+			return name in (data /*??*/|| this.data);
 		},
 
 		/**
@@ -166,15 +167,18 @@
 			let entries;
 			if (Array.isArray(names)) {
 				entries = names.entries();
-				values ??= new Array(names.length);
+				//values ??= new Array(names.length);
+				values || (values = new Array(names.length));
 			} else if (is_object(names)) {
 				entries = Object.entries(names);
-				values ??= {};
+				//values ??= {};
+				values || (values = {});
 			} else {
 				throw new TypeError(`dsa.getAll: Invalid argument type: ${typeof(names)}. Arguments must both be either arrays or simple objects.`);
 			}
 			for (const [i, name] of entries) {
-				values[i] ??= dsa.data[name] ?? '';
+				//values[i] ??= dsa.data[name] ?? '';
+				values[i] || (values[i] = dsa.data[name] || '');
 			}
 			return values;
 		},

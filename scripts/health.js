@@ -301,7 +301,8 @@
 		},
 
 		_setDetails(details, $pips, classer) {
-			classer ??= x => x;
+			//classer ??= x => x;
+			classer || (classer = x => x);
 			let collisions = [], iCollisions = [], collision = false;
 			for (let i = 0; i < details.length; ++i) {
 				let mark = classer(details[i]);

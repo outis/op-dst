@@ -18,7 +18,8 @@
 
 		/* */
 		alert(msg, opts={}) {
-			opts.id ??= this.id(msg);
+			//opts.id ??= this.id(msg);
+			opts.id || (opts.id = this.id(msg));
 			let $alert,
 				{id, duration} = opts;
 
@@ -29,7 +30,8 @@
 				({$alert, duration} = this.create(msg, opts));
 			}
 			if (! opts.sticky) {
-				duration ||= this.duration(msg) ?? this.defaultDuration;
+				//duration ||= this.duration(msg) ?? this.defaultDuration;
+				duration || (duration = this.duration(msg) || this.defaultDuration);
 				$alert.data('timer', setTimeout(
 					() => this.fadeAlert($alert),
 					duration * 1000));
@@ -55,8 +57,10 @@
 		},
 
 		create(msg, opts={}) {
-			opts.id ??= this.id(msg)
-			opts.duration ??= this.duration(msg);
+			//opts.id ??= this.id(msg)
+			opts.id || (opts.id = this.id(msg));
+			//opts.duration ??= this.duration(msg);
+			opts.duration || (opts.duration = this.duration(msg));
 
 			opts.$alert = this.$alert.clone();
 
@@ -123,7 +127,7 @@
 		revive($alert) {
 			//console.info(`reviving ${$alert[0].id}`);
 			this.cancelFade($alert);
-			return $alert.data('duration') ?? this.duration($alert.text() ?? this.defaultDuration);
+			return $alert.data('duration') /*??*/|| this.duration($alert.text() /*??*/|| this.defaultDuration);
 		},
 
 		textFor($alert, text) {

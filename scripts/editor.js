@@ -55,7 +55,7 @@
 				$editor = this.start($dsf);
 			} else {
 				evt.stopPropagation();
-				$editor = $dsf.data('$editor') ?? this.$active;
+				$editor = $dsf.data('$editor') /*??*/|| this.$active;
 			}
 			if ($editor) {
 				$editor.data('$input').trigger('focus');
@@ -124,10 +124,10 @@
 			if ('FORM' == $elt[0].tagName) {
 				$editor = $elt;
 			} else {
-				$editor = $elt.data('$editor') ?? this.$editor($elt);
+				$editor = $elt.data('$editor') /*??*/|| this.$editor($elt);
 			}
 			return $editor.data('$input')
-				?? $editor.find('input').add('textarea', $editor).add('select', $editor);
+				/*??*/|| $editor.find('input').add('textarea', $editor).add('select', $editor);
 		},
 
 		listFor($dsf) {

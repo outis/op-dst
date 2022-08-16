@@ -30,7 +30,8 @@
 	globals.ResettableGenerator = ResettableGenerator;
 	*/
 	function resettableGenerator(generator, reset) {
-		reset ??= () => {};
+		//reset ??= () => {};
+		reset || (reset = () => {});
 
 		function Resettable(...args) {
 			let items;

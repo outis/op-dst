@@ -52,6 +52,19 @@
 		},
 
 		/* */
+		/* Noop stand-in for demipips. */
+		demi: {
+			clicked() {},
+			is() { return false; },
+			pippify() {},
+			rating() { return 0; },
+			_refresh() {},
+			refresh() {},
+			start() {},
+			value() { return },
+			zero() { return '0'; },
+		},
+
 		addKinds: addPippedKinds,
 
 		/**
@@ -69,7 +82,8 @@
 			if (delta > 0) {
 				length += delta;
 				let attrs='';
-				blocker ??= this.blocked;
+				//blocker ??= this.blocked;
+				blocker || (blocker = this.blocked);
 				if (dsf.linked.isCurr(dsf.name($elt))) {
 					attrs = ` class="${blocker}"`;
 				}
@@ -89,7 +103,7 @@
 
 		assemble($elt) {
 			let nPips = this.count($elt[0]);
-			if (this.demi?.is($elt)) {
+			if (this.demi.is($elt)) {
 				nPips *= 2;
 			}
 			for (let i = 0; i <= nPips; ++i) {
@@ -101,7 +115,9 @@
 
 		/* Mark pips as being "blocked" off. */
 		block($elt, value, blocker) {
-			blocker ??= this.blocked;
+			//blocker ??= this.blocked;
+			blocker || (blocker = this.blocked);
+			// undo/redo handled in `block`
 			value = +value;
 			const $pips = $elt.find('span');
 			$pips.slice(1, value+1).removeClass(blocker);
@@ -128,8 +144,8 @@
 			}
 			if ($elt.hasClass('pips')) {
 				this.mark($elt, 0);
-				if (this.demi?.is($elt)) {
-					this.demi?.value($elt, this.demi?.zero());
+				if (this.demi.is($elt)) {
+					this.demi.value($elt, this.demi.zero());
 				} else {
 					this.value($elt, 0);
 				}
@@ -139,8 +155,8 @@
 		},
 
 		clicked(evt) {
-			if (this.demi?.is(evt.target)) {
-				this.demi?.clicked(evt);
+			if (this.demi.is(evt.target)) {
+				this.demi.clicked(evt);
 			} else {
 				this.fill(evt.target);
 			}
@@ -221,7 +237,8 @@
 		},
 
 		mark($elt, value, marker) {
-			marker ??= this.marker;
+			//marker ??= this.marker;
+			marker || (marker = this.marker);
 			value = +value;
 			let $pips = $elt.find('span');
 			$pips.slice(1, value+1).addClass(marker);
@@ -240,11 +257,12 @@
 			} else {
 				$elt = $($elt);
 			}
-			name ??= dsf.name($elt[0]);
+			//name ??= dsf.name($elt[0]);
+			name || (name = dsf.name($elt[0]));
 			// .readonly to disable DSF framework's click listener & field editor
 			$elt.addClass('pips readonly');
-			if (this.demi?.is($elt)) {
-				this.demi?.pippify($elt, {name, value});
+			if (this.demi.is($elt)) {
+				this.demi.pippify($elt, {name, value});
 				return;
 			}
 			var pips;
@@ -274,10 +292,11 @@
 		 * @returns {number}
 		 */
 		rating($elt, marker) {
-			if (this.demi?.is($elt)) {
-				return this.demi?.rating($elt);
+			if (this.demi.is($elt)) {
+				return this.demi.rating($elt);
 			}
-			marker ??= this.marker;
+			//marker ??= this.marker;
+			marker || (marker = this.marker);
 			return $elt.find(`.${marker}`).length;
 		},
 
@@ -294,7 +313,7 @@
 			let nPips = this.count($elt[0]),
 				nKids = $elt.children().length,
 				delta;
-			if (this.demi?.is($elt)) {
+			if (this.demi.is($elt)) {
 				nPips *= 2;
 			}
 			delta = nPips - nKids + 1; // 1 for clear box
@@ -302,8 +321,8 @@
 		},
 
 		refresh($elt) {
-			if (this.demi?.is($elt)) {
-				this.demi?.refresh($elt);
+			if (this.demi.is($elt)) {
+				this.demi.refresh($elt);
 			} else {
 				this.mark($elt, this.value($elt));
 			}
@@ -339,7 +358,7 @@
 			this.$context.find('.mll_sheet')
 				.on('click', '.pips:not(.current) > span', this.clicker);
 
-			this.demi?.start();
+			this.demi.start();
 		},
 
 		/**
@@ -352,7 +371,8 @@
 		},
 
 		toggle(eltPip, marker) {
-			marker ??= this.marker;
+			//marker ??= this.marker;
+			marker || (marker = this.marker);
 			let $eltPip = $(eltPip);
 			if ($eltPip.hasClass(marker)) {
 				$eltPip.removeClass(marker);
@@ -362,9 +382,11 @@
 		},
 
 		unpippify($elt, {value=0, marker}={}) {
-			marker ??= this.marker;
+			//marker ??= this.marker;
+			marker || (marker = this.marker);
 			//$elt.text($elt.data('value'));
-			value ??= dsf.value($elt) ?? $elt.find('.' + marker).length;
+			//value ??= dsf.value($elt) ?? $elt.find('.' + marker).length;
+			value || (value = dsf.value($elt) || $elt.find('.' + marker).length);
 			$elt.empty();
 			$elt.text(value);
 		},
@@ -373,8 +395,8 @@
 			if (elt instanceof $) {
 				elt = elt[0];
 			}
-			if (this.demi?.is(elt)) {
-				return this.demi?.value(elt, val);
+			if (this.demi.is(elt)) {
+				return this.demi.value(elt, val);
 			}
 			if (val) {
 

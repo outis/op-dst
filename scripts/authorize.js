@@ -17,7 +17,7 @@
 
 		set_owner() {
 			if (! this.owner) {
-				const owner = (dynamic_sheet_attrs.player ?? '').replace(/<[^>]*>/g, '');
+				const owner = (dynamic_sheet_attrs.player /*??*/|| '').replace(/<[^>]*>/g, '');
 				if (owner) {
 					Object.defineProperty(authorize, 'owner', {
 						configurable: false,
