@@ -137,9 +137,6 @@
 					left = values[0];
 					right = values[0];
 				} else {
-					if (! /click to /i.test(value)) {
-						//debugger;
-					}
 					// In case value is editing placeholder.
 					value = +value || 0;
 				}

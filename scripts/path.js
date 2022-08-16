@@ -20,4 +20,4 @@
 		split(name) {
 			return dsf.stripPrefix(name).split(this.reSeparator);
 		},
-	}
+	};

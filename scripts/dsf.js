@@ -43,6 +43,13 @@
 			return this.last(tpl).i;
 		},
 
+		/**
+		 * Return the element for the given name, wrapped in a jQuery.
+		 *
+		 * @param {string} name - DSF name
+		 *
+		 * @returns {jQuery}
+		 */
 		$dsf(name) {
 			name = this.addPrefix(name);
 			return this.$context.find(`.${name}`);
@@ -113,27 +120,19 @@
 		 * Get the last name & index from the DSA matching the given name template.
 		 */
 		last(tpl) {
+			// can't simply grab last element, as it might not match tpl; instead, scan entries
 			let entries = this.entries(tpl),
 				i =  entries.length,
 				last = entries[entries.length - 1],
 				name = last && last[0];
 			return {name, i};
-
-			// can't simply grab last element, as it might not match tpl
-			/*
-			tpl = dsf.addPrefix(tpl);
-			let pre = klass.pre(tpl),
-				= this.$context.find(`.dsf[class*=" ${pre}"]:last-of-type`)
-				.toArray()
-				.filter(elt => klass.matches(tplMine, elt.className))
-				.map(elt => [this.name(elt), this.value(elt)]);
-			*/
 			/* could potentially use nameGen.last instead */
 		},
 
 
 		linked: {
 			base(name) {
+				// test ensures nullish value if no match
 				if (this.isExtra(name)) {
 					return name.replace(/(^|_)extra_/, '$1');
 				}
@@ -152,18 +151,21 @@
 			},
 
 			curr(name) {
+				// test ensures nullish value if no match
 				if (this.isExtra(name)) {
 					return name.replace(/(^|_)extra_/, '$1curr_');
 				}
 			},
 
 			extra(name) {
+				// test ensures nullish value if no match
 				if (this.isBase(name)) {
 					return name.replace(/(^|_)(perm|curr)_/, '$1extra_');
 				}
 			},
 
 			perm(name) {
+				// test ensures nullish value if no match
 				if (this.isExtra(name)) {
 					return name.replace(/(^|_)extra_/, '$1perm_');
 				}
@@ -343,7 +345,7 @@
 			return value;
 		},
 
-		/* Volatile & UDFs are currently incompatible (as reordering changes field name, but localStorage isn't updated) */
+		/* TODO: get volatile DSFs to work with UDFs; the two are currently incompatible (as reordering changes field name, but localStorage isn't updated). */
 		update(eltField, value, name) {
 			//name ??= this.name(eltField);
 			name || (name = this.name(eltField));

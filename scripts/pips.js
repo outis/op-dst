@@ -17,9 +17,6 @@
 			module.waitFor('dsf');
 			dsf.each(function (elt, $elt, name, value) {
 				value = dsf.override(name, value)
-				if ($elt.closest('.equipment').length) {
-					//debugger;
-				}
 				if (   ! is_flag(elt, name, value)
 					&& this.is(elt, name, value)
 				) {
@@ -120,6 +117,7 @@
 			// undo/redo handled in `block`
 			value = +value;
 			const $pips = $elt.find('span');
+			// +1 for clear box
 			$pips.slice(1, value+1).removeClass(blocker);
 			$pips.slice(value+1).addClass(blocker);
 		},

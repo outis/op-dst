@@ -126,9 +126,6 @@
 					};
 				}
 			}
-			if (is_undefined(params)) {
-				debugger;
-			}
 
 			if ('continue' in params) {
 				// already processed; don't reprocess.
@@ -289,44 +286,6 @@
 
 			return _resettable();
 		},
-		/*
-		entries: resettableGenerator(function*(entries, obj) {
-			let entry, result;
-			switch (entries.length) {
-			case 0:
-				result = yield {...obj};
-				if (result > 0) {
-					// yield to the next() that produced `result`
-					yield `break ${result}`;
-					// break out of # `result` loops
-					return result;
-				}
-				break;
-
-			case 1:
-				// optimization
-				return yield* range.entry(entries[0][0], entries[0][1], obj);
-
-			default:
-				entry = entries[0];
-				// need a copy to prevent recursive call from modifying local for subsequent calls
-				entries = entries.slice(1);
-				for (let val of range.entry(entry[0], entry[1], obj)) {
-					result = yield* range.entries(entries, val);
-					if (result > 0) { // break out of # `result` loops
-						// keep breaking out of loops
-						return result - 1;
-					}
-				}
-				break;
-			}
-			return 0;
-		}, function () {
-			for (let entry of this.args[0]) {
-				('reset' in entry[1] && entry[1].reset());
-			}
-		}),
-		*/
 
 		filter: resettableGenerator(function*(iter, fn) {
 			let result;
@@ -359,12 +318,6 @@
 				xs = range.over(lower, 10, step);
 				break;
 			}
-			/*
-			if (pad) {
-				pad = ('boolean' == typeof(pad)) ? 2 : +pad;
-				xs = range.map(xs, x => x.toString().padStart(pad, '0'));
-			}
-			*/
 			return xs;
 		},
 

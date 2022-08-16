@@ -1,5 +1,8 @@
 	/**
+	 * Bind all methods in an object to a given object.
 	 *
+	 * @param {object} obj - object containing methods
+	 * @param {object} self - object to bind those methods to
 	 */
 	function bindAll(obj, self) {
 		for (let method in obj) {
@@ -389,7 +392,8 @@
 	 *
 	 * Async version of `requestAnimationFrame()`. Helps you avoid callback hell. Note that since this only guarantees to run following code before the next repaint, if you need to separate two pieces of code by a frame, this can't guarantee that; instead, use {@link animationPost()}.
 	 *
-	 * @yields {DOMHighResTimeStamp} resumption time
+	 * @async
+	 * @returns {DOMHighResTimeStamp} resumption time
 	 */
 	function animationFrame() {
 		return new Promise(resolve => {
@@ -404,6 +408,8 @@
 	 * Ensures at least one animation frame occurs before continuing.
 	 *
 	 * Asynchronous; you must await this function.
+	 *
+	 * @async
 	 */
 	function animationPost() {
 		return new Promise(resolve => {
@@ -425,7 +431,8 @@
 	 * @param {string} [selector] - selector to filter the descendents of <var>elt</var> that trigger the event
 	 * @param {*} [data] - data to be passed via event.data
 	 *
-	 * @yields event
+	 * @async
+	 * @returns {Event} {@link https://api.jquery.com/Types/#Event jQuery event}
 	 */
 	function waitOn(elt, name, selector, data) {
 		let $elt = $(elt);
@@ -441,6 +448,8 @@
 	 * Async version of `setTimeout()`.
 	 *
 	 * @param {number} time - Time to wait, in milliseconds.
+	 *
+	 * @async
 	 */
 	function wait(time) {
 		return new Promise(resolve => {

@@ -32,15 +32,7 @@
 			'animalken': 'Animal Ken',
 		},
 
-		/* */
-		/*
-		init($context) {
-			this.$context = $context;
-			// set up aliases to copy abiliies from other editions
-			aliases;
-		},
-		*/
-
+		/* DST event handlers */
 		preLoad(opts, $context) {
 			module.tarryFor('compatibility');
 			module.tarryFor('abilities'); // so specialties have been separated from dynamic abilities
@@ -178,6 +170,9 @@
 			return ability.replace(/\([^)]*\)/, '').trim().replace(/\s+/, '_');
 		},
 
+		/**
+		 * Combine left and right demipips, from sheets that have bisected arcanoi for those that don't.
+		 */
 		foldArcanoi() {
 			let envs = this.envs('arcanoi');
 			for (let [name, value] of dsa.entries('dyn_arcanoi_{i:02}', envs, {continuous: true})) {

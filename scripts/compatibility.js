@@ -144,7 +144,7 @@
 			// `this` will get bound to `compatibility`
 			export: {
 				//dst: {},
-				/* Entry points for my DSFs/UDFs */
+				/* Entry points for native DSFs/UDFs */
 				flaws(names, values) {
 					this.export.each(['flaws', 'flaw'], names, values);
 				},
@@ -347,10 +347,6 @@
 				//parsed.value ??= parsed.points;
 				parsed.value || (parsed.value = parsed.points);
 				this.import._udf(parsed, names);
-				/*
-				udfs.addDsa(names, parsed, parsed.base);
-				parsed.imported = parsed.base;
-				*/
 				return parsed;
 			},
 
@@ -358,10 +354,6 @@
 				names = {name: 'dyn_arcanoi_{i:02}_name', value: 'dyn_arcanoi_{i:02}'};
 				parsed.name = parsed.name.titleCase();
 				this.import._udf(parsed, names, 'arcanoi');
-				/*
-				udfs.addDsa(names, values);
-				parsed.imported = 'arcanoi';
-				*/
 				return parsed;
 			},
 
@@ -374,10 +366,6 @@
 				//parsed.name ??= parsed.value;
 				parsed.name || (parsed.name = parsed.value);
 				this.import._udf(parsed, names);
-				/*
-				udfs.addDsa(names, parsed, base);
-				parsed.imported = base;
-				*/
 				let bg = {
 					base: 'backgrounds',
 					name: parsed.type,
@@ -409,10 +397,6 @@
 				}
 				this.parse.appendUnmatched(values, parsed.unmatched);
 				this.import._udf(values, names, 'backgrounds');
-				/*
-				udfs.addDsa(names, values, 'backgrounds');
-				parsed.imported = 'backgrounds';
-				*/
 				return parsed;
 			},
 
@@ -539,8 +523,7 @@
 				}
 				// for debugging
 				//window.parses ??= {};
-				window.parses || (window.parses = {});
-				window.parses[names[1] /*??*/|| names[0]] = {from: [values], ...parsed};
+				//window.parses[names[1] ?? names[0]] = {from: [values], ...parsed};
 
 				return this.import.dispatch(parsed, names);
 			},
@@ -552,10 +535,6 @@
 						parsed.value = +parsed.value;
 					}
 					this.import._udf(parsed, names, base);
-					/*
-					udfs.addDsa(names, parsed, base);
-					parsed.imported = base;
-					*/
 				}
 				return parsed;
 			},
@@ -569,10 +548,6 @@
 					let tpls = udfs.keyedFieldsFor(base, {$tpl});
 					this.parse.appendUnmatched(parsed);
 					this.import._udf(parsed, tpls);
-					/*
-					udfs.addDsa(tpls, parsed, base);
-					parsed.imported = base;
-					*/
 					return parsed;
 				}
 			},
@@ -673,7 +648,6 @@
 					},
 				},
 				backgrounds: function(tokens, prelim) {
-					//debugger;
 					if (! prelim.hint) {
 						// DSF was categorized based on 'background' token; check if there's a more specific one
 						let {prelim:recategory, groups} = this.parse.categorizeFirst(tokens[0], this.parse._byTokens),
@@ -697,19 +671,7 @@
 					return this.parse.tokens(tokens, fields, prelim);
 				},
 				equipment: {
-					string: makeStringTokenParser(/artifact|relic/i)/*function (value, parsed) {
-						if (/artifact|relic/i.test(value)) {
-							parsed.type = value.toLowerCase();
-						} else {
-							const names = ['name', 'description'];
-							for (let name of names) {
-								if (! parsed[name]) {
-									parsed[name] = value;
-									break;
-								}
-							}
-						}
-					}*/,
+					string: makeStringTokenParser(/artifact|relic/i),
 					integer: ['points', 'charge'],
 					rational: ['charge'],
 					post: function (parsed) {
@@ -1105,7 +1067,6 @@
 		/*  */
 
 		advantage(base) {
-			//console.info(`Trying to import ${parsed.base} as a background.`);
 			for (let key in this.advantages) {
 				if (base in this.advantages[key]) {
 					return key;
@@ -1182,92 +1143,6 @@
 			}
 			return $field;
 		},
-
-		/* Ensure DSFs for aliases exist by creating any missing ones. */
-		/* no longer used: done as needed, rather than up-front
-		createFields() {
-			let $sheet = this.$sheet;
-			if (! dsf.exists('last_dst')) {
-				$sheet.append($('<span class="hidden dsf dsf_last_dst"></span>'));
-			}
-
-			this.createSimpleFields();
-			this.createTemplatedFields();
-		},
-
-		createSimpleFields() {
-			// eachSimple
-			for (let [theirs, mine] of this.simpleAliases()) {
-				this.createField(theirs, {mine});
-			}
-		},
-
-		createTemplatedFields() {
-			// eachTemplate
-			for (let [theirs, mine] of this.templateAliases()) {
-				let vars = klass.vars(theirs),
-					envs = range.forVars(vars, {pad:2}),
-					t = theirs, m = mine,
-					$mine;
-				// expandTo will add prefixes
-				for (let {theirs, mine} of this.expandTo(t, m, envs)) {
-					$mine = $(`.${mine}`);
-					if ($mine.length) {
-						this.createField(theirs, {mine});
-					} else {
-						break;
-					}
-				}
-			}
-		},
-		*/
-
-		/**
-		 * Remove any backing fields after the last non-empty field for the given templated alias.
-		 */
-		/* Not currently used
-		cullTemplate(theirs, mine) {
-			let vars = klass.vars(theirs),
-				k = vars.shift(),
-				range = range.forVar(k),
-				env = {};
-			for (let v of vars) {
-				// check only 1st field for each item
-				env[v] = 1;
-			}
-			/* Currently, this considers each DSF from a UDF template separately.
-			 * The result may be ragged (i.e. missing backing DSFs for some UDF
-			 * items). Should all the DSFs for each UDF item from other DST be
-			 * checked together?
-			 * /
-			for (let i of range.forVar(k, {step:-1})) { // loop down
-				env[k] = i;
-				let name = klass.eval(theirs, env),
-					$dsf = this.$context.find(`.${name}`);
-				if ($dsf.length && ! $dsf.is(':empty')) {
-					// remove all fields after .${name}
-					this.removeAfter(name, theirs);
-					break;
-				}
-			}
-		},
-		*/
-
-		/**
-		 * Remove any backing fields after the last non-empty field for templated aliases.
-		 *
-		 * As createItems() overproduces, this cleans up.
-		 */
-		/* Not currently used
-		cullTemplates() {
-			if (! this.shouldCull) {
-				return;
-			}
-			this.eachTemplate(function (theirs, mine) {
-				this.cullTemplate(theirs, mine);
-			}, this);
-		},
-		*/
 
 		/**
 		 * Iterate over all aliased DSFs.
@@ -1498,26 +1373,10 @@
 					};
 				}
 			}
-			/*
-			for (let udf of udfs.$udfs) {
-				let base = [udfs.base(udf), dsf.sectionName(udf)].find(name => name in this.aliases.export),
-					fn = this.aliases.export[base];
-				if (fn) {
-					for (let entry in udfs.entries(udf)) {
-						fn(entry.names, entry.values);
-					}
-				}
-			}
-			*/
 			callForAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_finish');
 		},
 
 		exportRequired() {
-			/*
-			this.eachSimple(function (theirs, mine) {
-				this.exportField(theirs, dsf.value(mine), {mine});
-			}, this, {prefix:true});
-			*/
 			this.exportSimple();
 			this.exportTemplated();
 		},
@@ -1797,26 +1656,6 @@
 			return words.lookup(name, this.aliases.simple);
 		}),
 
-
-		/**
-		 * Remove generated DSFs after the given number.
-		 */
-		// TODO: test
-		/* Not currently used
-		removeAfter(name, tpl, n) {
-			if (! n) {
-				// extract i from name
-				n = udfs.indexOf(name, tpl);
-			}
-			let pre = klass.prefix(tpl);
-			this.$context.find(`.compatibility .dsf`)
-				.filter((i, elt) => klass.matches(tpl, elt.className)
-						&& udfs.indexOf(elt.className, tpl) > n)
-				.remove()
-			;
-		},
-		*/
-
 		_splatRe: memoize(function (base) {
 			switch (base) {
 			case 'talent':
@@ -1972,12 +1811,6 @@
 			return this.nameFor(mine, this.sesalia);
 		}),
 	};
-	/*
-	for (let slug in compatibility.complex.export.dst) {
-		let dst = compatibility.complex.export.dst[slug];
-		derefProperties(dst);
-	}
-	*/
 	for (let funcs of [
 		compatibility.port.export,
 		compatibility.port.import,

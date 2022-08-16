@@ -999,12 +999,6 @@
 							theirs, {name, value}, mine, {...opts, start:0}
 						);
 						/**/
-						/*
-						  let theirs = dsf.nextName(, {start:0});
-
-						  compatibility.export.dynamicField(theirs.name, name, {mine});
-						  compatibility.export.dynamicField(theirs.value, value, {mine});
-						*/
 					},
 
 					simple(name, value, mine, opts={}) {

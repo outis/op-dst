@@ -38,32 +38,8 @@ foreach ($requires as $module => &$reqs) {
 	*/
 }
 
-function has_comment($line) {
-	return preg_match('%//|(?<!\\\\)/\*%', $line);
-}
-
 function strip_comments($line) {
 	return preg_replace('%//.*|/\*([^*]*?|\*(?!/))*?\*/%', '', $line);
-}
-
-function print_without_comment($line) {
-	$parts = explode('/*', $line, 2);
-	if (count($parts) > 1) {
-		if (! ctype_space($parts[0])) {
-			echo $parts[0];
-		}
-		$line = $parts[1];
-		// 
-		$parts = explode('*/', $line, 2);
-		if (count($parts) > 1) {
-			$line = $parts[1];
-			return $line;
-		}
-		return TRUE;
-	} else {
-		echo $line;
-		return FALSE;
-	}
 }
 
 /**

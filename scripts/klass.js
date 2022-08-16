@@ -1,15 +1,37 @@
 	/**
 	 * Name templates - useful to generate class names.
-	 *
-	 * In templates, braces surround variables to be replaced. Variables can optionally be followed by a colon and then formatting information. For example:
-	 *     name_{var}_{i:02}
-	 *
-	 * Currently, the only supported formatting information is a padding character and field width.
 	 */
 	let klass = globals.klass = {
+		/**
+		 * In templates, braces surround variables to be replaced. Variables can optionally be followed by a colon and then formatting information. For example:
+		 *     name_{var}_{i:02}
+		 *
+		 * Currently, the only supported formatting information is a padding character and field width.
+		 *
+		 * @typedef {string} NameTemplate
+		 */
+
 		reVar: /{(?<name>[^:}]+)(?::(?<fmt>[^}]*))?}/,
 
-		/*  */
+		/**
+		 * Copy values from a name matching one template into another template.
+		 *
+		 * Combines {@link this.extract} and {@link this.eval}.
+		 *
+		 * Example:
+		 *
+		 *    klass.apply(
+		 *        'foo_{name}_{i}_{value}_{ignore}',
+		 *        'bar_{i:02}_{name}_{value}_{extra}',
+		 *        'foo_baz_5_qux_xuq');
+		 *    // result: 'bar_05_baz_qux_{extra}'
+		 *
+		 * @param {NameTemplate} fromTpl - template used to extract values from <var>vals</var>
+		 * @param {NameTemplate} toTpl - template to apply extracted values to
+		 * @param {string} vals - a name to extract values from
+		 *
+		 * @returns {string}
+		 */
 		apply(fromTpl, toTpl, vals) {
 			let env = this.extract(fromTpl, vals);
 			return this.eval(toTpl, env);
@@ -22,7 +44,7 @@
 		 *
 		 * Unmatched template variables are handled in two different ways, depending on <var>unbrace</var>. If false, variables are left as-is. If true, the braces (and format) are removed, leaving the name.
 		 *
-		 * @param {string} name - A name template.
+		 * @param {NameTemplate} name - A name template.
 		 * @param {object} env - Variable environment.
 		 * @param {boolean} [unbrace] - Whether to remove braces from unmatched variables.
 		 *
@@ -64,6 +86,14 @@
 			return results;
 		},
 
+		/**
+		 * Yield entries of a given object that match a template or regex.
+		 *
+		 * @param {object} obj - object to filter
+		 * @param {NameTemplate|RegExp} include - property name filter
+		 *
+		 * @yields {*[]} `[name, property]` pairs
+		 */
 		*entries(obj, include) {
 			let tpl = include;
 			if ('string' == typeof(include)) {
@@ -86,6 +116,14 @@
 			}
 		},
 
+		/**
+		 * Filter properties of a given object, based on a template or regex.
+		 *
+		 * @param {object} obj - object to filter
+		 * @param {NameTemplate|RegExp} include - property name filter
+		 *
+		 * @yields {object}
+		 */
 		filter(obj, pred) {
 			let filtered = {};
 			for (let [name, value] of this.entries(obj, pred)) {
@@ -121,7 +159,7 @@
 		/**
 		 * Extract the name matching a template from HTML classes.
 		 *
-		 * @param {string} tpl class name template
+		 * @param {NameTemplate} tpl class name template
 		 * @param
 		 */
 		name(tpl, className) {

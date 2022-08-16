@@ -294,7 +294,6 @@
 		countUdfItems(data) {
 			//data ??= dsa.data;
 			data || (data = dsa.data);
-			//debugger;
 			let counts = {},
 				uncounted = {},
 				scan = false;
@@ -310,18 +309,6 @@
 					scan = true;
 				}
 			};
-			/*
-			this.$udfs.each(function (i, udf) {
-				let base = udfs.base(udf),
-					name = udfs.sizeName(base);
-				if (dsa.exists(name, data)) {
-					counts[base] = data[name];
-				} else {
-					uncounted[base] = base;
-					scan = true;
-				}
-			});
-			*/
 
 			if (scan) {
 				console.log('Scanning data to determine size of UDFs without a stored size field:', Object.values(uncounted));
@@ -391,12 +378,6 @@
 				let base = udfs.base(udf);
 				udfs.createItemsFor(udf, udfCounts[base], {base});
 			}
-			/*
-			this.$udfs.each(function (i, eltList) {
-				let base = udfs.base(eltList);
-				udfs.createItemsFor(eltList, udfCounts[base], {base});
-			});
-			*/
 		},
 
 		/**
@@ -501,24 +482,6 @@
 					return {base: full, field: match};
 				},
 			});
-			/*
-			fieldInfo.shorthand = this.shorthand;
-			fieldInfo.matches = function (full, key) {
-				return klass.matchesAny(this.full[full], key);
-			};
-			fieldInfo.value = function ({full, match}) {
-				return {base: full, field: match};
-			};
-			*/
-			/*
-			fieldInfo.entry = function (full, key) {
-				// returns the first matching item
-				let value = klass.matchesAny(this.full[full], key);
-				if (value) {
-					return {key: full, value};
-				}
-			};
-			*/
 
 			this.$udfs.each(function (i, udf) {
 				let base = udfs.base(udf),

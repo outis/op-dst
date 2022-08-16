@@ -95,20 +95,6 @@
 			return this.last(tpl).i;
 		},
 
-		/**
-		 *
-		 * /
-		 // not used
-		each(tpl, fn, self) {
-			if (self) {
-				fn = fn.bind(self);
-			}
-			for (let [name, value] of this.entriesByScan(tpl)) {
-				fn(name, value);
-			}
-		},
-		*/
-
 		entries(tpl, envs, opts={}) {
 			if (envs) {
 				return /*yield**/ this.entriesByBounds(tpl, envs, opts);
@@ -182,43 +168,6 @@
 			}
 			return values;
 		},
-
-		/**
-		 * 
-		 */
-		/* defined in nameGen.nextName
-		nextName(...tpls) {
-			let i;
-			if (is_object(tpls[0])) {
-				tpls = tpls[0];
-				let first = Object.keys(tpls)[0];
-				i = 1 + this.count(tpls[first]);
-				for (let k in tpls) {
-					tpls[k] = klass.eval(tpls[k], {i});
-				}
-			} else {
-				if (Array.isArray(tpls[0])) {
-					tpls = tpls[0];
-				}
-				i = 1 + this.count(tpls[0]);
-				if (tpls.length > 1) {
-					tpls = tpls.map(tpl => klass.eval(tpl, {i}));
-				} else {
-					tpls = klass.eval(tpls[0], {i});
-				}
-			}
-			if (is_object(tpls)) {
-				// so 'i' isn't enumerable; won't work on & not necessary for strings
-				Object.defineProperty(tpls, 'i', {
-					enumerable:false,
-					value: i,
-				});
-			} else {
-				tpls.i = i;
-			}
-			return tpls;
-		},
-		*/
 
 		rename(oldName, newName, {overwrite=false}={}) {
 			if (   this.exists(oldName)
