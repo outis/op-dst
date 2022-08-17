@@ -6,7 +6,7 @@ $requires = [
 	'aliases' => [ 'compatibility', 'dsa', 'dsf', 'klass', 'module', 'pips', 'udfs', 'words', ],
 	'authorize' => [ ],
 	'compatibility' => [ 'aliases', 'dsa', 'dsf', 'klass', 'module', 'range', 'ShorthandDict', 'udfs', 'words', ],
-	'deluxe' => [ 'abilities', 'edition', 'editor', 'health', 'notes', 'tabs' ],
+	'deluxe' => [ 'abilities', 'edition', 'editor', 'health', 'notes', 'tabs', 'undo' ],
 	'demipips' => [ 'dsf', 'pips', ],
 	'dsa' => [ 'klass', 'nameGen', ],
 	'dsf' => [ 'klass', 'nameGen', ],
@@ -30,7 +30,7 @@ $requires = [
 	'tabs' => [ ],
 	'transitions' => [ ],
 	'udfs' => [ 'dsa', 'dsf', 'klass', 'module', 'path', 'pips', 'reorder', 'ShorthandDict', 'words', ],
-	'undo' => [ ],
+	'undo' => [ 'alerts', 'dsf', ],
 	'version' => [ 'module', ],
 	'words' => [ ],
 ];

@@ -23,6 +23,14 @@
 			postLoad() {},
 			change() {},
 			preSave() {},
+
+			tryTransact(fn, all=false) {
+				if (modules.undo) {
+					modules.undo.transact(fn, all);
+				} else {
+					return fn();
+				}
+			},
 		},
 
 		/**
