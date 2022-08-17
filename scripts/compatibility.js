@@ -1496,7 +1496,7 @@
 					try {
 						fn.call(this, name, value, env);
 					} catch (err) {
-						console.error(`Error importing ${name} (${value}): ${err}`);
+						console.error(`Error importing ${name} (${value}): ${err}`, err.stack);
 						// let import continue with other fields
 						//throw err;
 					}
