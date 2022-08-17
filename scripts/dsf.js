@@ -29,6 +29,13 @@
 			return name.replace(/^(?:dsf_)?/, 'dsf_');
 		},
 
+		/**
+		 * Mark sheet as not having unsaved changes.
+		 */
+		clean() {
+			$("#dst_select").data("sheetValueChanged", false);
+		},
+
 		/** Remove the value set on a DSF node. */
 		clear(eltDsf) {
 			delete eltDsf.dataset.value;
@@ -41,6 +48,13 @@
 
 		count(tpl) {
 			return this.last(tpl).i;
+		},
+
+		/**
+		 * Mark sheet as having unsaved changes.
+		 */
+		dirty() {
+			$("#dst_select").data("sheetValueChanged", true);
 		},
 
 		/**
