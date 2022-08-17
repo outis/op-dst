@@ -71,13 +71,15 @@
 		clicked(evt) {
 			const {chirality, i} = this.locate(evt.target);
 
-			if (   chirality
-				&& (evt.altKey || evt.metaKey || evt.shiftKey || evt.button == 1))
-			{
-				this.toggle(evt.target, chirality, i);
-			} else {
-				this.setPips(evt.target, chirality, i);
-			}
+			this.tryTransact(() => {
+				if (   chirality
+					&& (evt.altKey || evt.metaKey || evt.shiftKey || evt.button == 1))
+				{
+					this.toggle(evt.target, chirality, i);
+				} else {
+					this.setPips(evt.target, chirality, i);
+				}
+			});
 		},
 
 		has(elt) {
@@ -104,6 +106,36 @@
 		mark($elt, chirality, value, marker) {
 			//marker ??= this.marker;
 			marker || (marker = this.marker);
+			const $pips = this.$pips($elt, chirality),
+				  oldValue = this.countPips($elt, chirality, marker);
+
+			function mark(value) {
+				if (/0x/.test(value)) {
+					// can't convert value to number before hex test
+					value = +value;
+					for (let i = 0, m = 1; i < $pips.length; ++i, m <<= 1) {
+						if (m & value) {
+							$pips.eq(i).addClass(marker);
+						} else {
+							$pips.eq(i).removeClass(marker);
+						}
+					}
+				} else {
+					value = +value;
+
+					$pips.slice(0, value).addClass(marker);
+					$pips.slice(value).removeClass(marker);
+				}
+			}
+
+			mark(value);
+			modules.undo && modules.undo.record(
+				() => mark(oldValue),
+				() => mark(value),
+			);
+		},
+
+		_mark($elt, chirality, value, marker) {
 			//marker ??= this.marker;
 			marker || (marker = this.marker);
 			const $pips = this.$pips($elt, chirality);
@@ -168,7 +200,7 @@
 			// parses string & sets field value
 			value = this.value($elt, value);
 			this.assemble($elt);
-			this.refresh($elt, value);
+			this._refresh($elt, value);
 		},
 
 		$pips(elt, chirality) {
@@ -230,6 +262,18 @@
 			this.mark($elt, 'right', value.right);
 		},
 
+		/**
+		 * Update marked pips.
+		 *
+		 * Doesn't record undo history.
+		 */
+		_refresh($elt, value) {
+			//value ??= this.value($elt);
+			value || (value = this.value($elt));
+			this._mark($elt, 'left', value.left);
+			this._mark($elt, 'right', value.right);
+		},
+
 		setPips(eltPip, chirality, nPip) {
 			const eltField = eltPip.parentNode,
 				  $eltField = $(eltField),
@@ -256,10 +300,29 @@
 			//marker ??= this.marker;
 			marker || (marker = this.marker);
 			let $eltPip = $(eltPip);
+
+			function turnOff() {
+				$eltPip.removeClass(marker);
+				this.recalc(eltPip.parentNode, chirality);
+			}
+
+			function turnOn() {
+				$eltPip.addClass(marker);
+				this.recalc(eltPip.parentNode, chirality);
+			}
+
 			if ($eltPip.hasClass(marker)) {
 				$eltPip.removeClass(marker);
+				modules.undo && modules.undo.record(
+					turnOn.bind(this),
+					turnOff.bind(this)
+				);
 			} else {
 				$eltPip.addClass(marker);
+				modules.undo && modules.undo.record(
+					turnOff.bind(this),
+					turnOn.bind(this)
+				);
 			}
 
 			this.recalc(eltPip.parentNode, chirality);

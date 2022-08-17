@@ -135,6 +135,8 @@
 		},
 
 		clicked(evt) {
+			this.tryTransact(() => {
+			let oldDetails = this.details;
 			if (evt.shiftKey || evt.altKey || evt.ctrlKey || evt.metaKey) {
 				this.damage(evt.target);
 				this.shiftState(evt.target);
@@ -142,7 +144,23 @@
 				this.heal(evt.target);
 				pips.clicker(evt);
 			}
+			let newDetails = this.details;
+			// adjusting may have removed target, so record position
+			let iPip = nodeIndex(evt.target),
+				parent = evt.target.parentNode;
+			modules.undo && modules.undo.record(
+				() => {
+					this.details = oldDetails;
+					// tamping may change marker position, so also highlight entire DSF.
+					return [parent, parent.children[iPip]];
+				},
+				() => {
+					this.details = newDetails
+					return [parent, parent.children[iPip]];
+				},
+			);
 			dsf.update(this.$details[0], newDetails, 'health_details');
+			});
 		},
 
 		/**

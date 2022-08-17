@@ -16,6 +16,8 @@
 				// strip 'Click to edit' text?
 				if (editMarker == elt.textContent) {
 					elt.textContent = '';
+				} else {
+					this._saveValue({elt, value: elt.textContent});
 				}
 			}, this);
 
@@ -23,6 +25,12 @@
 				elt.title = 'Specialty';
 			});
 		},
+
+		change({fieldName, fieldValue, oldValue}) {
+			// DSFs set through site editor
+			this.value(fieldName, fieldValue);
+		},
+
 
 		/* */
 		addPrefix(name) {
@@ -55,6 +63,18 @@
 		 */
 		dirty() {
 			$("#dst_select").data("sheetValueChanged", true);
+		},
+
+		/**
+		 * Return the specified DSF element.
+		 *
+		 * @param {string|HTMLElement|jQuery} name - DSF name, element, or jQuery-wrapped element
+		 *
+		 * @returns {HTMLElement}
+		 */
+		dsf(name) {
+			let {elt} = this.resolve(name);
+			return elt;
 		},
 
 		/**
@@ -333,7 +353,15 @@
 					return $elt.html();
 				},
 				default($elt) {
-					return $elt[0].dataset.value /*??*/|| $elt.data('value') /*??*/|| $elt.text();
+					//return $elt[0].dataset.value ?? $elt.data('value') ?? $elt.text();
+					if ('value' in $elt[0].dataset) {
+						return $elt[0].dataset.value;
+					}
+					let value = $elt.data('value');
+					if (! is_undefined(value)) {
+						return value;
+					}
+					return $elt.text();
 				},
 			},
 
@@ -356,6 +384,69 @@
 			},
 		},
 
+		/**
+		 * If `undo` module is loaded, record the given changes to history.
+		 *
+		 * @param {object} change - information about what was changed
+		 * @param {HTMLElement} change.elt - Backing element for DSF.
+		 * @param {string} [change.name] - Name of DSF.
+		 * @param {jQuery} [change.$elt] - jQuery wrapped backing element for DSF.
+		 * @param {string|number} value - New value for DSF.
+		 * @param {string|number} [oldValue] - Old value for DSF.
+		 */
+		_recordUndo(change, setValue) {
+			if (modules.undo) {
+				/*
+				change.oldValue ??= this.value(change.elt);
+				change.name ??= this.name(change.elt);
+				change.$elt ??= $(change.elt);
+				*/
+				('oldValue' in change) || (change.oldValue = this.value(change.elt));
+				change.name || (change.name = this.name(change.elt));
+				change.$elt || (change.$elt = $(change.elt));
+
+				setValue = setValue.bind(this);
+
+				modules.undo.record(
+					() => {
+						modules.undo.highlight(change.elt, change.$elt);
+						//console.log(`undo: Reverting ${change.name} to ${change.oldValue}`);
+						setValue({...change, value: change.oldValue});
+					},
+					() => {
+						modules.undo.highlight(change.elt, change.$elt);
+						//console.log(`redo: Setting ${change.name} to ${change.value}`);
+						setValue(change);
+					},
+				);
+			}
+		},
+
+		_setValue({elt, $elt, type, value}) {
+			this._dsf.setters[type]($elt, value);
+			this._saveValue({elt, $elt, value});
+		},
+
+		_saveValue({elt, $elt, value}) {
+			elt.dataset.value = value;
+			($elt /*??*/|| $(elt)).data('value', value);
+		},
+
+		_storeValue({elt, name, value}) {
+			if (this.isVolatile(elt)) {
+				name = this.sku(dsf.stripPrefix(name));
+				localStorage[name] = value;
+			}
+		},
+
+		_value(field, value) {
+			let {elt, $elt, type} = this.resolve(field);
+			if (! elt) {
+				return '';
+			}
+			this._setValue({elt, $elt, type, value});
+		},
+
 		/* get/set value from dsf */
 		value(field, value) {
 			let {elt, $elt, type} = this.resolve(field);
@@ -363,9 +454,8 @@
 				return '';
 			}
 			if (! is_undefined(value)) {
-				this._dsf.setters[type]($elt, value);
-				elt.dataset.value = value;
-				$elt.data('value', value);
+				this._recordUndo({elt, $elt, type, value}, this._setValue);
+				this._setValue({elt, $elt, type, value});
 				return value;
 			}
 			let getter = this._dsf.getters[type] /*??*/|| this._dsf.getters.default;
@@ -393,13 +483,22 @@
 		update(eltField, value, name) {
 			//name ??= this.name(eltField);
 			name || (name = this.name(eltField));
-			eltField.dataset.value = value || '';
-			if (this.isVolatile(eltField)) {
-				name = this.sku(dsf.stripPrefix(name));
-				localStorage[name] = value;
+
+			function saveValue(kwargs) {
+				this._saveValue(kwargs);
+				this._storeValue(kwargs)
 			}
-			//$(eltField).data('value', value);
-			//this.value(name, value);
+
+			let change = {
+				elt: eltField,
+				value,
+				oldValue: eltField.dataset.value,
+			};
+
+			if (change.value !== change.oldValue) {
+				this._recordUndo(change, saveValue);
+				saveValue.call(this, change);
+			}
 		},
 	};
 	mixIn(dsf, nameGen);

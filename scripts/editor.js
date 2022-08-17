@@ -165,13 +165,15 @@
 			console.debug(`editor.save ${dsf.name($dsf)}`);
 			this.stop($dsf);
 			let $editor = $dsf.data('$editor'),
-				val = $editor.find('.value').val();
+				val = $editor.find('.value').val(),
+				oldVal = dsf.value($dsf);
 
 			this.store($dsf, val);
 
 			this.opts.fieldName = dsf.name($dsf);
 			this.opts.fieldValue = val;
-			op.trigger('change', [this.opts]);
+			this.opts.oldValue = oldVal;
+			//op.trigger('change', [this.opts]);
 		},
 
 		setup($context) {
@@ -238,7 +240,8 @@
 			if (! /<p\b/.test(value)) {
 				value = this.addBreaks(value);
 			}
-			$dsf.html(value);
+			//$dsf.html(value);
+			dsf.value($dsf, value);
 
 			$dsf.removeData('old-value');
 		},

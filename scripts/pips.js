@@ -76,16 +76,19 @@
 			const $kids = $elt.children();
 			// -1 for clear box
 			let length = $kids.length - 1;
+			// record history before refresh (which calls this.mark, which records its own history)
+			modules.undo && modules.undo.record(
+				() => this.adjust($elt, -delta, blocker),
+				() => this.adjust($elt, delta, blocker),
+			);
 			if (delta > 0) {
 				length += delta;
-				let attrs='';
-				//blocker ??= this.blocked;
-				blocker || (blocker = this.blocked);
-				if (dsf.linked.isCurr(dsf.name($elt))) {
-					attrs = ` class="${blocker}"`;
-				}
 				for (let i = 0; i < delta; ++i) {
-					$elt.append($(`<span${attrs}></span>`));
+					$elt.append($(`<span></span>`));
+				}
+				let name = dsf.name($elt);
+				if (dsf.linked.isCurr(name)) {
+					this.block($elt, dsf.value(dsf.linked.perm(name)), blocker);
 				}
 				this.refresh($elt);
 			} else if (delta < 0) {
@@ -122,10 +125,20 @@
 			$pips.slice(value+1).addClass(blocker);
 		},
 
-		/* Mark current pips beyond permanent pips as "blocked". */
-		blockCurr(name, nPip) {
+		/* Mark current pips beyond permanent pips as "blocked".
+		 * Only pass $elt if this should be added to undo history.
+		 */
+		blockCurr(name, nPip, {$elt, rating, oldValue}={}) {
 			const matches = name.match(/perm_(?<curr>.*)/);
 			if (matches) {
+				if ($elt) {
+					//oldValue ??= rating ?? this.rating($elt);
+					oldValue || (oldValue = rating || dsf.value($elt));
+					modules.undo && modules.undo.record(
+						() => this.block(dsf.$dsf(`curr_${curr}`), oldValue),
+						() => this.block(dsf.$dsf(`curr_${curr}`), nPip),
+					);
+				}
 				const curr = matches.groups.curr;
 				this.block(dsf.$dsf(`curr_${curr}`), nPip);
 			}
@@ -156,7 +169,7 @@
 			if (this.demi.is(evt.target)) {
 				this.demi.clicked(evt);
 			} else {
-				this.fill(evt.target);
+				this.tryTransact(() => this.fill(evt.target));
 			}
 		},
 
@@ -165,7 +178,7 @@
 				maxPips = dsf.lookup(`perm_${name}`, 10),
 				nPip = Math.min(this.countPips(evt.target), maxPips);
 
-			this.setPips(evt.target, nPip);
+			this.tryTransact(() => this.setPips(evt.target, nPip));
 		},
 
 		/**
@@ -251,9 +264,25 @@
 			//marker ??= this.marker;
 			marker || (marker = this.marker);
 			value = +value;
-			let $pips = $elt.find('span');
-			$pips.slice(1, value+1).addClass(marker);
-			$pips.slice(value+1).removeClass(marker);
+			let $pips = $elt.find('span'),
+				oldValue = this.rating($elt);
+
+			function mark(value) {
+				if (! $pips.last()[0].parentElement) {
+					// $pips is invalidated, as elements have been removed & replaced; recalculate
+					$pips = $elt.find('span');
+					// alternatively, could have this.adjust keep removed kids & restore them when adding pips
+				}
+				$pips.slice(1, value+1).addClass(marker);
+				$pips.slice(value+1).removeClass(marker);
+			}
+
+			mark(value);
+
+			modules.undo && modules.undo.record(
+				() => mark(oldValue),
+				() => mark(value)
+			);
 		},
 
 		markRe: memoize(function (marker='X') {
@@ -331,6 +360,15 @@
 			this.adjust($elt, delta);
 		},
 
+		/* doesn't record undo history */
+		_refresh($elt) {
+			if (this.demi.is($elt)) {
+				this.demi._refresh($elt);
+			} else {
+				this._mark($elt, this.value($elt));
+			}
+		},
+
 		refresh($elt) {
 			if (this.demi.is($elt)) {
 				this.demi.refresh($elt);
@@ -346,6 +384,7 @@
 				$field = $(eltField),
 				name = dsf.name(eltField),
 				value = nPip,
+				oldValue = dsf.value($field) /*??*/||this.rating($field),
 				parts;
 
 			// check for charge max
@@ -356,8 +395,7 @@
 			}
 			dsf.update(eltField, value, name);
 			this.mark($field, nPip);
-
-			this.blockCurr(name, nPip);
+			this.blockCurr(name, nPip, {$elt:$field, oldValue });
 		},
 
 		/**
@@ -387,8 +425,16 @@
 			let $eltPip = $(eltPip);
 			if ($eltPip.hasClass(marker)) {
 				$eltPip.removeClass(marker);
+				this.tryTransact(
+					() => $eltPip.addClass(marker),
+					() => $eltPip.removeClass(marker),
+				);
 			} else {
 				$eltPip.addClass(marker);
+				this.tryTransact(
+					() => $eltPip.removeClass(marker),
+					() => $eltPip.addClass(marker),
+				);
 			}
 		},
 
