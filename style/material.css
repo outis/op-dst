@@ -1,0 +1,312 @@
+/**
+ * Layout and behavioral styling for function.
+ */
+
+/** site & browser style overrides */
+
+.mll_sheet ul,
+.mll_sheet li {
+	list-style-type: none;
+	padding: 0;
+	margin: 0;
+}
+
+.mll_sheet label,
+.mll_sheet li label {
+	display: inline-block;
+	cursor: default;
+}
+
+/** general */
+
+.mll_sheet template,
+.mll_sheet .compatibility,
+.mll_sheet .hidden {
+	display: none;
+}
+
+
+/** Tabs */
+
+.mll_sheet .tabs li {
+	position: relative;
+	display: inline-block;
+	cursor: pointer;
+}
+
+.mll_sheet .tabs .selected {
+	z-index: 5;
+}
+
+
+
+/** Alerts */
+.mll_sheet .alerts {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+}
+
+.mll_sheet .alert {
+	display: block;
+	box-sizing: border-box;
+	opacity: 1;
+	transition: opacity 3s ease-in-out;
+}
+
+.mll_sheet .alert .close::before {
+	cursor: pointer;
+	content: "⊗";
+}
+
+/** highlighting */
+.mll_sheet .highlight {
+	position: relative;
+}
+
+.mll_sheet .highlight::after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: -2px;
+	left: 0;
+}
+
+/** Effects */
+
+.mll_sheet .immediate,
+.mll_sheet .highlight.immediate::after {
+	transition: none !important;
+}
+
+.mll_sheet .highlight::after,
+.mll_sheet .fade-out:not(.highlight) {
+	opacity: 1;
+	transition: opacity 2s ease-in-out;
+}
+
+.mll_sheet .highlight.faded-out::after,
+.mll_sheet .faded-out:not(.highlight) {
+	opacity: 0;
+}
+
+.mll_sheet .wipe {
+	box-sizing: border-box ! important;
+	transition-property: margin, padding, height;
+	transition-duration: 0.5s;
+	transition-timing-function: ease-in-out;
+}
+
+.mll_sheet .wiped {
+	box-sizing: border-box ! important;
+	height: 0 ! important;
+	margin: 0 ! important;
+	padding: 0 ! important;
+}
+
+/** sheet */
+
+/** general sections */
+
+/** specific sections */
+.mll_sheet .attributes .pips {
+	vertical-align: top;
+}
+.mll_sheet .attributes .pips > span {
+	vertical-align: top;
+}
+
+
+.mll_sheet .page > section > .dsf_bio.editing {
+	width: 100%;
+}
+
+/** UDFs */
+.mll_sheet .controls {
+	display: none;
+}
+
+.mll_sheet .controls > button,
+.mll_sheet .controls > span,
+.mll_sheet .help .button,
+.mll_sheet .help button {
+	display: inline-block;
+	cursor: default;
+}
+
+
+.mll_sheet .controls > button,
+.mll_sheet .controls > span {
+	cursor: pointer;
+}
+
+.editable .mll_sheet .controls {
+	display: unset;
+}
+
+/** Tooltips */
+
+.mll_sheet .tipped {
+	position: relative;
+}
+
+.mll_sheet .tip {
+	display: none;
+	position: absolute;
+	bottom: -1.5rem;
+	left: 1rem;
+	z-index: 1;
+}
+
+.mll_sheet .abilities .tip {
+	bottom: -1.5rem;
+}
+
+.editable .mll_sheet .abilities .tip {
+	bottom: -1.25rem;
+}
+
+.mll_sheet .page h4.tipped .tip {
+	bottom: unset;
+	top: 1.1em;
+}
+
+
+.mll_sheet .tipped:hover .tip:not(:empty),
+.mll_sheet .tipped:hover+.tip:not(:empty),
+.mll_sheet .tipped .tip:not(:empty):hover,
+.mll_sheet .tipped+.tip:not(:empty):hover,
+.editable .mll_sheet .tipped:hover .tip,
+.editable .mll_sheet .tipped:hover+.tip,
+.editable .mll_sheet .tipped .tip:hover,
+.editable .mll_sheet .tipped+.tip:hover {
+	display: block;
+}
+
+/** Playing */
+.mll_sheet .dsf:empty.readonly:not(.hidden)::before {
+	/* clear "Click to Edit" placeholder */
+	content: " ";
+	display: inline-block;
+	height: 1em;
+}
+
+/** Editing */
+
+.mll_sheet .editonly {
+	display: none;
+}
+
+.editable .mll_sheet .editonly {
+	display: unset;
+}
+
+.editable .mll_sheet .dsf:empty:not(.readonly)::before,
+.editable .mll_sheet .dsf:empty.custedit::before {
+	content: "Click to edit";
+}
+
+.mll_sheet input.checkbox.dsf::before,
+.mll_sheet input[type="checkbox"].dsf::before {
+	content: ""	 !important /* edit marker selector above is more specific (has more classes), so overrides this ruleset without the !important */;
+}
+
+/** Pips */
+
+.mll_sheet .pips {
+}
+
+.mll_sheet .dsf.pips.perm {
+	display: block;
+}
+
+/*.editable .mll_sheet .pips::before,*/
+.mll_sheet .pips > span {
+	display: inline-block;
+	border-radius: 1em; /* as long as it's > 50% of height */
+	width: 0.75em;
+	height: 0.75em;
+}
+
+.editable .mll_sheet .pips > span,
+.mll_sheet .pips.current > span {
+	position: relative;
+	cursor: pointer;
+}
+
+.editable .mll_sheet .help .pips > span,
+.mll_sheet .help .pips.current > span {
+	cursor: unset;
+}
+
+.mll_sheet .pips.demi > span,
+.mll_sheet .demi .pips > span {
+	width: 0.375em;
+}
+
+.mll_sheet .pips.demi > span:nth-child(2n),
+.mll_sheet .demi .pips > span:nth-child(2n) {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+	border-right: 0;
+	margin-right: 0;
+}
+
+.mll_sheet .pips.demi > span:nth-child(2n+1),
+.mll_sheet .demi .pips > span:nth-child(2n+1) {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+	/* overrides border for clear box */
+	/*border-left: 0;*/
+	margin-left: 0;
+}
+
+
+/*.editable .mll_sheet .pips::before,*/
+.mll_sheet .pips > span:first-child,
+.mll_sheet .demi .pips > span:first-child,
+.mll_sheet .help .clear {
+	display: none;
+
+	/*vertical-align: top;*/
+	border-radius: 0;
+	position: relative;
+	width: 12px;
+	height: 12px;
+}
+
+
+.mll_sheet .pips.perm > span:first-child {
+	/* to align permanent & temp pips */
+	display: inline-block;
+	visibility: hidden;
+}
+
+.editable .mll_sheet .perm .pips > span:first-child {
+	visibility: visible;
+}
+
+
+/* clear box */
+.mll_sheet .pips > span:first-child::before,
+.mll_sheet .help .control.clear::before {
+	content: "╳";
+	line-height: 12px;
+	font-size: 14px;
+	position: absolute;
+	top: 1px;
+	left: -1px;
+}
+
+.editable .mll_sheet .pips > span:first-child,
+.mll_sheet .pips.current > span:first-child,
+.mll_sheet .help .control.clear {
+	display: inline-block;
+	visibility: visible;
+}
+
+.mll_sheet .help .control.clear {
+	vertical-align: baseline;
+}

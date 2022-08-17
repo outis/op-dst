@@ -1,0 +1,820 @@
+/**
+ * Purely for show.
+ */
+
+
+/** site & browser style overrides */
+
+.mll_sheet,
+.mll_sheet ul,
+.mll_sheet ol,
+.mll_sheet dl {
+	line-height: 1.1;
+}
+
+.mll_sheet dt {
+	font-weight: normal;
+}
+
+.mll_sheet dd {
+	padding: 0;
+	margin: 0;
+}
+
+.mll_sheet table,
+.mll_sheet table thead,
+.mll_sheet table tfoot {
+	background-color: unset;
+}
+
+.mll_sheet table tr.even,
+.mll_sheet table tr.alt,
+.mll_sheet table tr:nth-of-type(2n) {
+	background-color: #9995;
+}
+
+.mll_sheet li label {
+	min-width: 6em;
+}
+
+.mll_sheet label {
+	color: black;
+	font-size: 1em;
+}
+
+.mll_sheet .page > section > section {
+	background-color: unset;
+}
+
+.mll_sheet section > h2:first-child,
+.mll_sheet section > h3:first-child {
+	margin-top: 0;
+	margin-bottom: 0.5em;
+}
+
+
+/** general */
+
+.mll_sheet h4 {
+	margin-bottom: 0.5em;
+}
+
+.mll_sheet label + span {
+	margin-left: 0.5em;
+}
+
+/** Tabs */
+.mll_sheet .tabs {
+	border-bottom: 1px solid black;
+	text-align: right;
+}
+
+.mll_sheet .tabs li {
+	border: 1px solid black;
+	border-bottom: 0px;
+	border-radius: 3px 3px 0 0;
+	padding: 0.25em 0.75em;
+	margin: 0 -0.25em;
+
+	color: #444;
+	background-color: #AAA;
+}
+
+.mll_sheet .tabs li:hover:not(.selected) {
+	background-color: #CCC;
+}
+
+.mll_sheet .tabs li:last-child {
+	margin-right: 0;
+}
+
+.mll_sheet .tabs .selected {
+	background-color: white;
+	color: black;
+
+	border-bottom: 1px solid white;
+	margin-bottom: -1px;
+	/*
+	position: relative;
+	bottom: -1px;
+   */
+	padding-top: 0.5em;
+}
+
+/** Alert */
+.mll_sheet .alert {
+	margin: 1em;
+	border: 1px solid white;
+	border-radius: 3px;
+	padding: 0.25em;
+	background-color: #AAA;
+	color: white;
+
+	min-width: 15em;
+	max-width: 50%;
+}
+
+.mll_sheet .alert .close::before {
+	font-size: 1.25rem;
+}
+
+.mll_sheet .alert .close:first-child::before {
+	margin-right: 1em;
+}
+.mll_sheet .alert .close:last-child::before {
+	margin-left: 1em;
+}
+
+/** */
+.mll_sheet .highlight::after {
+	box-shadow: 0px 0px 5px #800;
+	border-radius: 3px;
+}
+
+/** Effects */
+
+/** sheet */
+
+.mll_sheet .page.stats > section,
+.mll_sheet .page.bio > section.associates {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+
+.mll_sheet .page.stats > section.advantages,
+.mll_sheet .page.bio > section.associates,
+.mll_shadow .page.stats > section {
+	grid-template-columns: 1fr 1fr;
+}
+
+.mll_shadow .page.stats > .attributes {
+	display: block;
+}
+
+/* cut
+.mll_sheet .page.stats > section.attributes {
+	grid-template-columns: 1fr 1fr 1fr;
+}
+*/
+
+.mll_sheet .page.stats > section.basic {
+	display: block;
+	position: relative;
+	overflow: auto;
+}
+
+/** general sections */
+.mll_sheet .page > section {
+	clear: both;
+	overflow: visible;
+	padding: 0;
+}
+
+.mll_sheet .page > section::after {
+	content: "";
+	clear: both;
+	display: block;
+}
+
+.mll_sheet .page > section:nth-of-type(2n+1) {
+	background: radial-gradient(circle at 105% 95%, black 0%, #888 10%, white 100%);
+}
+
+.mll_sheet .page > section:nth-of-type(2n) {
+	background: radial-gradient(circle at -5% 95%, black 0%, #888 10%, white 100%);
+}
+
+.mll_sheet section {
+	margin-top: 1em;
+	/* solid line all the way to left side */
+	/*border-top: 2px solid black;*/
+}
+
+.mll_sheet section > section {
+	display: inline-block;
+	border-top: 0;
+	margin-top: 0;
+	background-color: transparent;
+}
+
+.mll_sheet .page > section > h2,
+.mll_sheet .page > section > h3 {
+	grid-column: 1 / -1;
+	grid-row: 1;
+
+	position: relative;
+	/* cut
+	  text-align: center;
+	  z-index: 10;
+	  / *background: url("images/chains-36.png") center/25% repeat-x;* /
+   */
+	padding-left: 1em;
+	padding-top: 0.25em;
+	/* hollow on left side */
+	border-top: 2px solid black;
+	border-left: 3px double black;
+	border-bottom: 3px solid transparent;
+}
+
+.mll_sheet .equipment {
+	grid-column: 1 / -1;
+}
+
+/* cut
+.mll_sheet section > h3::before {
+	content: " ";
+	width: 100%;
+	position: absolute;
+	border-top: 3px dotted black;
+	top: 0.5em;
+	left: 0;
+	z-index: -1;
+}
+
+.mll_sheet section > h3::after {
+	background-color: white;
+	border-radius: 5px;
+	box-shadow: 0 0 15px 10px white;
+	content: " ";
+	top: 0;
+	left: 42%;
+	width: 16%;
+	height: 1.5em;
+	opacity: 0.75;
+	position: absolute;
+	z-index: -1;
+}
+*/
+
+.mll_sheet h4:first-child {
+	margin-top: 0px;
+}
+
+/* cut
+.mll_sheet .arcanoi > h4 {
+	background: url("images/chains-36.png") center/10% repeat-x;
+	width: 100%;
+	text-align: center;
+	margin: 0 auto;
+	position: relative;
+}
+
+.mll_sheet .arcanoi > h4::before {
+	outline: 1px solid red;
+	background: url("images/chain-36.png") center/10% repeat-x;
+	width: 100%;
+	height: 1.5em;
+	position: absolute;
+
+}
+*/
+
+.mll_sheet .page > section > section,
+.mll_sheet .page > section > div {
+	display: inline-block;
+	vertical-align: top;
+	/* width: 45%; */
+	padding: 0.5em 0.25em;
+	/* leave space for clear-box*/
+	/*
+	padding-left: 16px;
+   */
+}
+
+/* cut
+.mll_sheet .page > section:nth-of-type(2n) > section:nth-of-type(2n+1),
+.mll_sheet .page > section:nth-of-type(2n) > div:nth-of-type(2n+1),
+.mll_sheet .page > section:nth-of-type(2n+) > section:nth-of-type(2n),
+.mll_sheet .page > section:nth-of-type(2n+1) > div:nth-of-type(2n) {
+	/*
+	background: #DDD8;
+	background: radial-gradient(circle, #DDDD, #DDDD 80%, #DDD0 100%);
+   * /
+}
+*/
+
+.mll_sheet section > section > div {
+	display: block;
+}
+
+.mll_sheet dt {
+	float: left;
+	clear: left;
+	min-width: 5em;
+	margin-bottom: 0;
+	/*margin-right: 1em;*/
+}
+
+.mll_sheet .help dt {
+	float: none;
+	margin-left: 1em;
+	font-size: 1.2em;
+}
+
+.mll_sheet dt label {
+	display: inline-block;
+	margin-bottom: 0;
+}
+
+
+/** specific sections */
+
+.mll_sheet .basic {
+	text-align: right;
+}
+
+.mll_sheet .basic > * {
+	text-align: left;
+}
+
+.mll_sheet .basic h2 {
+	/*float: left;*/
+}
+
+/* `.page` is needed for specificity */
+.mll_sheet .page .basic > div {
+	min-width: 20em;
+	width: auto;
+}
+
+.mll_sheet .basic dl {
+	margin-top: 0;
+	clear: left;
+}
+
+.mll_sheet .basic dt {
+	margin: 0 0.5em 0 0;
+	background-color: #DDD;
+	padding: 0.2em;
+}
+.mll_sheet .basic dt::after {
+	content: ":";
+}
+.mll_sheet .basic dd {
+	padding: 0.2em;
+	min-height: 1em;
+	/*outline: 1px solid grey;*/
+}
+.mll_sheet .basic dd > :first-child {
+	border-bottom: 1px solid #AAA;
+}
+.mll_sheet.mll_shadow .basic dd > :first-child {
+	border-bottom: 0;
+}
+
+.mll_sheet .attributes dt {
+	line-height: 1;
+}
+
+.mll_sheet .physical dt {
+	min-width: 6em;
+}
+
+.mll_sheet .social dt {
+	min-width: 7em;
+}
+
+.mll_sheet .mental dt {
+	min-width: 6em;
+}
+
+
+/* cut
+.mll_sheet .advantages > :not(.equipment) .tipped {
+	/* not used yet; part of attempt to add some identifying information to backgrounds * /
+	/*
+	max-width: 6em;
+	display: inline-block;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+   * /
+}
+*/
+
+
+.mll_sheet .advantages .backgrounds .tipped .hint::before {
+	content: "(";
+}
+
+.mll_sheet .advantages .backgrounds .tipped .hint::after {
+	content: ")";
+}
+
+.mll_sheet .equipment table {
+	width: auto;
+}
+
+.mll_sheet .equipment td {
+	padding: 0.25em;
+}
+
+.mll_sheet .equipment .tip {
+	bottom: -1.75rem;
+}
+
+
+.mll_sheet .associates dt {
+	float: none;
+
+}
+
+.mll_sheet .associates dd,
+.mll_sheet .associates div.notes {
+	margin: 0 1em 0.25em;
+}
+
+.mll_sheet .page.bio .biodata,
+.mll_sheet .page.bio .biography .stats {
+	float: right;
+	margin: 1em;
+	border: 1px solid black;
+	background-color: #AAA8;
+	width: 30%;
+}
+
+.mll_sheet .page.bio .biodata dt,
+.mll_sheet .page.bio .biography .stats dt {
+	margin-right: 1em;
+}
+
+/** Fields */
+.mll_sheet .dsf blockquote,
+.mll_sheet .dsf blockquote p {
+	color: #600;
+}
+
+.mll_sheet .dsf.specialty {
+	font-size: 0.75em;
+}
+
+/* cut
+.mll_sheet .dsf.specialty:not(:empty)::before {
+	content: "(";
+}
+.mll_sheet .dsf.specialty:not(:empty)::after {
+	content: ")";
+}
+*/
+
+.mll_sheet .page > section > .dsf_bio {
+	padding: 1em;
+	display: block;
+}
+
+.mll_sheet .dsf_bio textarea {
+	display: block;
+	width: 95%;
+	min-height: 20em;
+}
+
+.mll_sheet .dsf_avatar_image {
+	float: left;
+	margin: 1em 2em;
+	max-width: 30%;
+	position: relative;
+}
+
+.mll_sheet .page.bio .dsf_avatar_image {
+	max-width: 60%;
+}
+
+.mll_sheet .dsf_avatar_image img {
+	float: left;
+	max-width: 100%;
+	box-shadow: -3px -3px 15px -5px #260000;
+}
+
+.mll_sheet .dsf_avatar_image::after {
+	content: "";
+	z-index: 1;
+	position: absolute;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	box-shadow: 3px 3px 30px black inset;
+}
+
+
+.mll_sheet.mll_shadow .dsf_avatar_image {
+	float: right;
+	margin-top: -2em;
+}
+
+.mll_sheet.mll_shadow .dsf_avatar_image img,
+.mll_sheet .mll_shadow .dsf_avatar_image img {
+	box-shadow: 3px -3px 15px -5px #260000;
+}
+
+.mll_sheet.mll_shadow .dsf_avatar_image::after,
+.mll_sheet .mll_shadow .dsf_avatar_image::after {
+	box-shadow: -3px 3px 30px black inset;
+}
+
+.mll_sheet h3.dsf_tagline {
+	text-align: center;
+}
+
+
+/** UDFs */
+.mll_sheet span.controls {
+	margin-left: 0.5em;
+	vertical-align: middle;
+}
+
+.mll_sheet td span.controls {
+	margin-left: 0;
+}
+
+.mll_sheet .pips + .controls {
+	margin-left: 0;
+}
+
+.mll_sheet .dsf form button {
+	margin-bottom: 0;
+}
+
+.mll_sheet .controls > button,
+.mll_sheet .controls > span,
+.mll_sheet .help .button,
+.mll_sheet .help button {
+	background: white;
+	color: black;
+	font-size: 0.75em;
+	text-align: center;
+	vertical-align: middle;
+
+	line-height: initial;
+
+	height: 1.5em;
+	width: 1.5em;
+	padding: 0;
+	border: 1px solid black;
+	border-radius: 3px;
+	margin: 0 1px;
+}
+
+.mll_sheet .swapping {
+	outline: 1px solid #800;
+}
+.mll_sheet .swapping .drag {
+	background-color: #DDD;
+}
+
+
+.mll_shadow .attributes .udf {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+}
+.mll_shadow .attributes .udf li {
+	padding: 0.1em 0.5em;
+	border-right: 1px solid black;
+}
+.mll_shadow .attributes .udf li:last-child,
+.mll_shadow .attributes .udf li:nth-child(3n) {
+	border-right: 0;
+}
+
+/** Tooltips */
+
+/*.mll_sheet .tipped:has(> .tip:not(:empty))::after,*/
+.mll_sheet .tipped.mark::after {
+	content: "…";
+	font-size: 0.5em;
+	border: 1px solid black;
+	border-radius: 50%;
+	padding: 0 0.1em;
+	opacity: 0.35;
+	position: absolute;
+	top: -30%;
+}
+
+.mll_sheet .tip {
+	white-space: nowrap;
+	background-color: #CCCD;
+	border: 1px solid #222;
+	padding: 0.5em;
+}
+
+.mll_sheet .page h4.tipped .tip {
+	font-size: 80%;
+}
+
+.mll_sheet :not(h4).tipped:not(.notip) {
+	box-shadow: 0px 0px 4px -1px inset #4008;
+}
+.mll_sheet .tipped:not(.notip):hover {
+	box-shadow: 0 0 4px #100C inset;
+}
+
+.mll_sheet .tipped::after {
+	font-size: 60%;
+	vertical-align: top;
+}
+
+.mll_sheet h4.tipped::after {
+	content: " ⓘ";
+}
+
+/* TODO: find a way to keep tipped marker while highlighting */
+.mll_sheet h4.tipped.highlight::after,
+.mll_sheet h4.tipped.notip::after {
+	content: "";
+}
+
+/* cut
+.mll_sheet h4.tipped .tipped {
+	display: block;
+	content: "test content";
+}
+*/
+
+.mll_sheet h4.tipped:hover .tipped {
+	/*content: ;*/
+}
+
+
+
+/** Playing */
+
+/** Editing */
+
+.editable .mll_sheet .abilities label {
+	font-size: 80%;
+}
+
+.editable .mll_sheet .dsf.custedit textarea {
+	min-height: 5em;
+	/* width: 90%; */
+}
+
+.editable .mll_sheet .dsf.custedit.tip textarea {
+	width: 95%;
+}
+
+.editable .mll_sheet .dsf.notes.custedit.editing {
+	min-width: 20em;
+}
+
+/* cut
+.editable .mll_sheet .dsf.specialty:empty:not(.readonly)::before {
+	content: "(Click to edit)";
+}
+*/
+
+.mll_sheet .dsf:content("Click to edit") {
+	text-decoration: 1px dotted underline;
+}
+
+.mll_sheet .dsf:empty:not(.readonly)::before,
+.mll_sheet .dsf:empty.custedit::before,
+.editable .mll_sheet .dsf:not(.readonly):not(select),
+.editable .mll_sheet .dsf.custedit {
+	text-decoration: 1px dotted underline;
+}
+
+.editable .mll_sheet select.dsf {
+	text-decoration: none;
+}
+
+
+/* cut
+.mll_sheet .pips.dsf::before,
+.mll_sheet input.dsf::before,
+.mll_sheet .dsf[]::before {
+}
+*/
+
+.mll_sheet .specialty input {
+	min-width: 5em ! important;
+}
+.mll_sheet .dsf .jeditable_input {
+	margin-bottom: 0;
+	height: auto !important;
+}
+
+.mll_sheet option.section {
+	text-indent: 0;
+}
+
+.mll_sheet option.subsection {
+	text-indent: 2em;
+}
+
+
+/** Pips */
+
+.mll_sheet .pips {
+	/*display: inline-block;*/
+	white-space: nowrap;
+	vertical-align: middle;
+	/* space for 0-pip */
+	/*padding-left: 4px;*/
+	margin-left: 2px;
+}
+
+.mll_sheet .help .pips.health {
+	white-space: normal;
+	vertical-align: middle;
+	margin-left: 0;
+}
+
+/*.editable .mll_sheet .pips::before,*/
+.mll_sheet .pips > span {
+	margin: 2px;
+	border: 1px solid black;
+	vertical-align: middle;
+	background: white;
+}
+
+.mll_sheet .help .pips.current > span {
+	border-style: solid;
+}
+
+
+/*.editable .mll_sheet .pips::before,*/
+.mll_sheet .pips > span:first-child,
+.mll_sheet .demi .pips > span:first-child,
+.mll_sheet .help .clear {
+	border-width: 1px;
+	border-style: dotted;
+}
+
+/* cut
+.mll_sheet label + .pips > span:first-child,
+.mll_sheet dd > .pips > span:first-child,
+.mll_sheet label + .pips.demi > span:first-child,
+.mll_sheet .demi label + .pips > span:first-child
+{
+	/* * /
+	/*margin-left: -16px;* /
+}
+*/
+
+/* clear box */
+
+/* filled pip */
+.mll_sheet .pips > span.X {
+	background-color: black;
+}
+
+/* blocked pip */
+.mll_sheet .pips > span.D {
+	background-color: #CCC;
+}
+
+.mll_sheet .pips > span.X.D {
+	background-color: #449;
+}
+
+/*
+.mll_sheet .pips.health > span.B,
+.mll_sheet .pips.health > span.L,
+.mll_sheet .pips.health > span.A {
+	background-color: white;
+}
+*/
+
+.mll_sheet .pips.current.health > span:not(:first-child)::before,
+.mll_sheet .pips.health > span.B::before,
+.mll_sheet .pips.health > span.L::before,
+.mll_sheet .pips.health > span.A::before {
+	font-size: 0.75em;
+	position: relative;
+	vertical-align: top;
+}
+
+.mll_sheet .pips.health > span.B::before,
+.mll_sheet .pips.current.health > span:not(.X):not(.L):not(.A):not(:first-child)::before,
+.mll_sheet .help .pips > span:first-child::before {
+	content:"╱";
+}
+
+.mll_sheet .pips.health > span.L::before {
+	content:"╳";
+}
+
+.mll_sheet .pips.health > span.A::before {
+	content:"＊";
+}
+
+/*  */
+.mll_sheet .pips.current > span {
+	border-radius: initial;
+}
+
+/** UDFS */
+.mll_sheet .controls .add::before,
+.mll_sheet .help .control.add::before {
+	content: "+";
+}
+
+.mll_sheet .controls .del::before,
+.mll_sheet .help .control.del::before {
+	content: "–";
+}
+
+.mll_sheet .controls .drag::before,
+.mll_sheet .help .control.drag::before {
+	content: "⇅";
+}
