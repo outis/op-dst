@@ -39,7 +39,7 @@ foreach ($requires as $module => &$reqs) {
 }
 
 function strip_comments($line) {
-	return preg_replace('%//.*|/\*([^*]*?|\*(?!/))*?\*/%', '', $line);
+	return preg_replace('%//.*|/\*([^*]|\*(?!/))*\*/%', '', $line);
 }
 
 /**
