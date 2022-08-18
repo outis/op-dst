@@ -169,9 +169,14 @@
 
 			curr(name) {
 				// test ensures nullish value if no match
-				if (this.isExtra(name)) {
-					return name.replace(/(^|_)extra_/, '$1curr_');
+				if (this.is_ep(name)) {
+					return name.replace(/(^|_)(extra|perm)_/, '$1curr_');
 				}
+			},
+
+			$curr(name) {
+				({name} = this.resolve(name));
+				return dsf.$dsf(this.curr(name));
 			},
 
 			extra(name) {
@@ -181,11 +186,25 @@
 				}
 			},
 
+			$extra(name) {
+				({name} = this.resolve(name));
+				return dsf.$dsf(this.extra(name));
+			},
+
 			perm(name) {
 				// test ensures nullish value if no match
-				if (this.isExtra(name)) {
-					return name.replace(/(^|_)extra_/, '$1perm_');
+				if (this.is_ec(name)) {
+					return name.replace(/(^|_)(extra|curr)_/, '$1perm_');
 				}
+			},
+
+			$perm(name) {
+				({name} = this.resolve(name));
+				return dsf.$dsf(this.perm(name));
+			},
+
+			is(name) {
+				return /(^|_)(extra|perm|curr)_/.test(name);
 			},
 
 			isBase(name) {
@@ -194,6 +213,14 @@
 
 			isCurr(name) {
 				return /(^|_)curr_/.test(name);
+			},
+
+			is_ec(name) {
+				return /(^|_)(extra|curr)_/.test(name);
+			},
+
+			is_ep(name) {
+				return /(^|_)(extra|perm)_/.test(name);
 			},
 
 			isExtra(name) {
