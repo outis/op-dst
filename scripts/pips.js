@@ -234,6 +234,19 @@
 			return $elt.hasClass(this.marker);
 		},
 
+		/**
+		 * Report whether a pip (specified as an index into a parent DSF) is marked.
+		 *
+		 * @param {string|HTMLElement|jQuery} pipped - a pipped DSF
+		 * @param {number} i - 0-based index of a pip
+		 *
+		 * @returns {boolean}
+		 */
+		isMarkedAt(pipped, i) {
+			let {$elt} = this.resolve(pipped);
+			return this.isMarked($elt.children().eq(i+1));
+		},
+
 		mark($elt, value, marker) {
 			//marker ??= this.marker;
 			marker || (marker = this.marker);
