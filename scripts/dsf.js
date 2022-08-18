@@ -65,8 +65,11 @@
 		 * @returns {jQuery}
 		 */
 		$dsf(name) {
-			name = this.addPrefix(name);
-			return this.$context.find(`.${name}`);
+			if (name) {
+				name = this.addPrefix(name);
+				return this.$context.find(`.${name}`);
+			}
+			return $();
 		},
 
 		$dsfs(context, {excludeCompatibility=false}={}) {
