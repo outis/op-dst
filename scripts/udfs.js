@@ -154,6 +154,7 @@
 		 * @param {HTMLElement} eltList Dynamic list to add to.
 		 */
 		add(eltList) {
+			modules.undo && modules.undo.begin();
 			let eltItem, $dsfs, $toPip;
 			eltItem = this.newItem(eltList);
 			this._appendItem(eltList, eltItem);
@@ -175,6 +176,23 @@
 
 			// make new fields editable
 			dsf.editable(eltItem);
+
+			if (modules.undo) {
+				let $eltItem = $(eltItem),
+					$prevItem = $eltItem.prev().last(),
+					$parent = $(eltList);
+				modules.undo.record(
+					() => {
+						$prevItem = $eltItem.prev().last();
+						$eltItem.remove();
+					},
+					() => $prevItem.parent().length
+						? $prevItem.after($eltItem)
+					// don't call this._appendItem, so as to avoid triggering 'add.mll.udfs'
+						: $parent.append($eltItem)
+				);
+				modules.undo.commit();
+			}
 		},
 
 		addDsa(names, values, base) {
@@ -384,10 +402,25 @@
 		 * Remove an item from a dynamic list.
 		 */
 		del(item) {
-			let eltNext = $(item).next()[0];
-			$(item).remove();
-			if (eltNext) {
-				this.renumberItems(eltNext);
+			let { $elt: $item, elt } = this.resolve(item),
+				$parent = $item.parent(),
+				iItem = nodeIndex(elt),
+				$itemPrev = $item.prev().last(),
+				itemNext = $item.next()[0];
+			item = elt;
+			this.id({item, $item});
+			$item.remove();
+			modules.undo && modules.undo.record(
+				// ensure itemNext exists & is still in DOM
+				() => itemNext && itemNext.parentElement ? $item.insertBefore(itemNext)
+				// otherwise, try $itemPrev
+					: $itemPrev.parent().length ? $itemPrev.after($item)
+				// lastly, append
+					: $parent.append($item),
+				() => $item.remove(),
+			);
+			if (itemNext) {
+				this.renumberItems(itemNext);
 			}
 		},
 
@@ -526,6 +559,24 @@
 				names = $dsfs.toArray().map(elt => klass.eval(dsf.name(elt), env).replace(/\d+$/, '{i:02}'));
 			this.fieldsFor[base] = names;
 			return names;
+		},
+
+		id({item, $item}) {
+			if (! item.id) {
+				// is there a method of this that gets parent udf?
+				let $udf = ($item || $(item)).closest('.udf'),
+					udf = $udf[0],
+					iItem;
+				if (is_undefined($udf.data('id-counter'))) {
+					$udf.data('id-counter', 0);
+					iItem = 0;
+				} else {
+					iItem = $udf.data('id-counter');
+				}
+				item.id = this.base(udf) + '_Item_' + iItem;
+				$udf.data('id-counter', iItem + 1);
+			}
+			return item.id;
 		},
 
 		/**
