@@ -206,14 +206,18 @@
 			}
 			let changes = this.transactions.pop();
 			if (changes) {
-				let undos = () => callAllFunctions(changes.undos),
-					redos = () => callAllFunctions(changes.redos);
-				undos.undos = changes.undos;
-				redos.redos = changes.redos;
-				this.record(
-					undos, // () => callAllFunctions(changes.undos),
-					redos, // () => callAllFunctions(changes.redos)
-				);
+				if (changes.undos.length > 1) {
+					let undos = () => callAllFunctions(changes.undos),
+						redos = () => callAllFunctions(changes.redos);
+					undos.undos = changes.undos;
+					redos.redos = changes.redos;
+					this.record(
+						undos, // () => callAllFunctions(changes.undos),
+						redos, // () => callAllFunctions(changes.redos)
+					);
+				} else {
+					this.record(changes.undos[0], changes.redos[0]);
+				}
 			}
 		},
 
