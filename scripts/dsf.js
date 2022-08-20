@@ -28,7 +28,15 @@
 
 		change({fieldName, fieldValue, oldValue}) {
 			// DSFs set through site editor
+			let $field = dsf.$dsf(fieldName),
+				field = $field[0];
+			// ensure old value is recorded, so is accessible when recording undo
+			if (! ('value' in field.dataset)) {
+				field.dataset.value = oldValue || '';
+			}
+			field.dataset.oldValue = oldValue || '';
 			this.value(fieldName, fieldValue);
+			delete field.dataset.oldValue;
 		},
 
 
@@ -396,12 +404,18 @@
 		 */
 		_recordUndo(change, setValue) {
 			if (modules.undo) {
-				/*
-				change.oldValue ??= this.value(change.elt);
+				/* // is elt.dataset.oldValue needed with nullish coalescing?
+				change.oldValue ??= change.elt.dataset.oldValue ?? this.value(change.elt);
 				change.name ??= this.name(change.elt);
 				change.$elt ??= $(change.elt);
 				*/
-				('oldValue' in change) || (change.oldValue = this.value(change.elt));
+				if (! ('oldValue' in change)) {
+					if ('oldValue' in change.elt.dataset) {
+						change.oldValue = change.elt.dataset.oldValue;
+					} else {
+						change.oldValue = this.value(change.elt);
+					}
+				}
 				change.name || (change.name = this.name(change.elt));
 				change.$elt || (change.$elt = $(change.elt));
 

@@ -24,6 +24,14 @@
 			this.slug = slug;
 			this._createControls();
 			this._subscribeListeners();
+			// set initial value so dsf.value() correctly retrieves it when recording an undo
+			for (let template of $('template')) {
+				for (let dsf of template.content.querySelectorAll('.dsf')) {
+					if (! ('value' in dsf.dataset)) {
+						dsf.dataset.value = dsf.textContent;
+					}
+				}
+			}
 
 			this.createItems();
 		},
