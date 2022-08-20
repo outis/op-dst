@@ -301,7 +301,7 @@
 			return new RegExp(`\\b${marker}\\b`);
 		}),
 
-		pippify($elt, {name, value=0}={}) {
+		pippify($elt, {name, value}={}) {
 			if ($elt instanceof $) {
 				if ($elt.length > 1) {
 					return $elt.each((i, elt) => this.pippify(elt));
@@ -311,6 +311,10 @@
 			}
 			//name ??= dsf.name($elt[0]);
 			name || (name = dsf.name($elt[0]));
+			//value ??= dsf.value($elt);
+			if (is_undefined(value)) {
+				value = dsf.value($elt) || '0';
+			}
 			// .readonly to disable DSF framework's click listener & field editor
 			$elt.addClass('pips readonly');
 			if (this.demi.is($elt)) {
