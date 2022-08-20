@@ -267,18 +267,8 @@ function include_modules($modules) {
 	};
 
 	listeners.Change = function dataChange(opts) {
-		let dsfName = dsf.addPrefix(opts.fieldName);
-
 		module.base.tryTransact(() => {
 				module.all('change', opts, $context);
-
-				console.log(`all.change ${opts.fieldName}: ${opts.fieldValue}`);
-				if (dsf.linked.isExtra(opts.fieldName)) {
-					let base = dsf.linked.base(opts.fieldName),
-						$base = $(`.dsf.pips.${base}`);
-
-					$base.each((i, elt) => pips.reassemble($(elt)));
-				}
 			});
 	};
 

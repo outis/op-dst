@@ -48,6 +48,18 @@
 			});
 		},
 
+		change(opts) {
+			module.waitFor('dsf');
+			if (dsf.linked.isExtra(opts.fieldName)) {
+				let base = dsf.linked.base(opts.fieldName),
+					$base = $(`.dsf.pips.${base}`);
+
+				for (let elt of $base) {
+					this.reassemble($(elt));
+				};
+			}
+		},
+
 		/* */
 		/* Noop stand-in for demipips. */
 		demi: {
