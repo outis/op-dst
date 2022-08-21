@@ -240,14 +240,21 @@
 		/**
 		 * Highlight an HTML element.
 		 *
-		 * This method will bring the element into view and draw a halo around the element, which gradually fades.
+		 * This method will bring the element into view and draw a halo around the element, which gradually fades. If the element is hidden, finds first visible ancestor and, if it's a DSF or tipped, highlights it instead; if not, nothing is highlighted.
 		 *
 		 * Used to draw attention to an element that's being changed.
+		 *
+		 * @param {HTMLElement|jQuery} elt - element to highlight
+		 * @param {jQuery} [$elt] - jQuery-wrapped element to highlight; pass only as an optimization so this method doesn't need to create one itself
 		 */
 		async highlight(elt, $elt) {
 			if (Array.isArray(elt)) {
 				elt.map(e => this.highlight(e));
 				return;
+			}
+			if (elt instanceof $) {
+				$elt = elt;
+				elt = $elt[0];
 			}
 			//$elt ??= $(elt);
 			$elt || ($elt = $(elt));
