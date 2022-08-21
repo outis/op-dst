@@ -26,10 +26,7 @@
 			});
 		},
 
-		change({fieldName, fieldValue, oldValue}) {
-			// DSFs set through site editor
-			let $field = dsf.$dsf(fieldName),
-				field = $field[0];
+		change({fieldName, fieldValue, $field, field, oldValue}) {
 			// ensure old value is recorded, so is accessible when recording undo
 			if (! ('value' in field.dataset)) {
 				field.dataset.value = oldValue || '';

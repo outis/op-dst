@@ -267,6 +267,12 @@ function include_modules($modules) {
 	};
 
 	listeners.Change = function dataChange(opts) {
+		opts.$field = dsf.$dsf(opts.fieldName);
+		opts.field = opts.$field[0];
+		if (! ('oldValue' in opts)) {
+			// should return old value (as field.dataset.value should take precedence)
+			opts.oldValue = dsf.value(opts.$field);
+		}
 		module.base.tryTransact(() => {
 				module.all('change', opts, $context);
 			});
