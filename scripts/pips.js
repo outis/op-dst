@@ -287,6 +287,7 @@
 				}
 				$pips.slice(1, value+1).addClass(marker);
 				$pips.slice(value+1).removeClass(marker);
+				return $elt;
 			}
 
 			mark(value);

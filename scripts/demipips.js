@@ -126,6 +126,7 @@
 					$pips.slice(0, value).addClass(marker);
 					$pips.slice(value).removeClass(marker);
 				}
+				return $elt;
 			}
 
 			mark(value);
@@ -304,11 +305,13 @@
 			function turnOff() {
 				$eltPip.removeClass(marker);
 				this.recalc(eltPip.parentNode, chirality);
+				return [$eltPip, eltPip.parentNode];
 			}
 
 			function turnOn() {
 				$eltPip.addClass(marker);
 				this.recalc(eltPip.parentNode, chirality);
+				return [$eltPip, eltPip.parentNode];
 			}
 
 			if ($eltPip.hasClass(marker)) {
