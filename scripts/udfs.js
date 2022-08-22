@@ -193,11 +193,17 @@
 					() => {
 						$prevItem = $eltItem.prev().last();
 						$eltItem.remove();
+						return $parent;
 					},
-					() => $prevItem.parent().length
-						? $prevItem.after($eltItem)
-					// don't call this._appendItem, so as to avoid triggering 'add.mll.udfs'
-						: $parent.append($eltItem)
+					() => {
+						if ($prevItem.parent().length) {
+							$prevItem.after($eltItem);
+						} else {
+							// don't call this._appendItem, so as to avoid triggering 'add.mll.udfs'
+							$parent.append($eltItem);
+						}
+						return $eltItem;
+					}
 				);
 				modules.undo.commit();
 			}
@@ -419,13 +425,23 @@
 			this.id({item, $item});
 			$item.remove();
 			modules.undo && modules.undo.record(
-				// ensure itemNext exists & is still in DOM
-				() => itemNext && itemNext.parentElement ? $item.insertBefore(itemNext)
-				// otherwise, try $itemPrev
-					: $itemPrev.parent().length ? $itemPrev.after($item)
-				// lastly, append
-					: $parent.append($item),
-				() => $item.remove(),
+				() => {
+					if (itemNext && itemNext.parentElement) {
+						// ensure itemNext exists & is still in DOM
+						$item.insertBefore(itemNext);
+					} else if ($itemPrev.parent().length) {
+						// otherwise, try $itemPrev
+						$itemPrev.after($item);
+					} else {
+						// lastly, append
+						$parent.append($item);
+					}
+					return $item;
+				},
+				() => {
+					$item.remove();
+					return $parent;
+				}
 			);
 			if (itemNext) {
 				this.renumberItems(itemNext);
