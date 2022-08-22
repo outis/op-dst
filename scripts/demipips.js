@@ -346,19 +346,25 @@
 		},
 
 		value(field, value) {
+			let oldValue = {...field.dataset};
 			if (field instanceof $) {
 				field = field[0];
 			}
-			if (is_undefined(value)) {
-				//value = {left: 0, right: 0, value: '0 / 0'};
-			} else if (value || 0 == value) { // also handles '' == value
+			// TODO: record undo/redo for val[chirality]
+			if (value || 0 == value) { // also handles '' == value
 				value = this.parse(value);
-				dsf.update(field, value.value, name);
-				Object.assign(field.dataset, value);
-			} else if (! ('left' in field.dataset)) {
-				Object.assign(field.dataset, this.parse(field.dataset.value));
+			} else if (! (is_undefined(value) || 'left' in field.dataset)) {
+				value = this.parse(field.dataset.value);
 			}
-			return field.dataset;
+			if (value) {
+				// must operate on dataset & record history for those changes here, so don't bother with dsf.update or dsf.value
+				Object.assign(field.dataset, value);
+				modules.undo && modules.undo.record(
+					() => Object.assign(field.dataset, oldValue),
+					() => Object.assign(field.dataset, value)
+				);
+			}
+			return {...field.dataset};
 		},
 
 		zero(value={}) {
