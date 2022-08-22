@@ -132,6 +132,8 @@
 					alert(`Error during ${operation}: ${err}. Please save now & reopen for further edits. Redoes redoes may leave sheet with inconsistent data; redo at your own risk.`);
 					// rest of redos might no longer apply & could leave in invalid state, so discard
 					//this.future = [];
+				} finally {
+					this.freeze = false;
 				}
 			} else {
 				alerts.info(`No more ${operation}s.`);
