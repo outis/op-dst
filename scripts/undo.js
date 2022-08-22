@@ -252,6 +252,8 @@
 				elt.map(e => this.highlight(e));
 				return;
 			}
+			// whether the element to highlight was the one requested
+			let requested = true;
 			if (elt instanceof $) {
 				$elt = elt;
 				elt = $elt[0];
@@ -262,8 +264,9 @@
 				// DFSs that are tips (specialties, notes) are generally hidden; this allows highlighting them by highlighting their first visible parent
 				elt = elt.parentNode;
 				$elt = $(elt);
+				requested = false;
 			}
-			if (! ($elt.closest('.dsf').length || $elt.hasClass('tipped'))) {
+			if (! (requested || $elt.closest('.dsf').length || $elt.hasClass('tipped'))) {
 				// The user shouldn't be aware of internally used DSFs, and so shouldn't be alerted to their changes.
 				return;
 			}
