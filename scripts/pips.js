@@ -77,6 +77,18 @@
 		addKinds: addPippedKinds,
 
 		/**
+		 * Add pips to an element.
+		 *
+		 * @param {jQuery} $elt - pipped element
+		 * @param {number} delta - number of pips to add (must be positive)
+		 */
+		addPips($elt, delta) {
+			for (let i = 0; i < delta; ++i) {
+				$elt.append($(`<span></span>`));
+			}
+		},
+
+		/**
 		 * Change the number of pips.
 		 *
 		 * Currently doesn't work for demi-pipped fields (not that there are any in practice that should be adjustable).
@@ -85,31 +97,28 @@
 		 * @param {int} delta Amount to change pips by.
 		 */
 		adjust($elt, delta, blocker) {
-			const $kids = $elt.children();
 			// -1 for clear box
-			let length = $kids.length - 1;
 			// record history before refresh (which calls this.mark, which records its own history)
 			modules.undo && modules.undo.record(
 				() => this.adjust($elt, -delta, blocker),
 				() => this.adjust($elt, delta, blocker),
 			);
 			if (delta > 0) {
-				length += delta;
-				for (let i = 0; i < delta; ++i) {
-					$elt.append($(`<span></span>`));
-				}
+				this.addPips($elt, delta);
 				let name = dsf.name($elt);
+				// reblock
 				if (dsf.linked.isCurr(name)) {
+					// If new permanent value is > old value, then blocking of current pips (new & old) has changed. Recalculate blocking in any case.
 					this.block($elt, dsf.value(dsf.linked.perm(name)), blocker);
 				}
+				// remark: mark any new pips, in case rating > old length
 				this.refresh($elt);
 			} else if (delta < 0) {
-				// don't remove 1st child
-				delta = Math.max(delta, -length);
-				length += delta;
-				// 1 for clear box
-				$kids.slice(length + 1).remove();
+				this.delPips($elt, delta);
+				// since there are no new pips, there's no need to reblock or remark
 			}
+			const $kids = $elt.children(),
+				  length = $kids.length - 1;
 			$elt.trigger('adjust.pips', {length, delta});
 		},
 
@@ -217,6 +226,26 @@
 		 * @returns {number}
 		 */
 		countPips: nodeIndex,
+
+		/**
+		 * Remove pips from element.
+		 *
+		 * @param {jQuery} $elt - pipped element
+		 * @param {number} delta - number of pips to remove (sign doesn't matter)
+		 *
+		 * @returns {number} new pip count
+		 */
+		delPips($elt, delta) {
+			const $kids = $elt.children();
+			// -1 for clear box
+			let length = $kids.length - 1;
+			// don't remove 1st child
+			delta = Math.max(-Math.abs(delta), -length);
+			length += delta;
+			// 1 for clear box
+			$kids.slice(length + 1).remove();
+			return length;
+		},
 
 		/**
 		 * Fill pips up to an element, clear after.
