@@ -80,9 +80,9 @@
 			this.keyPresser = this.keyPressed.bind(this);
 			if (isEditable) {
 				// doesn't catch ⌘-
-				//$context.on('keypress', this.keyPresser);
+				//$(window).on('keypress', this.keyPresser);
 				// catches ⌘-z, but not ⌘-Z
-				$context.on('keydown', this.keyPresser);
+				$(window).on('keydown', this.keyPresser);
 			}
 		},
 
