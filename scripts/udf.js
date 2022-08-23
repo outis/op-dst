@@ -774,8 +774,9 @@
 		 * @param {Object} [options]
 		 * @param {number} [options.width] width of numeric index in name; determines zero-padding
 		 * @param { (node) => null } [options.addl] Additional renumbering operations (if any).
+* @param {boolean} [options.volatile] Whether to remove stored volatile values from local storage.
 		 */
-		renumberItem(eltItem, i, {width, addl}={}) {
+		renumberItem(eltItem, i, {width, addl, volatile}={}) {
 			if (! i) {
 				let iLast = eltItem.length - 1;
 				if ('length' in eltItem && iLast in $tpl) {
@@ -796,6 +797,9 @@
 						'$1_' + this.zeroPad(i, width)
 					);
 				}
+				if (volatile) {
+					dsf.removeValue(elt);
+				}
 			};
 			addl && addl(eltItem);
 		},
@@ -807,11 +811,11 @@
 		 * @param {Object} [options]
 		 * @param { (node) => null } [options.addl] Additional renumbering operations (if any).
 		 */
-		renumberItems(eltItem, {addl}={}) {
+		renumberItems(eltItem, options={}) {
 			let iItem = this.itemNumber(eltItem);
 			for (; eltItem; eltItem = eltItem.nextSibling) {
 				// Note: 1-based index
-				this.renumberItem(eltItem, iItem++, {addl});
+				this.renumberItem(eltItem, iItem++, {...options, volatile:true});
 			}
 		},
 
@@ -822,11 +826,11 @@
 		 * @param {Object} [options]
 		 * @param { (node) => null } [options.addl] Additional renumbering operations (if any).
 		 */
-		renumberList(eltList, {addl}={}) {
+		renumberList(eltList, options={}) {
 			let eltItem;
 			for (let i = 0; i < eltList.children.length; ++i) {
 				// Note: 1-based index
-				this.renumberItem(eltList.children[i], i + 1, {addl});
+				this.renumberItem(eltList.children[i], i + 1, {...options, volatile:true});
 			}
 		},
 

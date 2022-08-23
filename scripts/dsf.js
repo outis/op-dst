@@ -298,6 +298,15 @@
 		},
 
 		/**
+		 * Remove volatile values from local storage.
+		 */
+		removeValue(field) {
+			let {elt, name} = this.resolve(field);
+			name = this.sku(this.stripPrefix(name));
+			localStorage.removeItem(name);
+		},
+
+		/**
 		 * Sort out whether the given thing is a field name, element or jQuery result.
 		 */
 		resolve(field) {
