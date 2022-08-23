@@ -110,7 +110,7 @@
 
 			const details = dsf.override('health_details', dsa.data.health_details);
 			if (details) {
-				this.details = details;
+				this.details = this.repack(details, {length: this.length, delta: 0});
 			}
 		},
 
@@ -306,13 +306,13 @@
 		},
 
 		/**
-		 * Move damage markers to fit if a pipped field shrinks.
+		 * Move damage markers to fit if a pipped field changes size.
 		 *
 		 * @param {LengthChange} change
 		 */
 		tamp(change) {
 			const details = dsf.value(this.$details),
-				  newDetails = this.compact(details, change);
+				  newDetails = this.repack(details, change);
 			if (newDetails !== details) {
 				this.details = newDetails;
 			}
