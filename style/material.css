@@ -216,6 +216,7 @@
 /** Pips */
 
 .mll_sheet .pips {
+	width: min-content;
 }
 
 .mll_sheet .dsf.pips.perm {
