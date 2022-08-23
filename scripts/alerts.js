@@ -32,7 +32,8 @@
 			if (! opts.sticky) {
 				//duration ||= this.duration(msg) ?? this.defaultDuration;
 				duration || (duration = this.duration(msg) || this.defaultDuration);
-				transitions.after($alert, duration).then(async () => this.fadeAlert($alert));
+				transitions.after($alert, duration)
+					.then(async () => this.fadeAlert($alert), () => {});
 			}
 			return $alert;
 		},
