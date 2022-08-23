@@ -221,12 +221,12 @@ function include_modules($modules) {
 
 	function edit() {
 		pips.start();
-		udfs.start();
+		udf.start();
 	}
 
 	function noedit() {
 		pips.stop();
-		udfs.stop();
+		udf.stop();
 		$('.editable').removeClass('.editable');
 	}
 

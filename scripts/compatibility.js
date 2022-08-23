@@ -328,7 +328,7 @@
 				if (parsed.description && ! names.description) {
 					parsed.name += ` (${parsed.description})`;
 				}
-				udfs.addDsa(names, parsed, base);
+				udf.addDsa(names, parsed, base);
 				parsed.imported = base;
 			},
 
@@ -418,8 +418,8 @@
 				if (dsf.exists(parsed.base)) {
 					return ['simple', base];
 				}
-				if (udfs.exists(parsed.base)) {
-					return ['udfs', base];
+				if (udf.exists(parsed.base)) {
+					return ['udf', base];
 				}
 				return ['generic', base];
 			},
@@ -475,8 +475,8 @@
 			},
 
 			generic(parsed, names) {
-				if (udfs.exists(parsed.base)) {
-					return this.import.udfs(parsed, names);
+				if (udf.exists(parsed.base)) {
+					return this.import.udf(parsed, names);
 				}
 				let base = this.normalize(parsed.name /*??*/|| parsed.base /*??*/|| '');
 				if (dsf.exists(base)) {
@@ -539,13 +539,13 @@
 				return parsed;
 			},
 
-			udfs(parsed, names) {
+			udf(parsed, names) {
 				// get template for `.{$parsed.base}`
 				let base = parsed.base,
-					$tpl = udfs.$template(base);
+					$tpl = udf.$template(base);
 
 				if ($tpl) {
-					let tpls = udfs.keyedFieldsFor(base, {$tpl});
+					let tpls = udf.keyedFieldsFor(base, {$tpl});
 					this.parse.appendUnmatched(parsed);
 					this.import._udf(parsed, tpls);
 					return parsed;
@@ -632,7 +632,7 @@
 				},
 				associates: {
 					pre: function(parsed) {
-						if (udfs.exists(parsed.base, compatibility.$context.find('.associates'))) {
+						if (udf.exists(parsed.base, compatibility.$context.find('.associates'))) {
 							// set `type`, in case it's already been removed from tokens
 							parsed.type = parsed.base;
 						}
@@ -750,10 +750,10 @@
 
 				let advantage = this.advantage(type);
 				if (advantage) {
-					if (udfs.exists(type)) {
+					if (udf.exists(type)) {
 						return {parser:advantage, base:type};
 					}
-					if (udfs.exists(base)) {
+					if (udf.exists(base)) {
 						// allies & contacts
 						return {parser:advantage, base, hint:type};
 					}
@@ -763,10 +763,10 @@
 					return {parser:'generic', type:advantage};
 				}
 
-				if (udfs.exists(type)) {
+				if (udf.exists(type)) {
 					return {parser:'generic', base:type};
 				}
-				if (udfs.exists(base)) {
+				if (udf.exists(base)) {
 					return {parser:'generic', base};
 				}
 
@@ -1019,10 +1019,10 @@
 					let names = words.pluralize(name),
 						base, bases;
 					if ('_' != name[0] && ! (name in this.aliases.export) && ! (names in this.aliases.export)) {
-						if (udfs.exists(names) || dsf.exists(names)) {
+						if (udf.exists(names) || dsf.exists(names)) {
 							base = names;
 							bases = [names, name];
-						} else if (udfs.exists(name) || dsf.exists(name)) {
+						} else if (udf.exists(name) || dsf.exists(name)) {
 							base = name;
 							bases = [name, names];
 						} else {
@@ -1057,8 +1057,8 @@
 		},
 
 		preSave(options, $context) {
-			// wait for udfs to recount
-			module.waitFor('udfs');
+			// wait for udf to recount
+			module.waitFor('udf');
 			this.export();
 		},
 
@@ -1360,12 +1360,12 @@
 					fn = this.aliases.export[base];//.bind(this);
 				if ($elt.length) {
 					fn(dsf.value(elt));
-				} else if (($elt = udfs.$udf(base)).length) {
+				} else if (($elt = udf.$udf(base)).length) {
 					/* TODO:
 					 * + behavior-skip more general exporters when there's a more specific exporter
 					 * + skip related fields (e.g. BGs for equipment)
 					 */
-					for (let entry of udfs.entries($elt)) {
+					for (let entry of udf.entries($elt)) {
 						/* TODO:
 						 * + figure out way of passing UDF base (e.g. 'skills') for section exporters (e.g. 'abilities')
 						 */
@@ -1534,7 +1534,7 @@
 		}),
 
 		loopOptions(tpl, defaults={}) {
-			defaults = {from: 0, to: udfs.maxCount, continuous: true, ...defaults};
+			defaults = {from: 0, to: udf.maxCount, continuous: true, ...defaults};
 			let options = {};
 			if (tpl in this.aliases.options) {
 				options = this.aliases.options[tpl];
@@ -1679,7 +1679,7 @@
 					specialty: `dyn_${base}_{i:02}_specialty`,
 				}, values = parts.groups;
 				values.value = dsa.data[rating];
-				udfs.addDsa(names, values, base);
+				udf.addDsa(names, values, base);
 				/*
 				dsa.data[names[0]] = parts.groups.val;
 				dsa.rename(rating, names[1]);

@@ -1,7 +1,7 @@
-	/*** 
+	/***
 	 * User-defined
 	 */
-	const udfs = globals.udfs = {
+	const udf = globals.udf = {
 		//
 		itemNumberWidth: 2,
 		// maximum number of items allowed in a UDF
@@ -82,7 +82,7 @@
 		 */
 		_appendItem(eltList, item) {
 			$(eltList).append(item);
-			$(eltList).trigger('add.mll.udfs', item);
+			$(eltList).trigger('add.mll.udf', item);
 		},
 
 		/**
@@ -200,7 +200,7 @@
 						if ($prevItem.parent().length) {
 							$prevItem.after($eltItem);
 						} else {
-							// don't call this._appendItem, so as to avoid triggering 'add.mll.udfs'
+							// don't call this._appendItem, so as to avoid triggering 'add.mll.udf'
 							$parent.append($eltItem);
 						}
 						return $eltItem;
@@ -622,7 +622,7 @@
 
 		/**
 		 * Get all UDFs from stored DSFs.
-		 * 
+		 *
 		 * Turns a flattened list (i.e. the DSFs stored as key-values in `dynamic_sheet_attrs`) into nested. For example, converts {'base_key_01':value, 'base_key_02':value, } to:
 		 *     {
 		 *     	base: [{key:value}, {key:value}],
@@ -779,7 +779,7 @@
 			if (! i) {
 				let iLast = eltItem.length - 1;
 				if ('length' in eltItem && iLast in $tpl) {
-					// template doesn't have a solo root 
+					// template doesn't have a solo root
 					i = this.itemNumber(eltItem[iLast]) / eltItem.length;
 				} else {
 					i = this.itemNumber(eltItem);
@@ -1002,7 +1002,7 @@
 				tpl = tpl.content;
 			}
 			return tpl;
-			/* jQuery selectors don't seem to work on document fragments, so return 
+			/* jQuery selectors don't seem to work on document fragments, so return
 			 * the template itself and let caller pull elements from it.
 			 .children(':first-child')[0];
 			 */

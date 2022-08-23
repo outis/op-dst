@@ -35,7 +35,7 @@
 				this.submitter = this.submitted.bind(this);
 				this.blurrer = this.blurred.bind(this);
 
-				$('.udf').on('add.mll.udfs', (evt, ...args) => this.setup(...args));
+				$('.udf').on('add.mll.udf', (evt, ...args) => this.setup(...args));
 				this.setup(this.$context);
 				//$context.find('.udf').on('click', '.dsf.' + this.custClass, this.clicker);
 			}

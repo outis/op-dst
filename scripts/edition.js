@@ -79,7 +79,7 @@
 					// this ed.; scan dynamic abilities for this ed.'s static abilities
 					for (let [base, names] of Object.entries(ed.abilities)) {
 						let tplFrom = tpl(base),
-							size = +udfs.size(base),
+							size = +udf.size(base),
 							// envs can be undefined, which will cause a scan rather than iterating over envs
 							envs = this.envs(base);
 						for (let entry of dsa.entries(tplFrom.name, envs, {continuous: true})) {
@@ -127,7 +127,7 @@
 
 				for (let base in compact) {
 					let tpls = tpl(base);
-					udfs.compact(base, tpls, {index: compact[base]+1});
+					udf.compact(base, tpls, {index: compact[base]+1});
 				}
 			}
 		},
@@ -157,7 +157,7 @@
 		},
 
 		envs(base) {
-			let size = +udfs.size(base);
+			let size = +udf.size(base);
 			if (size) {
 				return range.keyed({i: {from: 1, through:size}});
 			}

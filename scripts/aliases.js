@@ -287,7 +287,7 @@
 		 * `dynamic_sheet_attrs`, and so must be name templates. To import the 
 		 * data, these functions should modify `dynamic_sheet_attrs` (or 
 		 * `dsa.data`, including by using {@link dsa.rename()} and
-		 * {@link udfs.addDsa()}).
+		 * {@link udf.addDsa()}).
 		 *
 		 * Property names of [slug].export ar DSF names or UDF bases. Values
 		 * are taken from sheet and passed to these functions for export.
@@ -350,7 +350,7 @@
 						  let nameTpl = 'dyn_merits_{i:02}_name',
 						  valueTpl = 'dyn_merits_{i:02}',
 						  parsed = this.parse._byValues.simple('flaws', [value]);
-						  this.import.udfs(parsed);
+						  this.import.udf(parsed);
 						*/
 					},
 
@@ -376,7 +376,7 @@
 							name: 'dyn_backgrounds_{i:02}_name',
 							value: 'dyn_backgrounds_{i:02}',
 						};
-						udfs.addDsa(
+						udf.addDsa(
 							names,
 							{name, value: dsa.data[theirs + '_value']},
 							'backgrounds');
@@ -402,7 +402,7 @@
 									name: 'dyn_backgrounds_{i:02}_name',
 									value: 'dyn_backgrounds_{i:02}'
 								};
-								udfs.addDsa(names, parsed, 'backgrounds');
+								udf.addDsa(names, parsed, 'backgrounds');
 							}
 						} else if (false !== parsed) { // `false` means ignore this one
 							// couldn't parse
@@ -817,7 +817,7 @@
 							values.value = lvl;
 						}
 						// rename is insufficient, as value may be modified
-						udfs.addDsa(names, values, which);
+						udf.addDsa(names, values, which);
 						delete dsa.data[theirs];
 					},
 

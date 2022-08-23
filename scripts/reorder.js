@@ -97,10 +97,10 @@
 			$(evt.delegateTarget).removeData('payload');
 
 			/* As `reorder` is only to be used for UDFs, assume that calling 
-			 * `udfs.renumberList` is appropriate. Alternatively, reorder could
+			 * `udf.renumberList` is appropriate. Alternatively, reorder could
 			 * support callbacks registered for reorderable lists.
 			 */
-			udfs.renumberList(evt.delegateTarget);
+			udf.renumberList(evt.delegateTarget);
 		},
 
 		swapCancelled(evt) {
@@ -122,7 +122,7 @@
 				elt = $(evt.delegateTarget).data('payload');
 			reorder.insertBefore(elt, other);
 			this.swapOff(evt);
-			udfs.renumberList(evt.delegateTarget);
+			udf.renumberList(evt.delegateTarget);
 		},
 
 		swapOff(evt, {keepActive=true}={}) {

@@ -54,7 +54,7 @@
 
 			for (let base of abilities) {
 				env.base = base;
-				const nItems = udfs.size(base) || udfs.maxCount;
+				const nItems = udf.size(base) || udf.maxCount;
 				for (let i = 1; i <= nItems; ++i) {
 					env.i = i;
 					name = klass.eval(tpls.name, env);
