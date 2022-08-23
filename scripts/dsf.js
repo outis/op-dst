@@ -112,10 +112,10 @@
 			if (self) {
 				fn = fn.bind(self);
 			}
-			this.$dsfs(this.$context).each(function (i, elt) {
+			this.$dsfs(this.$context).each((i, elt) => {
 				let $elt = $(elt),
-					name = dsf.name(elt),
-					value = dsf.value(elt);
+					name = this.name(elt),
+					value = this.value(elt);
 				if (name) {
 					fn(elt, $elt, name, value);
 				} else {
@@ -130,14 +130,14 @@
 				.not('.readonly')
 				//.not('.pips') // should be covered by .readonly
 				//.not('.hidden') // should be covered by .readonly
-				.each(function (i, elt) {
-					let name = dsf.stripPrefix(dsf.name(elt));
-					aisleten.characters.bindField(name, dsf.sheetId, dsf.slug);
+				.each((i, elt) => {
+					let name = this.stripPrefix(this.name(elt));
+					aisleten.characters.bindField(name, this.sheetId, this.slug);
 				});
 		},
 
 		entries(tpl) {
-			tpl = dsf.addPrefix(tpl);
+			tpl = this.addPrefix(tpl);
 			let pre = klass.prefix(tpl);
 			return this.$context.find(`.dsf[class*=" ${pre}"]`)
 				.toArray()
@@ -445,7 +445,7 @@
 
 		_storeValue({elt, name, value}) {
 			if (this.isVolatile(elt)) {
-				name = this.sku(dsf.stripPrefix(name));
+				name = this.sku(this.stripPrefix(name));
 				localStorage[name] = value;
 			}
 		},
@@ -480,7 +480,7 @@
 		 * Allows for values to be set outside of edit mode.
 		 */
 		override(name, value) {
-			name = dsf.stripPrefix(name);
+			name = this.stripPrefix(name);
 			let key = this.sku(name);
 			if (key in localStorage) {
 				value = localStorage[key];

@@ -37,7 +37,7 @@
 		},
 
 		preSave() {
-			udfs.reCountAll();
+			this.reCountAll();
 		},
 
 		/* Update old versions */
@@ -103,25 +103,26 @@
 		 * @param {jQuery} [options.$udf] `$(udf)`. If not provided, created from `udf`.
 		 */
 		_createSizeDsf(udf, {base, $udf}={}) {
+			// note: local `udf` hides outer `udf`, but the latter is accessible as `this`
 			this.$size(udf, {base, $udf});
 		},
 
 		_createSizeDsfs() {
-			this.$udfs.each(function (i, elt) {
-				udfs._createSizeDsf(elt);
-			});
+			for (let elt of this.$udfs) {
+				this._createSizeDsf(elt);
+			};
 		},
 
 		_subscribeListeners() {
-			$(document).on('click', '.udf + .controls button', function (evt) {
+			$(document).on('click', '.udf + .controls button', (evt) => {
 				// prevent form submission
 				evt.preventDefault();
 				return false;
 			});
 
 			// for list-based UDFs
-			$(document).on('click', '.udf + .controls .add', function (evt) {
-				udfs.add(udfs.udfFor(evt.target));
+			$(document).on('click', '.udf + .controls .add', (evt) => {
+				this.add(this.udfFor(evt.target));
 				// prevent form submission.
 				// For some reason, generic button.click above doesn't prevent
 				evt.preventDefault();
@@ -129,26 +130,26 @@
 			});
 
 			// for table-based UDFs
-			$(document).on('click', '.udf + * .controls .add', function (evt) {
-				udfs.add(udfs.udfFor(evt.target));
+			$(document).on('click', '.udf + * .controls .add', (evt) => {
+				this.add(this.udfFor(evt.target));
 				// prevent form submission.
 				evt.preventDefault();
 				return false;
 			});
 
-			$(document).on('click', '.udf .del', function (evt) {
+			$(document).on('click', '.udf .del', (evt) => {
 				// ignore click if currently taking another action
-				if (! $(evt.target).closest(udfs.udfSel).hasClass('busy')) {
+				if (! $(evt.target).closest(this.udfSel).hasClass('busy')) {
 					let $item = $(evt.target).closest('.udf > *');
 					switch ($item) {
 					case 'dd':
-						udfs.del($item.prev('dt'));
+						this.del($item.prev('dt'));
 						break;
 					case 'dt':
-						udfs.del($item.next('dd'));
+						this.del($item.next('dd'));
 						break;
 					}
-					udfs.del($item);
+					this.del($item);
 				}
 				// prevent form submission.
 				evt.preventDefault();
@@ -213,12 +214,12 @@
 			let result = dsa.add(...arguments);
 			if (result.base) {
 				// TODO? feature-support different index bases (0- vs. 1-)
-				udfs.updateSize(result.base, result.i);
+				this.updateSize(result.base, result.i);
 			}
 		},
 
 		addItemControls(eltItem, $placeholder) {
-			let $controls = udfs.$itemControls.clone();
+			let $controls = this.$itemControls.clone();
 			//$placeholder ??= $(eltItem).find('.controls');
 			$placeholder || ($placeholder = $(eltItem).find('.controls'));
 			if ($placeholder.length) {
@@ -237,7 +238,7 @@
 		},
 
 		addListControls(eltList, $placeholder) {
-			let $controls = udfs.$listControls.clone();
+			let $controls = this.$listControls.clone();
 			//$placeholder ??= $(eltList).find('+ .controls');
 			$placeholder || ($placeholder = $(eltList).find('+ .controls'));
 			if ($placeholder.length) {
@@ -329,6 +330,7 @@
 			let counts = {},
 				uncounted = {},
 				scan = false;
+			// note: local `udf` hides outer `udf`, but the latter is accessible as `this`
 			for (let udf of this.$udfs) {
 				let base = this.base(udf),
 					name = this.sizeName(base);
@@ -388,8 +390,8 @@
 		 * @param {string} [options.base] Base name of dynamic list.
 		 */
 		createItemsFor(eltList, nItems, {base}) {
-			//base ??= udfs.base(eltList);
-			base || (base = udfs.base(eltList));
+			//base ??= this.base(eltList);
+			base || (base = this.base(eltList));
 			let $eltList = $(eltList),
 				$scion = this.newItem(eltList, {base}),
 				$clone;
@@ -407,8 +409,8 @@
 		createItems() {
 			let udfCounts = this.countUdfItems();
 			for (let udf of this.$udfs) {
-				let base = udfs.base(udf);
-				udfs.createItemsFor(udf, udfCounts[base], {base});
+				let base = this.base(udf);
+				this.createItemsFor(udf, udfCounts[base], {base});
 			}
 		},
 
@@ -470,16 +472,16 @@
 			});
 		},
 
-		eachEntry(udf, fn) {
+		eachEntry(items, fn) {
 			function entry(item) {
 				return fn(this.entry(item));
 			}
-			this.eachItem(udf, entry.bind(this));
+			this.eachItem(items, entry.bind(this));
 		},
 
-		eachItem(udf, fn) {
+		eachItem(items, fn) {
 			// TODO? feature-support templates/items without a unique root
-			let {$elt} = this.resolve(udf);
+			let {$elt} = this.resolve(items);
 			$elt.children().each(fn);
 		},
 
@@ -490,8 +492,8 @@
 					name: dsf.name(elt),
 					value: dsf.value(elt),
 				}));
-			return entry.reduce(function (accum, b) {
-				let key = udfs.key(b.name);
+			return entry.reduce((accum, b) => {
+				let key = this.key(b.name);
 				accum.names[key] = b.name;
 				accum.values[key] = b.value;
 				return accum;
@@ -540,12 +542,12 @@
 				},
 			});
 
-			this.$udfs.each(function (i, udf) {
-				let base = udfs.base(udf),
+			for (let udf of this.$udfs) {
+				let base = this.base(udf),
 					$udf = $(udf),
 					parts, short;
-				fieldInfo[base] = udfs.fieldsFor(udf, {base});
-			});
+				fieldInfo[base] = this.fieldsFor(udf, {base});
+			};
 
 			// save results for future calls
 			this.fieldInfo = function () {
@@ -757,9 +759,9 @@
 		},
 
 		renameItem(eltItem, env) {
-			$(eltItem).find('.dsf').each(function (i, node) {
+			for (let node of dsf.$dsfs(eltItem)) {
 				node.className = klass.eval(node.className, env);
-			});
+			};
 		},
 
 		/**
@@ -783,18 +785,18 @@
 					i = this.itemNumber(eltItem);
 				}
 			}
-			$(eltItem).find('.dsf').each(function (_, dsf) {
-				let vars = (klass.vars(dsf.className) /*??*/|| []).filter(v => 1 == v.length);
+			for (let elt of dsf.$dsfs(eltItem)) {
+				let vars = (klass.vars(elt.className) /*??*/|| []).filter(v => 1 == v.length);
 				if (vars.length) {
-					dsf.className = klass.eval(dsf.className, {[vars[0]]: i});
+					elt.className = klass.eval(elt.className, {[vars[0]]: i});
 				} else {
 					// replace the 1st number, or append if no numbers
-					dsf.className = dsf.className.replace(
+					elt.className = elt.className.replace(
 						/\b(dsf_[^ \d]*[^_ \d])(?:_\d+)?/,
-						'$1_' + udfs.zeroPad(i, width)
+						'$1_' + this.zeroPad(i, width)
 					);
 				}
-			});
+			};
 			addl && addl(eltItem);
 		},
 
@@ -946,33 +948,33 @@
 
 		start() {
 			// add item controls to templates
-			this.$context.find('template.item').each(function (i, doc) {
+			for (let doc of this.$context.find('template.item')) {
 				let item = doc.content.firstElementChild;
-				udfs.addItemControls(item);
-			});
+				this.addItemControls(item);
+			};
 
 			// add list controls to UDFs
-			this.$udfs.each(function(i, eltList) {
+			for (let eltList of this.$udfs) {
 				let $list = $(eltList),
 					$controls = $list.find('+ .controls');
 
 				if ($controls.length && $controls[0].childElementCount) {
 					$controls.show();
 				} else {
-					udfs.addListControls(eltList, $controls);
+					this.addListControls(eltList, $controls);
 				}
-			});
+			};
 
 			// add item controls to existing items (those created during preLoad)
-			this.$context.find('.udf > *').each(function (i, eltItem) {
+			for (let eltItem of this.$context.find('.udf > *')) {
 				let $controls = $(eltItem).find('.controls');
 				if ($controls.length && $controls[0].childElementCount) {
 					$controls.show();
 				} else {
-					udfs.addItemControls(eltItem, $controls);
-					//$(eltItem).append(udfs.$itemControls.clone());
+					this.addItemControls(eltItem, $controls);
+					//$(eltItem).append(this.$itemControls.clone());
 				}
-			});
+			};
 		},
 
 		stop() {
