@@ -119,7 +119,7 @@
 				if (name) {
 					fn(elt, $elt, name, value);
 				} else {
-					console.log(`No name for dsf ${elt.className}`, elt);
+					console.warn(`No name for dsf ${elt.className}`, elt);
 				}
 			});
 		},

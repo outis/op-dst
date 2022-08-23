@@ -343,7 +343,7 @@
 			};
 
 			if (scan) {
-				console.log('Scanning data to determine size of UDFs without a stored size field:', Object.values(uncounted));
+				console.info('Scanning data to determine size of UDFs without a stored size field:', Object.values(uncounted));
 				// some fields don't have counts; scan for specific fields
 				for (let base in uncounted) {
 					let tpl = `dyn_${base}_{i:02}`,

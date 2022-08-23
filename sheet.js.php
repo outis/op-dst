@@ -248,6 +248,8 @@ function include_modules($modules) {
 		$context = $(sel);
 		$context.selector = sel;
 		$context.containerId = opts.containerId;
+		// for debugging
+		mll_sheet.$context = $context;
 
 		// init, so updaters have $context
 		module.all('init', $context, slug, opts.isEditable);

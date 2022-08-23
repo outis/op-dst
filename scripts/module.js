@@ -83,7 +83,7 @@
 					later = [];
 				} else {
 					let message = `Cyclic dependency with ${func}; have to skip ${now}.`;
-					console.log(message);
+					console.error(message);
 					//now = [];
 					throw {
 						message,
