@@ -20,7 +20,7 @@
 		_inorder: [],
 		_resort: true,
 		// so other MLL clients can override for their own versioning
-		versionKey: 'mll_version',
+		versionKey: 'mll_data_version',
 
 		/* DST event handlers */
 		preLoad(opts, $context) {
@@ -38,7 +38,7 @@
 				this._version = version;
 				data[this.versionKey] = version;
 				if (this.$context) {
-					/* If $context not yet set, then dsf_mll_version also hasn't been 
+					/* If $context not yet set, then dsf_${this.versionKey} also hasn't been
 					   set, so it doesn't matter if it's not updated right now.*/
 					// Don't use dsf.$dsf, to avoid adding a dependency
 					this.$context.find(`.dsf_${this.versionKey}`).text(version);
