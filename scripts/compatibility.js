@@ -77,6 +77,8 @@
 			//bindAll(this._aliases., this);
 			//aliases.export.dst ??= {};
 			aliases.export.dst || (aliases.export.dst = {});
+			//aliases.export.templates ??= {};
+			aliases.export.templates || (aliases.export.templates = {});
 			for (let [name, dst] of Object.entries(aliases.dst)) {
 				derefProperties(dst.import);
 				bindAll(dst.import, this);
@@ -84,6 +86,10 @@
 				if (dst.export) {
 					derefProperties(dst.export);
 					aliases.export.dst[name] = dst.export /*??*/|| { partial:true };
+					if (dst.export.templates) {
+						// suppress export of these (by exportTemplated)
+						Object.assign(aliases.export.templates, dst.export.templates);
+					}
 				}
 				if (is_function(dst.override)) {
 					this.import.dst[name] = dst.override;
@@ -1398,7 +1404,9 @@
 		},
 
 		exportTemplated() {
-			for (let {mine, value, theirs, env} of this.myTemplateEntries({prefix:false})) {
+			// TODO: evaluate whether to set 'export' when exporting to a specific DST (cusory exam: yes, as )
+			const opts = {prefix:false, export:true};
+			for (let {mine, value, theirs, env} of this.myTemplateEntries(opts)) {
 				if (theirs in this.aliases.options) {
 					// handle 0-based indices
 					let options = this.aliases.options[theirs];
@@ -1767,6 +1775,19 @@
 		*templateAliases(options={}) {
 			// should options be copied first?
 			delete options.skipCorrections;
+			if (options.export) {
+				options.include = entry => {
+					const prefix = klass.prefix(entry[1]),
+						  name = klass.eval(entry[1], {i:1}),
+						  $udf = dsf.$dsf(name).closest('.udf');
+					if (   (entry[0] in this.aliases.export.templates)
+						|| (entry[1] in this.aliases.export.templates))
+					{
+						return false;
+					}
+					return true;
+				};
+			}
 			yield* this.aliasEntries('templates', options);
 		},
 
