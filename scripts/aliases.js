@@ -1037,9 +1037,13 @@
 						return this._flavor(names, values);
 					},
 
-					fetters: 'splat',
+					fetters(name, value, mine, opts={}) {
+						return this.splat(name, value, mine, {...opts, category: 'Fetter'});
+					},
 
-					passions: 'splat',
+					passions(name, value, mine, opts={}) {
+						return this.splat(name, value, mine, {...opts, category: 'Passion'});
+					},
 
 					// TODO: investigate "Object" values in traits_*_{i}
 					splat(name, value, mine, opts={}) {
@@ -1049,6 +1053,9 @@
 						if (! mine && is_object(name)) {
 							/* (names, values) */
 							[{name, value}, mine] = [value, name.value];
+						}
+						if (opts.category) {
+							name = `${opts.category}: ${name}`;
 						}
 						let theirs = {
 							name: 'traits_type_{i:02}',
