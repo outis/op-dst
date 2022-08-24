@@ -860,6 +860,14 @@
 					 * + check that createTemplatedFields doesn't create any fields that are handled by compatibility.export.paired
 					 * + export ability specialties (replace template alias?)
 					 */
+					templates: {
+						'ability_type_{i:02}': 'abilities',
+						'ability_value_{i:02}': 'abilities',
+						'talent_type_{i:02}': 'abilities',
+						'talent_value_{i:02}': 'abilities',
+						'knowledge_type_{i:02}': 'abilities',
+						'knowledge_value_{i:02}': 'abilities',
+					},
 
 					_flavor(names, values) {
 						compatibility.export.flavor(
@@ -884,17 +892,68 @@
 						// TODO: finish
 					},
 
-					abilities(names, values) {
-						if (values.specialty) {
-							values.name += ` (${values.specialty})`;
-						}
-						compatibility.export.paired(
-							{
-								name: 'numina_type_{i:02}',
-								value: 'numina_value_{i:02}'
-							}, values, names.value, {start:0}
-						);
+					// static abilities
+					_abilities: {
+						'athletics': 'ability',
+						'brawl': 'ability',
+						'drive': 'ability',
+						'firearms': 'ability',
+						'larceny': 'ability',
+						'stealth': 'ability',
+						'survival': 'ability',
+						'weaponry': 'ability',
 
+						'animalken': 'talent',
+						'empathy': 'talent',
+						'expression': 'talent',
+						'intimidation': 'talent',
+						'persuasion': 'talent',
+						'socialize': 'talent',
+						'streetwise': 'talent',
+						'subterfuge': 'talent',
+
+						'academics': 'knowledge',
+						'computer': 'knowledge',
+						'craft': 'knowledge',
+						'investigation': 'knowledge',
+						'medicine': 'knowledge',
+						'occult': 'knowledge',
+						'politics': 'knowledge',
+						'science': 'knowledge',
+					},
+
+					abilities(names, values) {
+						const slug = values.name.toLowerCase().replace(/\s+/, '');
+						if (slug in this._abilities) {
+							compatibility.exportField(slug, values.value);
+							if (values.specialty) {
+								compatibility.export.field(
+									'specialty_type_{i:02}',
+									values.specialty,
+									names.specialty,
+									aliases.options.jp12x_splat
+								);
+							}
+						} else {
+							if (values.specialty) {
+								values.name += ` (${values.specialty})`;
+							}
+							//const type = dsf.sectionName(`.${names.name}`);
+							const {type} = klass.extract('dyn_{type}_{i}', names.value) || {},
+								  abilities = {
+									  'talents': 'ability',
+									  'skills': 'talent',
+									  'knowledges': 'knowledge',
+								  },
+								  ability = abilities[type] || words.singulize(type || 'ability');
+							compatibility.export.paired(
+								{
+									// fix this: wrong field names
+									name: `${ability}_type_{i:02}`,
+									value: `${ability}_value_{i:02}`
+								}, values, names.value, aliases.options.jp12x_splat
+							);
+						}
 					},
 
 					arcanoi(names, values) {
