@@ -465,6 +465,7 @@
 						if (names) {
 							item.mine = compatibility.aliasFor(names);
 						}
+						item.name = item.name.ucfirst();
 						// adding their items is delayed, so register a handler to actually store them in DSFs when done collecting
 						// Handled via this._finish instead of preSave handler
 						//module.on('preSave', 'old_wod_generic._store', this._store.bind(this));
@@ -924,6 +925,7 @@
 
 					abilities(names, values) {
 						const slug = values.name.toLowerCase().replace(/\s+/, '');
+						values.name = values.name.titleCase();
 						if (slug in this._abilities) {
 							compatibility.exportField(slug, values.value);
 							if (values.specialty) {
@@ -959,6 +961,7 @@
 					arcanoi(names, values) {
 						let parts = values.value.match(pips.reDemi),
 							mine = names.value /*??*/|| Object.values(names)[0];
+						values.name = values.name.ucfirst();
 						if (parts) {
 							let {left, right, lmask, rmask} = parts.groups;
 							if (lmask) {
@@ -1054,6 +1057,7 @@
 							/* (names, values) */
 							[{name, value}, mine] = [value, name.value];
 						}
+						name = name.ucfirst();
 						if (opts.category) {
 							name = `${opts.category}: ${name}`;
 						}

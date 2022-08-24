@@ -847,18 +847,30 @@
 			},
 
 			dispatch(tokens, prelim) {
-				let parser = this.parse._byTokens[prelim.parser];
+				let parser = this.parse._byTokens[prelim.parser],
+					parsed;
 				if (parser) {
 					if (is_function(parser)) {
-						return parser(tokens, prelim);
+						parsed = parser(tokens, prelim);
 					} else {
 						// parse.tokens mutates parser properties, so make a copy first
 						parser = copyAll(parser);
-						return this.parse.tokens(tokens, parser, prelim);
+						parsed = this.parse.tokens(tokens, parser, prelim);
 					}
+					return this.parse.normalize(parsed);
 				} else {
 					console.error(`compatibility.parse.dispatch: No token parser for '${category}'`);
 				}
+			},
+
+			/**
+			 * Post-parse, pre-import processing.
+			 */
+			normalize(parsed) {
+				if (parsed.name) {
+					parsed.name = parsed.name.ucfirst();
+				}
+				return parsed;
 			},
 
 			prelim(tokens) {
@@ -986,7 +998,8 @@
 			/*** /parse by tokens ***/
 
 			split(value, defaults={}) {
-				return this.parse.byPatterns(value, 'split', defaults);
+				const parsed = this.parse.byPatterns(value, 'split', defaults);
+				return this.parse.normalize(parsed);
 			},
 
 			glueRe: memoize(function (glue) {
