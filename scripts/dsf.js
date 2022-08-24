@@ -263,7 +263,7 @@
 			*/
 		},
 
-		sectionName(elt) {
+		$section(elt) {
 			let $elt;
 			if ('string' == typeof(elt)) {
 				$elt = this.$context.find(elt);
@@ -272,7 +272,18 @@
 			} else {
 				$elt = $(elt);
 			}
-			let sectionElt = $elt.parent().closest('[class]')[0];
+			return $section = $elt.parent().closest('[class]');
+		},
+
+		section(elt) {
+			let $section = this.$section(elt);
+			if ($section[0]) {
+				return $section[0];
+			}
+		},
+
+		sectionName(elt) {
+			let sectionElt = this.section(elt);
 			if (sectionElt) {
 				return sectionElt.className.split(/\s+/)[0];
 			}
