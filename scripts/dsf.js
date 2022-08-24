@@ -454,7 +454,7 @@
 
 		_storeValue({elt, name, value}) {
 			if (this.isVolatile(elt)) {
-				name = this.sku(this.stripPrefix(name));
+				name = this.sku(this.stripPrefix(name || this.name(elt)));
 				localStorage[name] = value;
 			}
 		},
@@ -510,8 +510,8 @@
 			}
 
 			let change = {
-				elt: eltField,
-				value,
+				elt: eltField, $elt: $(eltField),
+				name, value,
 				oldValue: eltField.dataset.value,
 			};
 
