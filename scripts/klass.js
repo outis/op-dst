@@ -203,8 +203,8 @@
 		 */
 		vars: memoize(function (name) {
 			//return name.match(/(?<={)[^:}]+(?=(:[^}]*)?})/g) /*??*/|| [];
-			let vars = name.match(this.reVars) || [];
-			return vars.map(v => v.replace(/^{|}$/g, ''));
+			let vars = [...name.matchAll(this.reVars)] || [];
+			return vars.map(m => m.groups.name);
 		}),
 
 		// TODO: refactor-find better name
