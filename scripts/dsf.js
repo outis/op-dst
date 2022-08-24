@@ -5,10 +5,11 @@
 	 */
 	let dsf = globals.dsf = {
 		/* DST event handlers */
-		preLoad({containerId, slug}, $context) {
+		preLoad({containerId, slug, isEditable}, $context) {
 			this.$context = $context;
 			this.sheetId = containerId;
 			this.slug = slug;
+			this.isEditable = isEditable;
 		},
 
 		postLoad(opts, $context) {
@@ -453,7 +454,8 @@
 		},
 
 		_storeValue({elt, name, value}) {
-			if (this.isVolatile(elt)) {
+			// only store volatile values if not currently editing
+			if (! this.isEditable && this.isVolatile(elt)) {
 				name = this.sku(this.stripPrefix(name || this.name(elt)));
 				localStorage[name] = value;
 			}
