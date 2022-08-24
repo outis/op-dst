@@ -37,6 +37,7 @@
 		 * @typedef {Object} AliasOptions
 		 * @property {boolean} [prefix] Whether to prefix names with the DSF prefix.
 		 * @property {boolean} [skipCorrections] Whether to skip simple aliases that are spelling corrections.
+		 * @property {string[] => boolean} [include] Filter function, determines whether to include an alias entry in the results.
 		 *
 		 * @typedef {Object} MyAliasEntry
 		 * @property {string} mine DSF name for this DST
@@ -1085,12 +1086,17 @@
 		 */
 		*aliasEntries(segment, options={}) {
 			const isSimple = ('simple' == segment || segment === this.aliases.simple);
-			let include = entry => true;
+			let include = options.include || (entry => true);
 			if (segment in this.aliases) {
 				segment = this.aliases[segment];
 			}
 			if (isSimple && options.skipCorrections) {
-				include = entry => ! this.aliases.import[entry[1]];
+				// this.aliases.import is a SimpleDict of templated import fields, so the following test whether a simple alias also matches a templated import, indicating the simple alias is a spelling correction (e.g. 'other_trait_7a')
+				if (options.include) {
+					include = entry => (! this.aliases.import[entry[1]] && options.include(entry));
+				} else {
+					include = entry => ! this.aliases.import[entry[1]];
+				}
 			}
 			for (let entry of Object.entries(segment)) {
 				if (options.prefix) {
