@@ -1080,12 +1080,16 @@
 		/**
 		 * Generate alias pairs in the given segment (e.g. simple, templates) of aliases.
 		 *
-		 * @param {string} segment Segment name.
+		 * @param {string|object} segment Segment name, or segment.
 		 * @param {AliasOptions} [options]
 		 */
 		*aliasEntries(segment, options={}) {
+			const isSimple = ('simple' == segment || segment === this.aliases.simple);
 			let include = entry => true;
-			if ('simple' == segment && options.skipCorrections) {
+			if (segment in this.aliases) {
+				segment = this.aliases[segment];
+			}
+			if (isSimple && options.skipCorrections) {
 				include = entry => ! this.aliases.import[entry[1]];
 			}
 			for (let entry of Object.entries(segment)) {
@@ -1094,7 +1098,7 @@
 					entry[1] = dsf.addPrefix(entry[1]);
 				}
 				// skip simple aliases corresponding to complex ones, as the former are spelling corrections (`mine` isn't actually mine)
-				if (include) {
+				if (include(entry)) {
 					yield entry;
 				}
 			}
@@ -1239,7 +1243,7 @@
 		 * @param {AliasOptions} [options]
 		 */
 		eachSimple(fn, self, options={}) {
-			return this.eachEntry(fn, this.aliases.simple, self, options);
+			return this.eachEntry(fn, 'simple', self, options);
 		},
 
 		/**
@@ -1252,7 +1256,7 @@
 		 * @param {AliasOptions} [options]
 		 */
 		eachTemplate(fn, self, options={}) {
-			return this.eachEntry(fn, this.aliases.templates, self, options={});
+			return this.eachEntry(fn, 'templates', self, options={});
 		},
 
 
@@ -1746,7 +1750,7 @@
 		 * @param {AliasOptions} [options]
 		 */
 		*simpleAliases(options={}) {
-			yield* this.aliasEntries(this.aliases.simple, options);
+			yield* this.aliasEntries('simple', options);
 		},
 
 		/**
@@ -1757,7 +1761,7 @@
 		*templateAliases(options={}) {
 			// should options be copied first?
 			delete options.skipCorrections;
-			yield* this.aliasEntries(this.aliases.templates, options);
+			yield* this.aliasEntries('templates', options);
 		},
 
 		/**
