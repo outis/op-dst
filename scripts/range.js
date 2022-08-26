@@ -213,7 +213,7 @@
 		 * Generate a keyed sequence over a single key & sequence.
 		 *
 		 * @param {string} key
-		 * @param {generator | LoopParams | number} vals
+		 * @param {generator | LoopParams | number | number[]} vals
 		 * @param {object?} obj
 		 */
 		entry: resettableGenerator(function*(key, vals, obj = {}) {
@@ -241,7 +241,7 @@
 		/**
 		 * Generate a keyed sequence over multiple keys & sequences.
 		 *
-		 * @param {Array.<Array.<string, generator  | LoopParams | number>>} entries
+		 * @param {Array.<Array.<string, generator | LoopParams | number | number[]>>} entries
 		 */
 		entries(entries) {
 			for (let i in entries) {
@@ -392,7 +392,7 @@
 		/**
 		 * Generate a keyed sequence over multiple sequences.
 		 *
-		 * @param {{key: generator | LoopParams | number, ...}} entries
+		 * @param {{key: generator | LoopParams | number | number[], ...}} entries
 		 */
 		keyed: resettableGenerator(function*(obj) {
 			return yield* range.entries(Object.entries(obj));
@@ -484,12 +484,21 @@
 		 *     [...range.over(2, 10,  3)] # [2,5,8]
 		 *     [...range.over(2, 10, -3)] # [10, 7, 4]
 		 *
-		 * @param {LoopParams | number} params Loop parameters, or lower limit.
+		 * @param {LoopParams | number | number[]} params Loop parameters, or lower limit, or `[from, to, step]`.
 		 * @param {number} [to] Upper limit (exclusive).
 		 * @param {?number} [step] Difference between successive values. Can be negative. Defaults to `1` if from < to; `-1` if from > to.
 		 */
 		over: function (params, to, step) {
-			params = range._parameterize(...arguments);
+			if (Array.isArray(params)) {
+				if (   0 < params.length && params.length < 4
+					&& params.every(x => 'number' === typeof(x)))
+				{
+					[params, to, step] = params;
+				} else {
+					return params;
+				}
+			}
+			params = range._parameterize(params, to, step);
 			let i = params.from;
 			return {
 				next(value) {
