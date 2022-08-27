@@ -927,8 +927,10 @@
 			 * @returns {string[]}
 			 */
 			tokenize(value) {
-				let tokens = this.scrub(value.toString()).split(/ *(?:[- ]*[:;()]+[- ]*| -|- |((?:0x[\dA-F]+|\d+) *(?:pts?|\/ *(?:0x[\dA-F]+|\d+)))) *| *(\d+)$/g);
-				return tokens.filter(x => x);
+				return this.scrub(value.toString())
+					.split(/ *(?:[- ]*[:;()]+[- ]*| -|- |((?:0x[\dA-F]+|\d+) *(?:pts?|\/ *(?:0x[\dA-F]+|\d+)))) *| *(\d+)$/g)
+					.filter(x => x)
+					.map(x => x.replace(/^[-]|[-]$/, ''));
 			},
 
 			/**
