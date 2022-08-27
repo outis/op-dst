@@ -124,8 +124,7 @@
 						}
 						++n;
 					}
-					// if n, then all vars <= 1; don't break yet
-					break;
+					// all vars <= 1, so don't break yet
 				}
 			}
 		},
