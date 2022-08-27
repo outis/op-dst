@@ -113,13 +113,12 @@
 					//yield {name, value:data[name], env};
 				} else if (continuous && Object.values(env).every(x => x)) {
 					// only break out of variables at 2 or more
-					let n = 0;
+					let n = 1;
 					// find first variable not at start of loop
 					for (let i = vars.length - 1; i >= 0; --i) {
 						if (env[vars[i]] > 1) {
 							// break, so vars[i] will advance
 							envs.next(n);
-							n = 0;
 							break;
 						}
 						++n;
