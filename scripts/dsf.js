@@ -263,6 +263,13 @@
 			*/
 		},
 
+		/**
+		 * The closest named container of a given element, as a jQuery.
+		 *
+		 * @param {string|HTMLElement|jQuery} elt - an element of the section
+		 *
+		 * @returns {jQuery}
+		 */
 		$section(elt) {
 			let $elt;
 			if ('string' == typeof(elt)) {
@@ -275,6 +282,13 @@
 			return $section = $elt.parent().closest('[class]');
 		},
 
+		/**
+		 * The closest named container of a given element, as an HTML element.
+		 *
+		 * @param {string|HTMLElement|jQuery} elt - an element of the section
+		 *
+		 * @returns {HTMLElement}
+		 */
 		section(elt) {
 			let $section = this.$section(elt);
 			if ($section[0]) {
@@ -282,6 +296,13 @@
 			}
 		},
 
+		/**
+		 * The name of the container of a given element.
+		 *
+		 * @param {string|HTMLElement|jQuery} elt - an element of the section
+		 *
+		 * @returns {string}
+		 */
 		sectionName(elt) {
 			let sectionElt = this.section(elt);
 			if (sectionElt) {

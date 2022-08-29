@@ -353,7 +353,6 @@
 			if (field instanceof $) {
 				field = field[0];
 			}
-			// TODO: record undo/redo for val[chirality]
 			if (value || 0 == value) { // also handles '' == value
 				value = this.parse(value);
 			} else if (! (is_undefined(value) || 'left' in field.dataset)) {

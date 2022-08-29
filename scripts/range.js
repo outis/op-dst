@@ -212,9 +212,13 @@
 		/**
 		 * Generate a keyed sequence over a single key & sequence.
 		 *
-		 * @param {string} key
-		 * @param {generator | LoopParams | number | number[]} vals
-		 * @param {object?} obj
+		 * Generates a sequence of values and stores each in turn as the property <var>key</var> of target object <var>obj</var>.
+		 *
+		 * @param {string} key - property name to hold generated value
+		 * @param {generator | LoopParams | number | number[]} vals - A generator, or arguments to {@link this.over}.
+		 * @param {object?} obj - target object, to hold generated values. Only needed if recursively generating multiple keyed sequences.
+		 *
+		 * @yields {object}
 		 */
 		entry: resettableGenerator(function*(key, vals, obj = {}) {
 			let result;
@@ -241,7 +245,20 @@
 		/**
 		 * Generate a keyed sequence over multiple keys & sequences.
 		 *
+		 * Each element of entries are passed as the <var>key</var> and <var>vals</var> arguments of {@link this.entry}.
+		 *
+		 * Example:
+		 *     range.entries([
+		 *         ['name', ['foo', 'bar', 'baz']],
+		 *         ['i', range.over(5)],
+		 *         ['j', 5], # equivalent to range.over(5)
+		 *         ['k', {from: 3, through: 18, step: 3}],
+		 *         ['n', [1, 10, 2]],
+		 *     ]);
+		 *
 		 * @param {Array.<Array.<string, generator | LoopParams | number | number[]>>} entries
+		 *
+		 * @yields {object}
 		 */
 		entries(entries) {
 			for (let i in entries) {
@@ -391,6 +408,15 @@
 
 		/**
 		 * Generate a keyed sequence over multiple sequences.
+		 *
+		 * Example:
+		 *     range.keyed({
+		 *         name: ['foo', 'bar', 'baz'],
+		 *         i: range.over(5),
+		 *         j: 5, # equivalent to range.over(5)
+		 *         k: {from: 3, through: 18, step: 3},
+		 *         n: [1, 10, 2],
+		 *     });
 		 *
 		 * @param {{key: generator | LoopParams | number | number[], ...}} entries
 		 */

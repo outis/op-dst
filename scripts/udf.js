@@ -2,6 +2,22 @@
 	 * User-defined
 	 */
 	const udf = globals.udf = {
+		/**
+		 * DSF names in UDF items match the template `dyn_{base}_{i}_{key}`. An `ItemName` contains these components as an object.
+		 *
+		 * @typedef {object} ItemName
+		 * @property {string} base
+		 * @property {string} i
+		 * @property {string?} key
+		 *
+		 *
+		 * A UdfEntry represents an item in a UDF, where each DSF is split into corresponding entries of the <var>names</var> and <var>values</var> properties.
+		 *
+		 * @typedef {object} UdfEntry
+		 * @property {string[]} names - UDF keys (parsed from DSF names, which include base & item index)
+		 * @property {string[]} values - DSF values
+		 */
+
 		//
 		itemNumberWidth: 2,
 		// maximum number of items allowed in a UDF
@@ -271,7 +287,9 @@
 		},
 
 		/**
-		 * Return a list of the base field name for all UDFs.
+		 * Return a list of the base field names for all UDFs.
+		 *
+		 * @returns {string[]}
 		 */
 		bases() {
 			return this.$udfs
@@ -485,6 +503,13 @@
 			$elt.children().each(fn);
 		},
 
+		/**
+		 * Extract the names & values from a UDF item (as an HTML element).
+		 *
+		 * @param {HTMLElement} item
+		 *
+		 * @returns {UdfEntry}
+		 */
 		entry(item) {
 			let entry = dsf.$dsfs(item)
 				.toArray()
@@ -659,6 +684,13 @@
 			return /^(dsf_)?dyn_.*\{.*\}/.test(name);
 		},
 
+		/**
+		 * Yield each item (as an HTML element) from a UDF in turn.
+		 *
+		 * @param {string|HTMLElement|jQuery} udf
+		 *
+		 * @yield HTMLElement
+		 */
 		*items(udf) {
 			// TODO? feature-support templates/items without a unique root
 			let {$elt} = this.resolve(udf);
@@ -678,7 +710,7 @@
 		/**
 		 * Extract names of fields for a given UDF.
 		 *
-		 * Differs from {@link this.fieldsFor} in the latter returns a list of only field names, while this also extracts field keys and uses them for indices.
+		 * Differs from {@link this.fieldsFor} in that the latter returns a list of only field names, while this also extracts field keys and uses them for indices.
 		 *
 		 * @param {HTMLElement|string|$} eltList Dynamic list.
 		 * @param {Object} [kwargs] `this.fieldsFor` keyword arguments
@@ -740,6 +772,15 @@
 			return $eltItem;
 		},
 
+		/**
+		 * Parse a DSF name from a UDF item.
+		 *
+		 * {@link this.splitName Splits} the components of a DSF name from a UDF item (following the name template `dyn_{base}_{i}_{key}`), then assigns them to properties corresponding to the component names.
+		 *
+		 * @param {string} name
+		 *
+		 * @returns {ItemName}
+		 */
 		parseName: memoize(function (name) {
 			let parts = this.splitName(name);
 			if (parts.length) {
@@ -807,6 +848,8 @@
 		/**
 		 * Update the UDF item number portion of DSF names for the given HTML element and all following siblings.
 		 *
+		 * Differs from {@link this.renumberList} in that this method only renumbers items starting with a given item, while the other renumbers all items. Also, this method takes an item, while the other the parent UDF.
+		 *
 		 * @param {HTMLElement} eltItem A dynamic list item
 		 * @param {Object} [options]
 		 * @param { (node) => null } [options.addl] Additional renumbering operations (if any).
@@ -821,6 +864,8 @@
 
 		/**
 		 * Update item numbers in DSF field names for all items in a dynamic list.
+		 *
+		 * Differs from {@link this.renumberList} in that this method renumbers all items, while the other only renumbers starting with a given item. Also, this method takes the parent UDF, while the other takes an item.
 		 *
 		 * @param {HTMLElement} eltList A dynamic list
 		 * @param {Object} [options]
@@ -845,6 +890,9 @@
 			this.renumberItem(eltItem, iItem);
 		},
 
+		/**
+		 * @param {string|HTMLElement|jQuery} list
+		 */
 		resolve(list) {
 			let base, elt, $elt;
 			if ('string' == typeof(list)) {
@@ -1031,6 +1079,13 @@
 			return $(eltList.children[0]);
 		},
 
+		/**
+		 * Return the UDF(s) under the given base.
+		 *
+		 * @param {string} base - class name of element(s) containing UDFs to return
+		 *
+		 * @returns {jQuery}
+		 */
 		$udf(base) {
 			// only look in .page to exclude compatibility fields
 			return this.$context.find(`.page .${base} .udf`);

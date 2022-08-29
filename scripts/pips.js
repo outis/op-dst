@@ -266,6 +266,16 @@
 				|| (! closer && is_kind(pippedKinds, elt));
 		},
 
+		/**
+		 * Report whether the given DSF (or name/value) is pipped.
+		 *
+		 * There are various properties that come into play. An element might have the 'pips' or 'nopips' class, for example. It might be a pipped {@link is_kind kind}, as long as it's not also a {@link is_flag flag} field (the <var>name</var> and <var>value</var> arguments are used to determine this).
+		 *
+		 * @param {HTMLElement} elt - element to check
+		 * @param {string} value - boolean values indicate the element is not pipped (via {@link is_flag})
+		 *
+		 * @returns {boolean}
+		 */
 		is(elt, name, value) {
 			let $elt = $(elt),
 				closer = $elt.closer('.pips', '.nopips');
