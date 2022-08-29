@@ -1082,11 +1082,17 @@
 		/**
 		 * Return the UDF(s) under the given base.
 		 *
-		 * @param {string} base - class name of element(s) containing UDFs to return
+		 * @param {string|HTMLElement|jQuery} base - class name of element(s) containing UDFs to return
 		 *
 		 * @returns {jQuery}
 		 */
 		$udf(base) {
+			if (base instanceof HTMLElement) {
+				base = $(base);
+			}
+			if (base instanceof $) {
+				return base.find(this.udfSel);
+			}
 			// only look in .page to exclude compatibility fields
 			return this.$context.find(`.page .${base} .udf`);
 		},
