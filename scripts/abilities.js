@@ -12,6 +12,17 @@
 			this.separateSpecialties();
 		},
 
+		/**
+		 * Convert the ability text (from a dynamic ability field) to a valid DSF name (which is also an HTML class).
+		 *
+		 * @param {string} ability - ability label (i.e. a dynamic field value)
+		 *
+		 * @returns {string}
+		 */
+		fieldName(ability) {
+			return ability.toLowerCase().replace(/\([^)]*\)/, '').trim().replace(/\s+/, '_');
+		},
+
 		/* */
 
 		separateSpecialty(tpls, env, name, value) {
