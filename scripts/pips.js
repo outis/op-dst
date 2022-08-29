@@ -1,5 +1,7 @@
 	/***
 	 * Pipped fields
+	 *
+	 * @mixes resolver
 	 */
 	let pips = globals.pips = {
 		reDemi: /(?<left>(?<lmask>0x)?[\dA-F]+) *\/ *(?<right>(?<rmask>0x)?[\dA-F]+)/i,
@@ -518,3 +520,4 @@
 		},
 	};
 	pips.postLoad.queue = [];
+	mixIn(pips, resolver);
