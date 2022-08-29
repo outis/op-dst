@@ -30,7 +30,7 @@ $requires = [
 	'tabs' => [ ],
 	'transitions' => [ ],
 	'udf' => [ 'dsa', 'dsf', 'klass', 'module', 'path', 'pips', 'reorder', 'ShorthandDict', 'words', ],
-	'undo' => [ 'alerts', 'dsf', ],
+	'undo' => [ 'alerts', 'dsf', 'transitions', ],
 	'version' => [ 'module', ],
 	'words' => [ ],
 ];
