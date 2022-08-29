@@ -287,16 +287,25 @@
 		},
 
 		/**
-		 * Return a list of the base field names for all UDFs.
+		 * Return a list of the base field names for UDFs in the given context.
+		 *
+		 * @param {string|HTMLElement|jQuery} [section] - Restrict results to UDFs in this section. Defaults to global context.
 		 *
 		 * @returns {string[]}
 		 */
-		bases() {
-			return this.$udfs
-				.parent()
-				.closest('[class]')
-				.toArray()
-				.map(elt => elt.className.replace(/ .*/, ''));
+		bases(section) {
+			const $udfs = section ? this.$udf(section) : this.$udfs;
+			return $udfs.toArray().map(this.base.bind(this));
+
+			if (section) {
+				this.$udf(section).toArray().map(this.base.bind(this));
+			} else {
+				return this.$udfs
+					.parent()
+					.closest('[class]')
+					.toArray()
+					.map(elt => elt.className.replace(/ .*/, ''));
+			}
 		},
 
 		baseToRe: memoize(function (base) {
