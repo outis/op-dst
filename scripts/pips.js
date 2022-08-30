@@ -516,7 +516,7 @@
 				return this.demi.value(elt, val);
 			}
 			if (val) {
-
+				this.setPips(elt.children[0], val);
 			}
 			return +dsf.value(elt) || 0;
 		},
