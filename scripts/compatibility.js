@@ -294,6 +294,26 @@
 			},
 
 			/**
+			 * Export to a dynamic field with multiple DSFs.
+			 *
+			 * Properties of <var>names</var> and <var>values</var> with the same keys are paired. This method generates names for the fields, then exports to a DSF for each `name[key], value[key]` pair.
+			 *
+			 * @param {object} names - Foreign DSF name templates.
+			 * @param {object} values - DSF values.
+			 * @param {string} [mine] - Native DSFs that were the source of the values.
+			 * @param {object} [options] - Options for {@link dsf.nextName}
+			 */
+			fields(names, values, mine, options={}) {
+				if (! options && is_object(mine)) {
+					options = mine;
+					delete mine;
+				}
+				let theirs = dsf.nextName(names, options);
+
+				this.export.all(theirs, values, mine);
+			},
+
+			/**
 			 * Export a "flavor" field (merit, flaw), by packing a tag, the label, and possibly a value into a single DSF.
 			 *
 			 * @param {NameTemplate} name - foreign DSF name (can be templated)
@@ -331,26 +351,6 @@
 				let perm = dsf.value('perm_' + mine),
 					curr = dsf.value('curr_' + mine);
 				this.export.simple(base /*??*/|| mine, `${curr} / ${perm}`);
-			},
-
-			/**
-			 * Export to a dynamic field with multiple DSFs.
-			 *
-			 * Properties of <var>names</var> and <var>values</var> with the same keys are paired. This method generates names for the fields, then exports to a DSF for each `name[key], value[key]` pair.
-			 *
-			 * @param {object} names - Foreign DSF name templates.
-			 * @param {object} values - DSF values.
-			 * @param {string} [mine] - Native DSFs that were the source of the values.
-			 * @param {object} [options] - Options for {@link dsf.nextName}
-			 */
-			fields(names, values, mine, options={}) {
-				if (! options && is_object(mine)) {
-					options = mine;
-					delete mine;
-				}
-				let theirs = dsf.nextName(names, options);
-
-				this.export.all(theirs, values, mine);
 			},
 
 			/**
