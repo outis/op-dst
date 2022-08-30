@@ -95,6 +95,27 @@
 			return this.last(tpl).i;
 		},
 
+		/**
+		 * Yields entries of {@link this.data} matching the given name template.
+		 *
+		 * For efficiency, a sequence of variable environments can be provided via the <var>envs</var> argument, which are used with {@link klass.eval} to generate names from <var>tpl</var>. This argument should be created with {@link range.keyed} or compatible (it must yield a sequence of environments, must comply with the iterator-break-protocol, and thus must be resettable). Without this argument, all sheet data is scanned, checking each entry for a match against <var>tpl</var>.
+		 *
+		 * If <var>envs</var> is provided and there shouldn't be any gaps in the sequence, set the `continuous` option, which will cause the scan loop to break out of inner loops when it encounters an entry that doesn't {@link this.exists exist}.
+		 *
+		 * Example:
+		 *
+		 *     let envs = range.keyed({i: {from: 0, to:10}});
+		 *     for (let [name, value, env] of dsa.entries('bg{i}', envs, {continuous: true})) {
+		 *         // …
+		 *     }
+		 *
+		 * @param {NameTemplate} tpl - name template to match
+		 * @param {*object} [envs] - iterable yielding name template variables
+		 * @param {object} [opts] - keyword arguments
+		 * @param {boolean} [opts.continuous] - if true (and if <var>envs</var> is provided), break out of loops
+		 *
+		 * @yields {[string, string, object]} name, value, and environment
+		 */
 		entries(tpl, envs, opts={}) {
 			if (envs) {
 				return /*yield**/ this.entriesByBounds(tpl, envs, opts);

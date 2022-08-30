@@ -201,6 +201,9 @@
 		},
 
 
+		/**
+		 * Linked fields are interdependent fields representing a permanent rating and a current value, such as health or willpower, where the permanent rating is a maximum for the current value. There may also be a field that gives a bonus or penalty to the permanent field's own maximum.
+		 */
 		linked: {
 			base(name) {
 				// test ensures nullish value if no match

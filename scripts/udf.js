@@ -749,7 +749,7 @@
 		 * The 1-based index of a UDF in the parent collection.
 		 *
 		 * @param {string} name
-		 * @param {string} the template for the UDF
+		 * @param {NameTemplate} the template for the UDF
 		 */
 		indexOf(name, tpl) {
 			let parts;

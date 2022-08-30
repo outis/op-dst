@@ -409,6 +409,8 @@
 		/**
 		 * Generate a keyed sequence over multiple sequences.
 		 *
+		 * Emulates nested loops over arbitrary loop variables.
+		 *
 		 * Example:
 		 *     range.keyed({
 		 *         name: ['foo', 'bar', 'baz'],

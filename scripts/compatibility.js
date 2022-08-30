@@ -35,18 +35,18 @@
 	let compatibility = globals.compatibility = {
 		/**
 		 * @typedef {Object} AliasOptions
-		 * @property {boolean} [prefix] Whether to prefix names with the DSF prefix.
-		 * @property {boolean} [skipCorrections] Whether to skip simple aliases that are spelling corrections.
-		 * @property {string[] => boolean} [include] Filter function, determines whether to include an alias entry in the results.
+		 * @property {boolean} [prefix] - Whether to prefix names with the DSF prefix.
+		 * @property {boolean} [skipCorrections] - Whether to skip simple aliases that are spelling corrections.
+		 * @property {string[] => boolean} [include] - Filter function, determines whether to include an alias entry in the results.
 		 *
 		 * @typedef {Object} MyAliasEntry
-		 * @property {string} mine DSF name for this DST
-		 * @property {string} value DSF value
-		 * @property {string} theirs DSF name for other DST
-		 * @property {string} [env] For template aliases, contains variables extracted from name.
+		 * @property {string} mine - DSF name for this DST
+		 * @property {string} value - DSF value
+		 * @property {string} theirs - DSF name for other DST
+		 * @property {string} [env] - For template aliases, contains variables extracted from name.
 		 *
 		 * @typedef {MyAliasEntry} MyTemplateEntry
-		 * @property {string} theirs DSF template for other DST
+		 * @property {NameTemplate} theirs - DSF template for other DST
 		 * @property {string} env
 		 */
 		defaults: {
@@ -189,6 +189,24 @@
 				this.export.generic('backgrounds', ...arguments);
 			},
 
+			/**
+			 * Export multiple (usually related) fields.
+			 *
+			 * Field <var>names</var> and <var>values</var> are related by key. Example:
+			 *     compatibility.export.all(
+			 *         {name: 'other_trait_1', value: 'other_value_1'},
+			 *         {name: 'Oboli', value: '1.5'},
+			 *         'money'
+			 *     );
+			 *
+			 * Doesn't handle templated fields; for that, use {@link this.export.paired}, which will generate DSF names for related fields.
+			 *
+			 * Calls {@link this.export.dynamicField} to export each DSF.
+			 *
+			 * @param {object} names - foreign DSF names (not templated)
+			 * @param {object} values - DSF values
+			 * @param {string} mine - native DSF name
+			 */
 			all(names, values, mine) {
 				for (let key in names) {
 					this.export.dynamicField(names[key], values[key], {mine});
@@ -260,7 +278,7 @@
 			 *         }
 			 *     }
 			 *
-			 * @param {string} theirs - DSF name template ('dsf_' prefix is optional).
+			 * @param {NameTemplate} theirs - DSF name template ('dsf_' prefix is optional).
 			 * @param {*} value - Value to store in DSF.
 			 * @param {string} [mine] - Native DSF(s) being exported.
 			 * @param {object} [options] - Keyword parameters for {@link this.createField}.
@@ -275,6 +293,14 @@
 				this.export.dynamicField(theirs, value, {mine});
 			},
 
+			/**
+			 * Export a "flavor" field (merit, flaw), by packing a tag, the label, and possibly a value into a single DSF.
+			 *
+			 * @param {NameTemplate} name - foreign DSF name (can be templated)
+			 * @param {object} values - values to export
+			 * @param {string} [mine] - Native DSF(s) being exported.
+			 * @param {object} [options] - Keyword parameters for {@link this.createField}.
+			 */
 			flavor(name, values, mine, options={}) {
 				let value = values.name;
 				if (values.value) {
@@ -283,10 +309,24 @@
 				compatibility.export.field(name, value, mine, options);
 			},
 
+			/**
+			 * Generic exporter.
+			 *
+			 * Checks each DST for an exporter named <var>base</var> or "generic" and calls them.
+			 *
+			 * @param {string} base - base name for DSF
+			 * @param {*[]} args - additional arguments for DST-specific exporters
+			 */
 			generic(base, ...args) {
 				this.export.each([base, 'generic'], ...args);
 			},
 
+			/**
+			 * Export two {@link dsf.linked linked} fields (permanent & current) in a single foreign field.
+			 *
+			 * @param {string} mine - base of native DSF name
+			 * @param {string} base - foreign DSF base
+			 */
 			linked(mine, base) {
 				let perm = dsf.value('perm_' + mine),
 					curr = dsf.value('curr_' + mine);
@@ -313,11 +353,20 @@
 				this.export.all(theirs, values, mine);
 			},
 
+			/**
+			 * Export a simple DSF.
+			 *
+			 * A DSF is simple to export when there's a 1-1 correspondence between the native and foreign DSF. Generally, these will be listed in the simple aliases.
+			 *
+			 * @param {string} mine - native DSF name
+			 * @param {string} value
+			 */
 			simple(mine, value) {
 				// TODO: behavior-only rename certain aliased fields
 				// power -> pathos, curr_health -> corpus
 				let name = this.sesalia.simple[mine] /*??*/|| mine;
 
+				// TODO? loop over name, instead of taking first? Will probably need to filter out some aliases
 				if (Array.isArray(name)) {
 					name = name[0];
 				}
@@ -1566,6 +1615,24 @@
 			return name in this.aliases.simple || name in this.sesalia.simple;
 		}),
 
+		/**
+		 * Loop options are arguments to {@link range.over} used by {@link this.loopVars} when creating DSF name sequences from a {@link NameTemplate name template}.
+		 *
+		 * Options can be set for specific DSF name templates in {@link aliases.options}. Example:
+		 *
+		 *     aliases = {
+		 *         options: {
+		 *             'bg{i}': {
+		 *                 from: 1,
+		 *                 to: 10,
+		 *                 continuous: false,
+		 *             },
+		 *         }
+		 *     }
+		 *
+		 * @param {NameTemplate} tpl - the name template
+		 * @param {object} [defaults] - defaults for loop options
+		 */
 		loopOptions(tpl, defaults={}) {
 			defaults = {from: 0, to: udf.maxCount, continuous: true, ...defaults};
 			let options = {};
@@ -1581,6 +1648,28 @@
 		},
 
 		/**
+		 * Creates a {@link range.keyed keyed} sequence to loop over (templated) DSF names.
+		 *
+		 * Example:
+		 *     let tpl = 'bg{i}',
+		 *         {envs} = compatibility.loopVars(tpl);
+		 *     for (let env of envs) {
+		 *         let name = klass.eval(tpl, env);
+		 *         // …
+		 *     }
+		 *
+		 *     let tpl = 'bg{i}',
+		 *         {envs, opts} = compatibility.loopVars(tpl, {to: 10, continuous: false}),
+		 *         expandedBgs = dsa.entries(tpl, envs, opts);
+		 *
+		 * Creates an {@link range.keyed iterable} yielding {@link NameTemplate name template} environments which can be used with {@link klass.eval} to produce a sequence of DSF names.
+		 *
+		 * Returns not only the sequence, but also the template vars and the loop options used to create the sequence.
+		 *
+		 * @param {NameTemplate} tpl - the name template
+		 * @param {object} [defaults] - defaults for loop options
+		 *
+		 * @returns {{vars, envs, opts}}
 		 */
 		loopVars(tpl, defaults={}) {
 			let opts = this.loopOptions(tpl, defaults),

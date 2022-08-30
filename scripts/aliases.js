@@ -295,6 +295,7 @@
 		 * + {@link compatibility.export.all}
 		 * + {@link compatibility.export.dynamicField}
 		 * + {@link compatibility.export.field}
+		 * + {@link compatibility.export.paired}
 		 * + {@link compatibility.exportField}
 		 *
 		 */

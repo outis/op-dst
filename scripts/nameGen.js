@@ -25,6 +25,8 @@
 
 		/**
 		 * Get the last name & index from the item matching the given name template.
+		 *
+		 * @param {NameTemplate} tpl
 		 */
 		last(tpl) {
 			let base, i=1, name, last;
@@ -56,7 +58,7 @@
 		/**
 		 * Return an index for the next available (i.e. non-existent) item.
 		 *
-		 * @param {string} tpl - Name template. Must include an '{i}' variable.
+		 * @param {NameTemplate} tpl - Name template. Must include an '{i}' variable.
 		 * @param {string} [start] - starting index for scanning.
 		 *
 		 * @returns number
@@ -76,7 +78,7 @@
 		 *
 		 * Note that only the first template is used when searching for existing items, so be sure to pass one that will be present for all items.
 		 *
-		 * @param {string[]|object} tpls - Name templates.
+		 * @param {NameTemplate[]|object} tpls - Name templates.
 		 * @param {object} [options] - Keyword arguments.
 		 * @param {number} [options.start=1] - Index to start scanning from.
 		 */
