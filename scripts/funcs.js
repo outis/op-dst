@@ -2,10 +2,23 @@
 	 * Bind all methods in an object to a given object.
 	 *
 	 * @param {object} obj - object containing methods
-	 * @param {object} self - object to bind those methods to
+	 * @param {object} [self=obj] - object to bind those methods to
 	 */
 	function bindAll(obj, self) {
-		for (let method in obj) {
+		bindSome(obj, Object.keys(obj /*??*/|| {}), self);
+	}
+
+	/**
+	 * Bind the given methods in an object to a given object.
+	 *
+	 * @param {object} obj - object containing methods
+	 * @param {string} methods - method names to bind
+	 * @param {object} [self=obj] - object to bind those methods to
+	 */
+	function bindSome(obj, methods, self) {
+		//self ??= obj;
+		self || (self = obj);
+		for (let method of methods) {
 			if (is_function(obj[method])) {
 				obj[method] = obj[method].bind(self);
 			}
