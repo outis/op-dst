@@ -115,18 +115,18 @@
 				// if there are any active transactions, close them
 				this.commitAll();
 			}
+			let result;
 			if (changes.length) {
 				let change = changes.pop();
 				try {
 					// suppress history recording
 					this.freeze = true;
-					let result = change[operation]();
+					result = change[operation]();
 					this.freeze = false;
 					revert.push(change);
 					if (result) {
 						this.highlight(result);
 					}
-					return result;
 				} catch (err) {
 					console.error(`Error during ${operation}:`, err);
 					alert(`Error during ${operation}: ${err}. Please save now & reopen for further edits. Redoes redoes may leave sheet with inconsistent data; redo at your own risk.`);
@@ -143,6 +143,7 @@
 			} else {
 				dsf.clean();
 			}
+			return result;
 		},
 
 		/**
