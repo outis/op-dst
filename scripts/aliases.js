@@ -724,7 +724,7 @@
 						};
 						this._inventory[item.name] = item;
 						if (values.description) {
-							item.name += ' (' + values.description + ')';
+							item.name += ' (' + stripHtml(values.description).trim() + ')';
 						}
 						if (values.charge) {
 							item.value += ', ' + values.charge;
