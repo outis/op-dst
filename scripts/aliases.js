@@ -748,7 +748,7 @@
 					},
 
 					health(name, value) {
-						compatibility.exportField('humanity_value', values.value /*??*/|| value, {mine: 'health'});
+						compatibility.exportField('humanity_value', value.value /*??*/|| value, {mine: 'health'});
 					},
 
 					merits(names, values) {
