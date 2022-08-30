@@ -538,7 +538,7 @@
 	}
 	*/
 
-	function is_flag(elt, name, value) {
+	function is_flag(elt, value) {
 		return elt.type == 'checkbox'
 			|| /\bcheckbox\b/.test(elt.className)
 			|| 'boolean' === typeof(value);

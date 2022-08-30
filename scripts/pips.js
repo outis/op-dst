@@ -19,8 +19,8 @@
 			module.waitFor('dsf');
 			dsf.each(function (elt, $elt, name, value) {
 				value = dsf.override(name, value)
-				if (   ! is_flag(elt, name, value)
-					&& this.is(elt, name, value)
+				if (   ! is_flag(elt, value)
+					&& this.is(elt, value)
 				) {
 					//const val = $elt.text() ?? elt.dataset.value ?? $elt.data('value');
 					$elt.text('');
@@ -44,7 +44,7 @@
 		preSave() {
 			/* convert back to numeric fields */
 			dsf.each(function (elt, $elt, name, value) {
-				if (pips.is(elt, name, value)) {
+				if (pips.is(elt, value)) {
 					pips.unpippify($elt, {name, value});
 				}
 			});
@@ -273,13 +273,15 @@
 		 *
 		 * There are various properties that come into play. An element might have the 'pips' or 'nopips' class, for example. It might be a pipped {@link is_kind kind}, as long as it's not also a {@link is_flag flag} field (the <var>name</var> and <var>value</var> arguments are used to determine this).
 		 *
-		 * @param {HTMLElement} elt - element to check
+		 * The <var>field</var> argument is {@link this.resolve resolved} to appropriate types.
+		 *
+		 * @param {string|HTMLElement|jQuery} field - DSF to check
 		 * @param {string} value - boolean values indicate the element is not pipped (via {@link is_flag})
 		 *
 		 * @returns {boolean}
 		 */
-		is(elt, name, value) {
-			let $elt = $(elt),
+		is(field, value) {
+			let {$elt, elt} = this.resolve(field),
 				closer = $elt.closer('.pips', '.nopips');
 			return closer != '.nopips'
 				&& ! $elt.parent('label').length
@@ -288,7 +290,7 @@
 				&& ! /_(name|description|specialty|size)\b/.test($elt[0].className)
 				&& (   closer == '.pips'
 					|| (   is_kind(pippedKinds, elt)
-						&& ! is_flag(elt, name, value)))
+						&& ! is_flag(elt, value)))
 			;
 		},
 
