@@ -393,7 +393,7 @@
 			if (Object.keys(uncounted).length) {
 				// some fields still don't have counts; scan all data
 				for (let name of Object.keys(data)) {
-					let {base, i} = this.parseName(name) /*??*/|| {};
+					let {base, i} = this.destructureName(name) /*??*/|| {};
 					if (base && i) { // name is a UDF name
 						/* don't exclude UDFs with size fields (i.e. those not in `uncounted`; check their counts */
 						if (base in counts) {
@@ -672,7 +672,7 @@
 			for (let [name, value] of Object.entries(dsfs)) {
 				if ((base = this.dsfBase(name, fieldInfo))) {
 					// name is a UDF name
-					let {key, i} = this.parseName(name, base) ?? {};
+					let {key, i} = this.destructureName(name) ?? {};
 					data[udfField.base] ??= [];
 					data[udfField.base][+i] ??= {};
 					data[udfField.base][+i][key ?? ''] = value;
@@ -712,7 +712,7 @@
 		},
 
 		key(name, dflt='value') {
-			let {key} = this.parseName(name);
+			let {key} = this.destructureName(name);
 			return key /*??*/|| dflt;
 		},
 
@@ -782,7 +782,7 @@
 		},
 
 		/**
-		 * Parse a DSF name from a UDF item.
+		 * Extract the components of a DSF name from a UDF item.
 		 *
 		 * {@link this.splitName Splits} the components of a DSF name from a UDF item (following the name template `dyn_{base}_{i}_{key}`), then assigns them to properties corresponding to the component names.
 		 *
@@ -790,7 +790,7 @@
 		 *
 		 * @returns {ItemName}
 		 */
-		parseName: memoize(function (name) {
+		destructureName: memoize(function (name) {
 			let parts = this.splitName(name);
 			if (parts.length) {
 				return {base: parts[0], i: parts[1], key: parts[2]};
