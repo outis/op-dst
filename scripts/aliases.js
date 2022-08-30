@@ -1068,6 +1068,8 @@
 					flaws(names, values) {
 						if (values.value) {
 							values.value = '-' + values.value;
+						} else {
+							values.name = 'Flaw: ' + values.name;
 						}
 						return this._flavor(names, values);
 					},
@@ -1075,6 +1077,8 @@
 					merits(names, values) {
 						if (values.value) {
 							values.value = '+' + values.value;
+						} else {
+							values.name = 'Merit: ' + values.name;
 						}
 						return this._flavor(names, values);
 					},
