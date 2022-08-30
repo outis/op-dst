@@ -860,6 +860,35 @@
 							[klass.eval('equipment_{i:02}', env), theirs, klass.eval('equipment_tootip_{i:02}', env)]
 						);
 					},
+
+					'attack_weapon_{i:02}': function (theirs, value, env) {
+						let values = {},
+							tpls = {
+								name: 'attack_weapon_{i:02}',
+								difficulty: 'attack_difficulty_{i:02}',
+								damage: 'attack_damage_{i:02}',
+								range: 'attack_range_{i:02}',
+								rate: 'attack_rate_{i:02}',
+								clip: 'attack_clip_{i:02}',
+								conceal: 'attack_conceal_{i:02}',
+							},
+							names = klass.evalAll(tpls, env);
+						dsa.getAll(names, values);
+						console.log(values);
+						this.parse.normalize(values);
+
+						let description = Object.keys(tpls);
+						description.shift(); // remove 'name'
+						for (let i = 0; i < description.length; ++i) {
+							description[i] += ': ' + values[description[i]];
+						}
+						values.description = description.join('; ');
+
+						values.type = 'weapon';
+						values.charge = 10;
+
+						this.import.equipment(values, names);
+					},
 				},
 
 				export: {
@@ -1009,6 +1038,9 @@
 							},
 							theirValues = {};
 						if (values.type) {
+							if ('weapon' === values.type) {
+								return this.weapon(names, values);
+							}
 							line.push(`${values.type}: `);
 						}
 						line.push(`${values.name}: `);
@@ -1092,6 +1124,25 @@
 						/**/
 					},
 
+					weapon(names, values) {
+						const parsed = compatibility.parse.tagged([values.description]),
+							  theirs = {
+								  name: 'attack_weapon_{i:02}',
+								  difficulty: 'attack_difficulty_{i:02}',
+								  damage: 'attack_damage_{i:02}',
+								  range: 'attack_range_{i:02}',
+								  rate: 'attack_rate_{i:02}',
+								  clip: 'attack_clip_{i:02}',
+								  conceal: 'attack_conceal_{i:02}',
+							  };
+						parsed.name = values.name;
+						compatibility.export.fields(theirs, parsed, {
+							for: {
+								name: names.name,
+							},
+							mine: names.description,
+						});
+					},
 
 					// handled via aliases, so NOOP
 					health() {},
