@@ -730,7 +730,7 @@
 							item.value += ', ' + values.charge;
 						}
 
-						this._addTheirItem(words.pluralize(values.type), item, names);
+						this._addTheirItem(words.pluralize(item.type), item, names);
 						//this._addTheirItem('inventory', item, names);
 					},
 
