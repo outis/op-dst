@@ -1154,7 +1154,7 @@
 
 		preSave(options, $context) {
 			// wait for udf to recount
-			module.waitFor('udf');
+			module.waitFor('udf', 'undo');
 			this.export();
 		},
 

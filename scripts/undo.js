@@ -90,6 +90,10 @@
 			this.freeze = false;
 		},
 
+		preSave() {
+			// as editing is ending, no more need to record history
+			this.freeze = true;
+		},
 
 		/* */
 
