@@ -186,4 +186,6 @@
 			}
 		},
 	};
+	// bind dsa.exists, so it can be used directly as a filter
+	bindSome(dsa, ['exists']);
 	mixIn(dsa, nameGen);
