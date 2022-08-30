@@ -1,6 +1,6 @@
 #!/bin/bash4
 # keep an eye on ignore for editor,udf
-declare -A reqs=() ignore=([version,dsa]=1 [editor,udf]=1)
+declare -A reqs=() ignore=([version,dsa]=1 [editor,udf]=1 [pips,demipips]=1)
 declare -a keys
 
 function list() {
