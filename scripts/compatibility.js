@@ -1468,7 +1468,7 @@
 				let {name, elt, $elt} = dsf.resolve(base),
 					fn = this.aliases.export[base];//.bind(this);
 				if ($elt.length) {
-					fn(dsf.value(elt));
+					this.tryExporter(() => fn(dsf.value(elt)), name);
 				} else if (($elt = udf.$udf(base)).length) {
 					/* TODO:
 					 * + behavior-skip more general exporters when there's a more specific exporter
@@ -1478,7 +1478,7 @@
 						/* TODO:
 						 * + figure out way of passing UDF base (e.g. 'skills') for section exporters (e.g. 'abilities')
 						 */
-						fn(entry.names, entry.values);
+						this.tryExporter(() => fn(entry.names, entry.values), name);
 					};
 				}
 			}
@@ -1974,6 +1974,19 @@
 		theirNameFor: memoize(function (mine) {
 			return this.nameFor(mine, this.sesalia);
 		}),
+
+		/**
+		 */
+		tryExporter(exporter, label='') {
+			try {
+				exporter();
+			} catch (err) {
+				if (label) {
+					label = ' for ' + label;
+				}
+				console.error(`Error during export${label}:`, err);
+			}
+		},
 	};
 	for (let funcs of [
 		compatibility.port.export,
