@@ -534,10 +534,8 @@
 			}, {names:{}, values:{}})
 		},
 
-		*entries(udf) {
-			for (let item of this.items(udf)) {
-				yield this.entry(item);
-			};
+		*entries(list) {
+			yield* this.mapItems(list, this.entry.bind(this));
 		},
 
 		exists(name, $context) {
@@ -672,10 +670,10 @@
 			for (let [name, value] of Object.entries(dsfs)) {
 				if ((base = this.dsfBase(name, fieldInfo))) {
 					// name is a UDF name
-					let {key, i} = this.destructureName(name) ?? {};
+					let {key, i} = this.parseName(name, '') ?? {};
 					data[udfField.base] ??= [];
 					data[udfField.base][+i] ??= {};
-					data[udfField.base][+i][key ?? ''] = value;
+					data[udfField.base][+i][key] = value;
 				}
 			}
 			return data;
@@ -712,8 +710,8 @@
 		},
 
 		key(name, dflt='value') {
-			let {key} = this.destructureName(name);
-			return key /*??*/|| dflt;
+			let {key} = this.parseName(name, dflt);
+			return key;
 		},
 
 		/**
@@ -744,6 +742,20 @@
 				value: nTpls,
 			});
 			return tpls;
+		},
+
+		/**
+		 * Apply a function to all {@link this.items} of a UDF.
+		 *
+		 * @param {string|HTMLElement|jQuery} list - UDF to get items from
+		 * @param {HTMLElement => *} f - map function
+		 *
+		 * @returns {*[]}
+		 */
+		*mapItems(list, f) {
+			for (let item of this.items(list)) {
+				yield f(item);
+			}
 		},
 
 		/* Not currently used
@@ -796,6 +808,23 @@
 				return {base: parts[0], i: parts[1], key: parts[2]};
 			}
 		}),
+
+		/**
+		 * Parse a DSF name from a UDF item.
+		 *
+		 * {@link this.splitName Splits} the components of a DSF name from a UDF item (following the name template `dyn_{base}_{i}_{key}`), then assigns them to properties corresponding to the component names. Differs from {@link this.destructureName} in that this method sets a default value for the 'key' component.
+		 *
+		 * @param {string} name - DSF name to parse
+		 * @param {string} [dflt] - default value for 'key' name component
+		 *
+		 * @returns {ItemName}
+		 */
+		parseName(name, dflt='value') {
+			let parts = this.destructureName(name);
+			//parts.key ??= 'value';
+			parts.key || (parts.key = dflt);
+			return parts;
+		},
 
 		reCount(eltList) {
 			let n = eltList.children.length;
