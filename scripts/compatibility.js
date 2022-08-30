@@ -192,11 +192,22 @@
 			/**
 			 * Export multiple (usually related) fields.
 			 *
-			 * Field <var>names</var> and <var>values</var> are related by key. Example:
+			 * Field <var>names</var> and <var>values</var> are related by key. Examples:
 			 *     compatibility.export.all(
 			 *         {name: 'other_trait_1', value: 'other_value_1'},
 			 *         {name: 'Oboli', value: '1.5'},
 			 *         'money'
+			 *     );
+			 *     compatibility.export.all(
+			 *         {name: 'equipment_name_00', value: 'equipment_tootip_00'},
+			 *         {name: 'relic toothbrush: 8 / 10', value: 'no need to moliate a flip-top head'},
+			 *         {
+			 *             for: {
+			 *                 name: ['dyn_equipment_01_type', 'dyn_equipment_01_name', 'dyn_equipment_01_charge'],
+			 *             },
+			 *             mine:'dyn_equipment_01_description',
+			 *             classes: 'complex',
+			 *         }
 			 *     );
 			 *
 			 * Doesn't handle templated fields; for that, use {@link this.export.fields}, which will generate DSF names for related fields.
@@ -205,11 +216,25 @@
 			 *
 			 * @param {object} names - foreign DSF names (not templated)
 			 * @param {object} values - DSF values
-			 * @param {string} mine - native DSF name
+			 * @param {string} options - native DSF names and keyword parameters for {@link this.createField}
+			 * @param {string[]} [options.for] - native DSF name(s); indexed by same keys as <var>names</var> and <var>values</var>
+			 * @param {string|string[]} [options.mine] - native DSF name(s)
 			 */
-			all(names, values, mine) {
+			all(names, values, options={}) {
+				if (! is_object(options)) {
+					options = {mine: options};
+				}
+				//options.for ??= {};
+				options.for || (options.for = {});
 				for (let key in names) {
-					this.export.dynamicField(names[key], values[key], {mine});
+					let mine;
+					if (options.for[key]) {
+						// override with generated native DSF name
+						mine = options.for[key];
+					} else {
+						mine = options.mine;
+					}
+					this.export.dynamicField(names[key], values[key], {...options, mine});
 				}
 			},
 
@@ -1210,7 +1235,11 @@
 		createField(theirs, {mine, attrs='', classes=''}={}) {
 			theirs = dsf.addPrefix(theirs);
 			if (mine) {
-				mine = dsf.addPrefix(mine);
+				if (Array.isArray(mine)) {
+					mine = mine.map(dsf.addPrefix).join(',');
+				} else {
+					mine = dsf.addPrefix(mine);
+				}
 				attrs += ` data-for="${mine}"`;
 			}
 
