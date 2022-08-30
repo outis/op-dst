@@ -159,7 +159,7 @@
 					return [parent, parent.children[iPip]];
 				},
 			);
-			dsf.update(this.$details[0], newDetails, 'health_details');
+			dsf._value(this.$details, newDetails);
 			});
 		},
 
@@ -336,7 +336,7 @@
 			if (collision) {
 				console.warn(`Some undamaged pips are marked for damage: ${iCollisions}; '${collisions.join("")}'. Ignoring damage markers.`);
 			}
-			dsf.update(this.$details[0], details, 'health_details');
+			dsf._value(this.$details, details);
 		},
 
 		setClassDetails(details, $pips) {
