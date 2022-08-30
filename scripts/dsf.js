@@ -4,6 +4,10 @@
 	 * @mixes nameGen
 	 */
 	let dsf = globals.dsf = {
+		/**
+		 * A DsfExtract represents DSFs as an object, with DSF names used for property names.
+		 * @typedef {object} DsfExtract
+		 */
 		/* DST event handlers */
 		preLoad({containerId, slug, isEditable}, $context) {
 			this.$context = $context;
@@ -153,6 +157,30 @@
 				console.error(err);
 				return false;
 			}
+		},
+
+		/**
+		 * Extract the DSFs from the given context as key-value pairs of an object.
+		 *
+		 * Example:
+		 *     dsf.extract('.mental');
+		 *     # result:
+		 *     {
+		 *         perception: 2,
+		 *         intelligence: 3,
+		 *         wits: 4,
+		 *     }
+		 *
+		 * @param {HTMLElement|selector|jQuery} context - where to search for DSFs
+		 *
+		 * @returns {DsfExtract}
+		 */
+		extract(context) {
+			const data = {};
+			for (let field of this.$dsfs(context)) {
+				data[this.name(field)] = this.value(field);
+			}
+			return data;
 		},
 
 		isVolatile(node) {
@@ -491,6 +519,19 @@
 				name = this.sku(this.stripPrefix(name || this.name(elt)));
 				localStorage[name] = value;
 			}
+		},
+
+		/**
+		 * Store volatile values in local storage.
+		 *
+		 * Volatile values can be changed by a player even when not editing a sheet. If a value is changed during play, it is stored in local storage until the change can be incorporated more permanently during editing. While editing, local storage isn't used (so this becomes a no-op).
+		 *
+		 * @param {string|HTMLElement|jQuery} field
+		 * @param {string} value
+		 */
+		storeValue(field, value) {
+			let {elt, name} = this.resolve(field);
+			this._storeValue({elt, name, value});
 		},
 
 		_value(field, value) {
