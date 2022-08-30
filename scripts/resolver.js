@@ -45,6 +45,8 @@
 			}
 			if (is_function(this.name)) {
 				resolved.name = this.name(resolved.$elt);
+			} else {
+				resolved.name = dsf.name(resolved.elt);
 			}
 			return resolved;
 		},
