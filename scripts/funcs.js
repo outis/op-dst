@@ -221,6 +221,22 @@
 		return results;
 	}
 
+	/**
+	 * Combine two arrays into an object, using one for keys and another for values.
+	 *
+	 * @param {string[]} keys
+	 * @param {*} values
+	 *
+	 * @returns {object}
+	 */
+	function zipObject(keys, values) {
+		let result = {};
+		for (let i = 0; i < keys.length; ++i) {
+			result[keys[i]] = values[i];
+		}
+		return result;
+	}
+
 	function copy(thing) {
 		if (Array.isArray(thing)) {
 			return [...thing]; // Array.from(thing);
