@@ -7,6 +7,7 @@
 			'arcanum': 'arcanoi',
 			'obolus': 'oboli',
 			'money': 'money',
+			'equipment': 'equipment',
 			// should status be pluralized?
 			//'status': 'statuses',
 		},
