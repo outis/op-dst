@@ -478,6 +478,22 @@
 		},
 
 		/**
+		 * Extract the components of a DSF name from a UDF item.
+		 *
+		 * {@link this.splitName Splits} the components of a DSF name from a UDF item (following the name template `dyn_{base}_{i}_{key}`), then assigns them to properties corresponding to the component names.
+		 *
+		 * @param {string} name
+		 *
+		 * @returns {ItemName}
+		 */
+		destructureName: memoize(function (name) {
+			let parts = this.splitName(name);
+			if (parts.length) {
+				return {base: parts[0], i: parts[1], key: parts[2]};
+			}
+		}),
+
+		/**
 		 * Returns the base portion of a UDF name, given a DSF name & field info.
 		 */
 		/*
@@ -792,22 +808,6 @@
 			}
 			return $eltItem;
 		},
-
-		/**
-		 * Extract the components of a DSF name from a UDF item.
-		 *
-		 * {@link this.splitName Splits} the components of a DSF name from a UDF item (following the name template `dyn_{base}_{i}_{key}`), then assigns them to properties corresponding to the component names.
-		 *
-		 * @param {string} name
-		 *
-		 * @returns {ItemName}
-		 */
-		destructureName: memoize(function (name) {
-			let parts = this.splitName(name);
-			if (parts.length) {
-				return {base: parts[0], i: parts[1], key: parts[2]};
-			}
-		}),
 
 		/**
 		 * Parse a DSF name from a UDF item.
