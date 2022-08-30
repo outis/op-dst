@@ -60,8 +60,7 @@
 
 		/* DST event handlers */
 		preLoad({slug}, $context) {
-			module.tarryFor('compatibility');
-			module.tarryFor('edition');
+			module.tarryFor('compatibility', 'edition');
 
 			this.slug = slug;
 			this._createControls();

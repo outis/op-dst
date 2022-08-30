@@ -34,8 +34,10 @@
 
 		/* DST event handlers */
 		preLoad(opts, $context) {
-			module.tarryFor('compatibility');
-			module.tarryFor('abilities'); // so specialties have been separated from dynamic abilities
+			module.tarryFor(
+				'compatibility',
+				'abilities' // so specialties have been separated from dynamic abilities
+			);
 			this.ed('preLoad');
 			this.import();
 		},
