@@ -832,6 +832,12 @@
 							}
 							// TODO: detect dynamic abilities, rather than assuming attr is the base
 							dsa.data[`${attr}_specialty`] = specialty;
+							if (! dsa.exists(attr)) {
+								let ability = abilities.find(attr);
+								if (ability) {
+									ability.specialty = specialty;
+								}
+							}
 						}
 					},
 
