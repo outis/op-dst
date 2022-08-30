@@ -199,7 +199,7 @@
 			 *         'money'
 			 *     );
 			 *
-			 * Doesn't handle templated fields; for that, use {@link this.export.paired}, which will generate DSF names for related fields.
+			 * Doesn't handle templated fields; for that, use {@link this.export.fields}, which will generate DSF names for related fields.
 			 *
 			 * Calls {@link this.export.dynamicField} to export each DSF.
 			 *
@@ -265,7 +265,7 @@
 			 *
 			 * This method is for exporting dynamic foreign DSFs without the caller specifying the exact field name. Instead, the caller provides a name template that is used to generate an unused name by {@link dsf.nextName}.
 			 *
-			 * Note that this method only works on a single DSF that has no related DSFs, as each time the new name is generated with a higher index. If this method were called for related DSFs, each created DSF would have different indices. An example of how this can result in bugs:
+			 * Note that this method only works on a single DSF that has no related DSFs, as each time the new name is generated with a higher index; instead, use {@link this.export.fields}. If this method were called for related DSFs, each created DSF would have different indices. An example of how this can result in bugs:
 			 *
 			 *     foo = [
 			 *        {name: 'Bar'},
@@ -343,7 +343,7 @@
 			 * @param {string} [mine] - Native DSFs that were the source of the values.
 			 * @param {object} [options] - Options for {@link dsf.nextName}
 			 */
-			paired(names, values, mine, options={}) {
+			fields(names, values, mine, options={}) {
 				if (! options && is_object(mine)) {
 					options = mine;
 					delete mine;

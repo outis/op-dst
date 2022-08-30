@@ -295,7 +295,7 @@
 		 * + {@link compatibility.export.all}
 		 * + {@link compatibility.export.dynamicField}
 		 * + {@link compatibility.export.field}
-		 * + {@link compatibility.export.paired}
+		 * + {@link compatibility.export.fields}
 		 * + {@link compatibility.exportField}
 		 *
 		 */
@@ -865,7 +865,7 @@
 				export: {
 					// nWoD Reloaded!
 					/* TODO:
-					 * + check that createTemplatedFields doesn't create any fields that are handled by compatibility.export.paired
+					 * + check that createTemplatedFields doesn't create any fields that are handled by compatibility.export.fields
 					 * + export ability specialties (replace template alias?)
 					 */
 					templates: {
@@ -955,7 +955,7 @@
 									  'knowledges': 'knowledge',
 								  },
 								  ability = abilities[type] || words.singulize(type || 'ability');
-							compatibility.export.paired(
+							compatibility.export.fields(
 								{
 									// fix this: wrong field names
 									name: `${ability}_type_{i:02}`,
@@ -980,7 +980,7 @@
 							//value = Math.max(+left, +right);
 							// TODO: prevent loss of info
 							// store in other fields? splat traits? 2nd numina?
-							compatibility.export.paired(
+							compatibility.export.fields(
 								{
 									name: 'numina_type_{i:02}',
 									value: 'numina_value_{i:02}'
@@ -993,7 +993,7 @@
 						} else if ((parts = values.value.match(/(?<mask>(?:0x[\dA-F]+))/i))) {
 							value = Math.bits(parts.groups.mask);
 						}
-						compatibility.export.paired(
+						compatibility.export.fields(
 							{
 								name: 'numina_type_{i:02}',
 								value: 'numina_value_{i:02}'
@@ -1028,7 +1028,7 @@
 						} else {
 							delete theirs.description;
 						}
-						compatibility.export.paired(
+						compatibility.export.fields(
 							theirs, theirValues,
 							compatibility.aliasFor(names), {start:0});
 					},
@@ -1072,7 +1072,7 @@
 							name: 'traits_type_{i:02}',
 							value: 'traits_value_{i:02}'
 						};
-						compatibility.export.paired(
+						compatibility.export.fields(
 							theirs, {name, value}, mine, {...opts, start:0}
 						);
 						/**/
@@ -1084,7 +1084,7 @@
 							name: 'traits_type_{i:02}',
 							value: 'traits_value_{i:02}'
 						};
-						compatibility.export.paired(
+						compatibility.export.fields(
 							theirs, {name, value}, mine, {...opts, start:0}
 						);
 						/*/
