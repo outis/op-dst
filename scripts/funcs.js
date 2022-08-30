@@ -607,6 +607,12 @@
 		pippedKinds = kinds;
 	}
 
+	function stripHtml(source) {
+		let elt = document.createElement("DIV");
+		elt.innerHTML = source;
+		return elt.textContent || elt.innerText || source.replace(/<(p|br)[^>]*\/?>/g);
+	}
+
 	/*** jQuery extensions */
 	// TODO: feature-add methods that take multiple selectors, and return which has closer matching descendents (i.e. `closer()` for descendents)
 
