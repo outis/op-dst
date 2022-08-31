@@ -79,6 +79,8 @@
 			'misctrait4_value': 'misc_trait4_value',
 
 			// old_wod_generic
+			'dodge__specialty': 'dodge_specialty',
+			'empathy__specialty': 'empathy_specialty',
 			'other_trait_7a': 'other_trait_7',
 
 			// jp12x_splat
