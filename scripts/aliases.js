@@ -535,7 +535,10 @@
 						},
 						{
 							bg(item, category) {
-								return `${item.name}: ${item.value}`;
+								if (item.description) {
+									item.name += ` (${item.description})`;
+								}
+								return `${item.name}: ${item.value || ''}`;
 							},
 							misc(item) {
 								return {
