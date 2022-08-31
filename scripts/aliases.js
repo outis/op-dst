@@ -687,6 +687,12 @@
 									value: 'misc{i}',
 								},
 							},
+							cwodTpls = {
+								other: {
+									name: 'misc_trait{i}',
+									value: 'misc_trait{i}_value',
+								},
+							},
 							section = 'other',
 							tpls = sectionTpls.other,
 							maxI = this._max.other,
@@ -708,11 +714,21 @@
 									tpls = sectionTpls[section];
 									names = dsf.nextName(tpls);
 								}
+								let preserved = this._preserve(item, section);
 								compatibility.export.all(
 									names,
-									this._preserve(item, section),
+									preserved,
 									item.mine
 								);
+								if (cwodTpls[section]) {
+									// cover cWoD_Revised
+									names = dsf.nextName(cwodTpls[section]);
+									compatibility.export.all(
+										names,
+										preserved,
+										item.mine
+									);
+								}
 							}
 						}
 					},
@@ -781,6 +797,13 @@
 								theirs.name = compatibility.sesalia.simple[theirs.name];
 								compatibility.export.dynamicField(theirs.name, name, {mine});
 							}
+
+							// cover cWoD_Revised
+							compatibility.export.fields(
+								{name: 'misc_trait{i}', value: 'misc_trait{i}_value'},
+								{name, value},
+								mine
+							);
 						} else {
 							theirs = dsf.nextName('misc{i}');
 							if (theirs.i > 5) {
