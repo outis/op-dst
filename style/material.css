@@ -240,6 +240,7 @@
 .editable .mll_sheet .help .pips > span,
 .mll_sheet .help .pips.current > span {
 	cursor: unset;
+	line-height: 1.1;
 }
 
 .mll_sheet .pips.demi > span,
