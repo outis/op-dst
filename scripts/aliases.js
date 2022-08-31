@@ -764,11 +764,17 @@
 						this._addTheirItem('arcanoi', values, names);
 					},
 
-					// handled by backgrounds, but necessary as jp12x_splat defines an exporter
 					associates(names, values) {
+						names = {name: names.value, description: names.notes};
+						values = {name: values.value, description: stripHtml(values.notes).trim()};
+						this._addTheirItem('associates', values, names);
 					},
 
 					backgrounds(names, values) {
+						if (/all(y|ies)|contacts?/i.test(values.name)) {
+							// let associates exporter handle this one
+							return;
+						}
 						this._addTheirItem('backgrounds', values, names);
 					},
 
