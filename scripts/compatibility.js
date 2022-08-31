@@ -51,6 +51,7 @@
 		 */
 		defaults: {
 		},
+		_prune: [],
 		_aliases: null,
 		_sesalia: {},
 		get aliases() {
@@ -1595,7 +1596,17 @@
 		 */
 		finishExport() {
 			callForAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_finish');
+			this.finishPrune();
 			this.exportTypos();
+		},
+
+		finishPrune() {
+			if (this._prune.length) {
+				for (let key of Object.keys(filterObject(dsa.data, (v, k) => this._prune.some(f => f(k))))) {
+					this.createField(key);
+				}
+				this._prune = [];
+			}
 		},
 
 		/* Copy from their fields to mine. */
@@ -1837,6 +1848,21 @@
 		 */
 		offset(start) {
 			return start - 1;
+		},
+
+		/**
+		 * Remove old values.
+		 *
+		 * @param {RegExp|string => boolean} predicate - tests which existing character data to prune
+		 */
+		prune(predicate) {
+			if (predicate.test) {
+				// e.g. regex
+				const pred = predicate;
+				predicate = k => pred.test(k);
+			}
+			// schedule pruning
+			this._prune.push(predicate);
 		},
 
 		scrub: memoize(function (name) {

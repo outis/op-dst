@@ -978,6 +978,10 @@
 						'knowledge_value_{i:02}': 'abilities',
 					},
 
+					_finish() {
+						compatibility.prune(/^((ability|talent|knowledge|backgrounds|numina|specialty|traits)_(type|value)|equipment_(name|tootip)|attack_\w+|flaw)_\d+$/);
+					},
+
 					_flavor(names, values) {
 						compatibility.export.flavor(
 							'flaw_{i:02}', values,
