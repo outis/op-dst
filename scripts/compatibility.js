@@ -1075,7 +1075,9 @@
 
 			split(value, defaults={}) {
 				const parsed = this.parse.byPatterns(value, 'split', defaults);
-				return this.parse.normalize(parsed);
+				if (parsed) {
+					return this.parse.normalize(parsed);
+				}
 			},
 
 			glueRe: memoize(function (glue) {
@@ -1840,7 +1842,7 @@
 		},
 
 		scrub: memoize(function (name) {
-			return name.replace(/<[^>]*>|click to edit| *\((cont('d|inued)?\.*|misc\.?|\.+)\)/gi, '');
+			return name.replace(/<[^>]*>|click to edit| *\((cont('d|inued)?\.*|misc\.?|\.+)\)|^[- :;_()]+$/gi, '');
 		}),
 
 		standardize: memoize(function (name) {
