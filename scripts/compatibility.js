@@ -1656,6 +1656,12 @@
 		 *                 to: 10,
 		 *                 continuous: false,
 		 *             },
+		 *             'bg{i}_expanded{j}': {
+		 *                 from: 1,
+		 *                 i: {to: 10},
+		 *                 j: {thru: 3},
+		 *                 continuous: false,
+		 *             },
 		 *         }
 		 *     }
 		 *
@@ -1663,32 +1669,30 @@
 		 * @param {object} [defaults] - defaults for loop options
 		 */
 		loopOptions(tpl, defaults={}) {
-			defaults = {from: 0, to: udf.maxCount, continuous: true, ...defaults};
+			defaults = {from: 0, continuous: true, ...defaults};
 			let options = {};
 			if (tpl in this.aliases.options) {
 				options = this.aliases.options[tpl];
-				if (range.hasEnd(options)) {
-					// 'to' will override other ends, so remove it
-					delete defaults.to;
-				}
-				return {...defaults, ...options};
 			}
-			return defaults;
+			if (! (range.hasEnd(defaults) || range.hasEnd(options))) {
+				defaults.to = udf.maxCount;
+			}
+			return {...defaults, ...options};
 		},
 
 		/**
 		 * Creates a {@link range.keyed keyed} sequence to loop over (templated) DSF names.
 		 *
 		 * Example:
-		 *     let tpl = 'bg{i}',
+		 *     let tpl = 'bg{i}_expanded{j}',
 		 *         {envs} = compatibility.loopVars(tpl);
 		 *     for (let env of envs) {
 		 *         let name = klass.eval(tpl, env);
 		 *         // …
 		 *     }
 		 *
-		 *     let tpl = 'bg{i}',
-		 *         {envs, opts} = compatibility.loopVars(tpl, {to: 10, continuous: false}),
+		 *     let tpl = 'bg{i}_expanded{j}',
+		 *         {envs, opts} = compatibility.loopVars(tpl, {from: 1, to: 10, continuous: false}),
 		 *         expandedBgs = dsa.entries(tpl, envs, opts);
 		 *
 		 * Creates an {@link range.keyed iterable} yielding {@link NameTemplate name template} environments which can be used with {@link klass.eval} to produce a sequence of DSF names.
@@ -1701,10 +1705,24 @@
 		 * @returns {{vars, envs, opts}}
 		 */
 		loopVars(tpl, defaults={}) {
-			let opts = this.loopOptions(tpl, defaults),
+			let options = this.loopOptions(tpl, defaults),
 				vars = klass.vars(tpl),
-				envs = range.keyed(fillObject(vars, opts));
-			return {vars, envs, opts};
+				paramses = {},
+				envs;
+			for (let v of vars) {
+				if (v in options) {
+					// this leaves any variable-specific options in options[v], but those should be ignored within range.keyed
+					paramses[v] = {...options, ...options[v]};
+					if (range.hasEnd(options[v]) && paramses[v].to == udf.maxCount) {
+						// default end not overwritten; remove it, so it doesn't take precedence over the end from options
+						delete paramses[v].to;
+					}
+				} else {
+					paramses[v] = options;
+				}
+			}
+			envs = range.keyed(paramses);
+			return {vars, envs, opts:paramses};
 		},
 
 		/**

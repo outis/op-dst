@@ -12,7 +12,12 @@
 			},
 			'bg{i}_expanded{j}': {
 				from: 1,
-				to: 10,
+				i: {
+					to: 10,
+				},
+				j: {
+					thru: 3,
+				},
 				continuous: false,
 			},
 			'flaw{i}': {
