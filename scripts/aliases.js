@@ -761,6 +761,10 @@
 						this._addTheirItem('arcanoi', values, names);
 					},
 
+					// handled by backgrounds, but necessary as jp12x_splat defines an exporter
+					associates(names, values) {
+					},
+
 					backgrounds(names, values) {
 						this._addTheirItem('backgrounds', values, names);
 					},
@@ -1087,6 +1091,15 @@
 								name: 'numina_type_{i:02}',
 								value: 'numina_value_{i:02}'
 							}, values, mine, {start:0}
+						);
+					},
+
+					associates(names, values) {
+						compatibility.export.fields(
+							{
+								value: 'dsf_contact_type_{i:02}',
+								notes: 'dsf_contact_tootip_{i:02}'
+							}, values, {for: names}, {start:0}
 						);
 					},
 
