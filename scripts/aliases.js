@@ -1141,7 +1141,7 @@
 							line.push(`${values.charge}`);
 						}
 						theirValues.name = line.join('');
-						theirValues.description = values.description;
+						theirValues.description = stripHtml(values.description);
 						compatibility.export.fields(
 							theirs, theirValues,
 							compatibility.aliasFor(names), {start:0});
