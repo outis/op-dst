@@ -5,6 +5,11 @@
 				through: 7,
 				continuous: false,
 			},
+			'misc_trait{i}': {
+				from: 1,
+				through: 8,
+				continuous: false,
+			},
 			'bg{i}': {
 				from: 1,
 				to: 10,
@@ -103,6 +108,11 @@
 			'perm_willpower_value': 'perm_willpower',
 			'temp_willpower_value': 'curr_willpower',
 			'chealth': 'curr_health',
+
+			// cWoD_Revised
+			'misctrait2': 'misc_trait2', // correct typo in sheet
+			'misctrait4': 'misc_trait4', // correct typo in sheet
+			'misctrait4_value': 'misc_trait4_value', // correct typo in sheet
 
 			// old_wod_generic
 			/// bio
@@ -320,6 +330,15 @@
 					_start() {
 						compatibility.exportField('powers_value', 'Arcanoi');
 					},
+
+					_finish() {
+						compatibility.createFields('misc_trait{i}', aliases.options['other_trait_{i}']);
+						compatibility.createFields('misc_trait{i}_value', aliases.options['other_trait_{i}']);
+						dsf.rename('misc_trait2', 'misctrait2', {overwrite: true});
+						dsf.rename('misc_trait4', 'misctrait4', {overwrite: true});
+						dsf.rename('misc_trait4_value', 'misctrait4_value', {overwrite: true});
+					},
+
 					// prevent "Cannot export" warning
 					partial: true,
 				},
