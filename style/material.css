@@ -168,9 +168,14 @@
 	bottom: -1.25rem;
 }
 
+.mll_sheet .backgrounds .tip {
+	bottom: unset;
+	top: 0.9em;
+}
+
 .mll_sheet .page h4.tipped .tip {
 	bottom: unset;
-	top: 1.1em;
+	top: 1.6em;
 }
 
 
