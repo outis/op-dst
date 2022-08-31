@@ -441,17 +441,15 @@
 			associates(parsed, names) {
 				let base = parsed.base;
 				names = {
-					name: `dyn_${base}_{i:02}`,
+					value: `dyn_${base}_{i:02}`,
 					notes:`dyn_${base}_{i:02}_notes`,
 				};
-				//parsed.name ??= parsed.value;
-				parsed.name || (parsed.name = parsed.value);
 				this.import._udf(parsed, names);
 				let bg = {
 					base: 'backgrounds',
 					name: parsed.type,
 					value: parsed.points /*??*/|| parsed.value,
-					description: parsed.name,
+					description: parsed.value,
 				};
 				this.import.backgrounds(bg);
 			},
@@ -718,8 +716,8 @@
 							parsed.type = parsed.base;
 						}
 					},
-					string: makeStringTokenParser(/^(?:all(y|ies)|contacts?)$/i),
-					number: ['value'],
+					string: makeStringTokenParser(/^(?:all(y|ies)|contacts?)$/i, ['value', 'notes']),
+					number: ['points'],
 					post: function(parsed) {
 						if (parsed.type) {
 							// in case parsed.type is more specific (base might be 'associates')
