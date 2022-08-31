@@ -787,6 +787,10 @@
 						//this._addTheirItem('inventory', item, names);
 					},
 
+					experience(value) {
+						this.simple('Experience', value, 'experience');
+					},
+
 					// TODO: test
 					fetters(names, values) {
 						this._addTheirItem('fetters', values, names);
@@ -814,6 +818,10 @@
 
 					passions(names, values) {
 						this._addTheirItem('passions', values, names);
+					},
+
+					shadow(value) {
+						this.simple('Shadow', value, 'shadow');
 					},
 
 					simple(name, value, mine) {
