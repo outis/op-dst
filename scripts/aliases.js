@@ -450,6 +450,12 @@
 						if (Object.keys(this._items).length) {
 							this._store();
 						}
+						compatibility.createFields('bg{i}_expanded{j}');
+						compatibility.createFields('other_trait_{i}');
+						// typo in original sheet
+						compatibility.createField('other_trait_7a');
+						compatibility.createFields('other_value_{i}', aliases.options['other_trait_{i}']);
+						compatibility.createFields('misc{i}');
 					},
 
 					_flavor(names, values, base) {

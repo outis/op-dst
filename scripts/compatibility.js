@@ -1254,6 +1254,20 @@
 		},
 
 		/**
+		 * Create multiple fields, generating names from a template.
+		 *
+		 * @param {NameTemplate} tpl - name template
+		 * @param {object} options - options for name generation and {@link this.createField}
+		 */
+		createFields(tpl, options) {
+			let {envs, opts} = this.loopVars(tpl, options);
+			for (let env of envs) {
+				let theirs = klass.eval(tpl, env);
+				this.createField(theirs, options);
+			}
+		},
+
+		/**
 		 * Iterate over all aliased DSFs.
 		 *
 		 * Won't expand any templates into actual DSFs.
