@@ -1185,14 +1185,6 @@
 			if (segment in this.aliases) {
 				segment = this.aliases[segment];
 			}
-			if (isSimple && options.skipCorrections) {
-				// this.aliases.import is a SimpleDict of templated import fields, so the following test whether a simple alias also matches a templated import, indicating the simple alias is a spelling correction (e.g. 'other_trait_7a')
-				if (options.include) {
-					include = entry => (! this.aliases.import[entry[1]] && options.include(entry));
-				} else {
-					include = entry => ! this.aliases.import[entry[1]];
-				}
-			}
 			for (let entry of Object.entries(segment)) {
 				if (options.prefix) {
 					entry[0] = dsf.addPrefix(entry[0]);
@@ -1930,6 +1922,9 @@
 		 */
 		*simpleAliases(options={}) {
 			yield* this.aliasEntries('simple', options);
+			if (! options.skipCorrections) {
+				yield* this.aliasEntries('typos', options);
+			}
 		},
 
 		/**

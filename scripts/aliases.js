@@ -72,6 +72,19 @@
 			'knowledge_value_{i:02}': 'jp12x_splat',
 		},
 
+		typos: { // typos in DSF names
+			// cWoD_Revised
+			'misctrait2': 'misc_trait2',
+			'misctrait4': 'misc_trait4',
+			'misctrait4_value': 'misc_trait4_value',
+
+			// old_wod_generic
+			'other_trait_7a': 'other_trait_7',
+
+			// jp12x_splat
+			'experiance': 'experience',
+		},
+
 		simple: {
 			// attributes
 			'presence': 'charisma',
@@ -94,7 +107,6 @@
 			'craft': 'crafts',
 
 			// assets
-			'experiance': 'experience',
 			'pathos': 'power',
 			'oboli': 'money',
 			'cash': 'money',
@@ -108,11 +120,6 @@
 			'perm_willpower_value': 'perm_willpower',
 			'temp_willpower_value': 'curr_willpower',
 			'chealth': 'curr_health',
-
-			// cWoD_Revised
-			'misctrait2': 'misc_trait2', // correct typo in sheet
-			'misctrait4': 'misc_trait4', // correct typo in sheet
-			'misctrait4_value': 'misc_trait4_value', // correct typo in sheet
 
 			// old_wod_generic
 			/// bio
@@ -168,7 +175,6 @@
 			'science_value': 'science',
 
 			/// advantages
-			'other_trait_7a': 'other_trait_7', // correct typo in sheet
 			'humanity_value': 'health', /* potential issue: all DST exporters 
 				* will get 'humanity_value' as their local name. In balance, if 
 				* they have their own local field name, it will be added as an 
