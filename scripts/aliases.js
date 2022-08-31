@@ -759,6 +759,55 @@
 					},
 
 					// UDF exporters
+					_abilities: {
+						'alertness': 'talents',
+						'athletics': 'talents',
+						'awareness': 'talents',
+						'brawl': 'talents',
+						'dodge': 'talents',
+						'empathy': 'talents',
+						'leadership': 'talents',
+						'persuasion': 'talents',
+						'streetwise': 'talents',
+						'subterfuge': 'talents',
+
+						'crafts': 'skills',
+						'drive': 'skills',
+						'etiquette': 'skills',
+						'firearms': 'skills',
+						'melee': 'skills',
+						'performance': 'skills',
+						'security': 'skills',
+						'stealth': 'skills',
+						'survival': 'skills',
+						'technology': 'skills',
+
+						'academics': 'knowledges',
+						'computer': 'knowledges',
+						'enigmas': 'knowledges',
+						'investigation': 'knowledges',
+						'law': 'knowledges',
+						'linguistics': 'knowledges',
+						'medicine': 'knowledges',
+						'occult': 'knowledges',
+						'politics': 'knowledges',
+						'science': 'knowledges',
+					},
+
+					abilities(names, values) {
+						const slug = abilities.normalizeName(values.name);
+						if (slug in this._abilities) {
+							compatibility.exportField(`${slug}_value`, values.value, {mine:names.value});
+							compatibility.exportField(`${slug}_specialty`, values.specialty, {mine:names.specialty});
+						} else {
+							const {base} = udf.parseName(names.name);
+							values.name = words.singulize(base) + ': ' + values.name;
+							if (values.specialty) {
+								values.name += ` (${values.specialty})`;
+							}
+							this._addTheirItem('abilities', values, names);
+						}
+					},
 
 					arcanoi(names, values) {
 						this._addTheirItem('arcanoi', values, names);
@@ -1058,17 +1107,18 @@
 								);
 							}
 						} else {
-							if (values.specialty) {
-								values.name += ` (${values.specialty})`;
-							}
-							//const type = dsf.sectionName(`.${names.name}`);
-							const {type} = klass.extract('dyn_{type}_{i}', names.value) || {},
+							const {base} = udf.parseName(names.value),
 								  abilities = {
 									  'talents': 'ability',
 									  'skills': 'talent',
 									  'knowledges': 'knowledge',
 								  },
-								  ability = abilities[type] || words.singulize(type || 'ability');
+								  ability = abilities[base] || words.singulize(base || 'ability');
+
+							if (values.specialty) {
+								values.name += ` (${values.specialty})`;
+							}
+
 							compatibility.export.fields(
 								{
 									// fix this: wrong field names
