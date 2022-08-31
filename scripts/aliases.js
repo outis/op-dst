@@ -340,9 +340,6 @@
 					_finish() {
 						compatibility.createFields('misc_trait{i}', aliases.options['other_trait_{i}']);
 						compatibility.createFields('misc_trait{i}_value', aliases.options['other_trait_{i}']);
-						dsf.rename('misc_trait2', 'misctrait2', {overwrite: true});
-						dsf.rename('misc_trait4', 'misctrait4', {overwrite: true});
-						dsf.rename('misc_trait4_value', 'misctrait4_value', {overwrite: true});
 					},
 
 					// prevent "Cannot export" warning
@@ -477,8 +474,6 @@
 						}
 						compatibility.createFields('bg{i}_expanded{j}');
 						compatibility.createFields('other_trait_{i}');
-						// typo in original sheet
-						compatibility.createField('other_trait_7a');
 						compatibility.createFields('other_value_{i}', aliases.options['other_trait_{i}']);
 						compatibility.createFields('misc{i}');
 					},

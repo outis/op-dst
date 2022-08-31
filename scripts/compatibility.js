@@ -1488,7 +1488,7 @@
 					};
 				}
 			}
-			callForAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_finish');
+			this.finishExport();
 		},
 
 		exportRequired() {
@@ -1519,6 +1519,15 @@
 				// use env & overwrite old fields of theirs
 				theirs = klass.eval(theirs, env);
 				this.export.dynamicField(theirs, value, {mine});
+			}
+		},
+
+		/**
+		 * Handle export to names with typos by renaming.
+		 */
+		exportTypos() {
+			for (let [typo, fixed] of Object.entries(aliases.typos)) {
+				this.exportField(typo, dsf.value(fixed), {mine: fixed});
 			}
 		},
 
@@ -1579,6 +1588,14 @@
 		/* Get aliased DSFs for other DSTs out of storage. */
 		extractTheirs(data) {
 			return this.extract_(data, this.aliases);
+		},
+
+		/**
+		 * Perform final tasks after exporting DSFs.
+		 */
+		finishExport() {
+			callForAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_finish');
+			this.exportTypos();
 		},
 
 		/* Copy from their fields to mine. */
