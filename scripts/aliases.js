@@ -1095,6 +1095,7 @@
 					},
 
 					associates(names, values) {
+						values.notes = stripHtml(values.notes).trim();
 						compatibility.export.fields(
 							{
 								value: 'dsf_contact_type_{i:02}',
