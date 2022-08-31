@@ -1137,11 +1137,7 @@
 							line.push(`${values.charge}`);
 						}
 						theirValues.name = line.join('');
-						if (values.description) {
-							theirValues.description = values.description;
-						} else {
-							delete theirs.description;
-						}
+						theirValues.description = values.description;
 						compatibility.export.fields(
 							theirs, theirValues,
 							compatibility.aliasFor(names), {start:0});
