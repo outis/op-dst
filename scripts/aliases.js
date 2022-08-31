@@ -782,6 +782,10 @@
 						return this._flavor(names, values, 'merit');
 					},
 
+					money(value) {
+						this.simple('Oboli', value, 'money');
+					},
+
 					passions(names, values) {
 						this._addTheirItem('passions', values, names);
 					},
