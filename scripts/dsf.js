@@ -295,6 +295,39 @@
 		},
 
 		/**
+		 * Change the name of a DSF.
+		 *
+		 * Used mosly for DSFs generated during export.
+		 *
+		 * Returns `true` if the DSF exists and was renamed, false otherwise.
+		 *
+		 * @param {string} oldName
+		 * @param {string} newName
+		 * @param {object} [options]
+		 * @param {boolean} [options.overwrite] - Whether to rename if there's already a DSF with <var>newName</var>.
+		 *
+		 * @returns {boolean} whether the DSF exists & was renamed
+		 */
+		rename(oldName, newName, {overwrite=false}={}) {
+			let $old = this.$dsf(oldName),
+				$new = this.$dsf(newName);
+			if ($old.length) {
+				if ($new.length) {
+					if (overwrite) {
+						this._value($new, this.value($old));
+						$old.remove();
+					} else {
+						return false;
+					}
+				} else {
+					$old.removeClass(this.addPrefix(oldName)).addClass(this.addPrefix(newName));
+				}
+				return true;
+			}
+			return false;
+		},
+
+		/**
 		 * The closest named container of a given element, as a jQuery.
 		 *
 		 * @param {string|HTMLElement|jQuery} elt - an element of the section
