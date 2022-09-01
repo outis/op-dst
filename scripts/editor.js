@@ -127,7 +127,7 @@
 				$editor = $elt.data('$editor') /*??*/|| this.$editor($elt);
 			}
 			return $editor.data('$input')
-				/*??*/|| $editor.find('input').add('textarea', $editor).add('select', $editor);
+				/*??*/|| $editor.find('input, textarea, select');
 		},
 
 		listFor($dsf) {
@@ -180,8 +180,7 @@
 			if (! ($context instanceof $)) {
 				$context = $($context);
 			}
-			$context.find('.dsf[list]')
-				.add('.dsf.notes', $context)
+			$context.find('.dsf[list], .dsf.notes')
 				.addClass('readonly ' + this.custClass)
 				.on('click', this.clicker);
 			// could also use `.one('click', this.clicker)`, but must then rebind after edit finishes
