@@ -31,13 +31,14 @@
 		resolve(thing) {
 			let resolved = {};
 			if ('string' == typeof(thing)) {
-				resolved.$elt = $(selector);
+				resolved.$elt = $(thing);
 				resolved.elt = resolved.$elt[0];
+				resolved.selector = thing;
 			} else if (thing instanceof $) {
 				resolved.$elt = thing;
 				resolved.elt = thing[0];
 				if (thing.selector) {
-					selector = thing.selector;
+					resolved.selector = thing.selector;
 				}
 			} else {
 				resolved.elt = thing;
