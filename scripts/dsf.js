@@ -346,7 +346,7 @@
 			} else {
 				$elt = $(elt);
 			}
-			return $section = $elt.parent().closest('[class]');
+			return $section = $elt.parent().closest('div[class], section[class]');
 		},
 
 		/**
