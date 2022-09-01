@@ -1034,6 +1034,52 @@
 						'talent_value_{i:02}': 'abilities',
 						'knowledge_type_{i:02}': 'abilities',
 						'knowledge_value_{i:02}': 'abilities',
+
+						//// export as dynamic items
+						// talents
+						'alertness': 'ability',
+						'awareness': 'ability',
+
+						// skills
+						'etiquette': 'talent',
+						'leadership': 'talent',
+						'meditation': 'talent',
+						'melee': 'talent',
+						'performance': 'talent',
+
+						// knowledges
+						'bureaucracy': 'knowledge',
+						'enigmas': 'knowledge',
+						'technology': 'knowledge',
+					},
+
+					_start() {
+						const tpls = {
+							'talents': {
+								name: `ability_type_{i:02}`,
+								value: `ability_value_{i:02}`
+							},
+							'skills': {
+								name: `talent_type_{i:02}`,
+								value: `talent_value_{i:02}`
+							},
+							'knowledges': {
+								name: `knowledge_type_{i:02}`,
+								value: `knowledge_value_{i:02}`
+							},
+						};
+
+						compatibility.export.staticToDynamic(
+							'abilities',
+							this._abilities,
+							tpls,
+							values => {
+								if (values.specialty) {
+									values.name += ` (${values.specialty})`;
+								}
+								values;
+							}
+						);
 					},
 
 					_finish() {
@@ -1086,6 +1132,8 @@
 						'academics': 'knowledge',
 						'computer': 'knowledge',
 						'craft': 'knowledge',
+						// treat alias as ability in foreign sheet
+						'crafts': 'knowledge',
 						'investigation': 'knowledge',
 						'medicine': 'knowledge',
 						'occult': 'knowledge',

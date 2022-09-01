@@ -398,6 +398,63 @@
 				}
 				this.export.each([mine, 'simple'], name, value, mine);
 			},
+
+			/**
+			 * Export static abilities (or other field categories) to dynamic ones.
+			 *
+			 * The <var>tpls</var> argument gives template names to export to for each category. Example:
+			 *     {
+             *         'talents': {
+             *             name: `ability_type_{i:02}`,
+             *             value: `ability_value_{i:02}`
+             *         },
+             *         'skills': {
+             *             name: `talent_type_{i:02}`,
+             *             value: `talent_value_{i:02}`
+             *         },
+             *         'knowledges': {
+             *             name: `knowledge_type_{i:02}`,
+             *             value: `knowledge_value_{i:02}`
+             *         },
+             *     }
+			 *
+			 * The <var>normalize</var> argument allows values to be altered before export (e.g. combine specialties with names, if foreign sheet doesn't support specialties).
+			 *
+			 * @param {string} section - HTML class name of section to scan for DSFs
+			 * @param {object} foreign - static DSFs in other sheet (names as keys)
+			 * @param {object} tpls - map of categories to foreign DSF name templates
+			 * @param {object => object} normalize - process values before export
+			 */
+			staticToDynamic(section, foreign, tpls, normalize=(x=>x)) {
+				const $dsfs = dsf.$dsfs(`.${section}`).not('[class*="dsf_dyn"]').not('.notes').not('.hidden'),
+					  dynamize = {};
+				for (let field of $dsfs) {
+					let name = dsf.name(field),
+						[base, key] = path.split(name).concat('value');
+					if (! (base in foreign)) {
+						let category = dsf.sectionName(name) /*??*/|| '';
+						//dynamize[category] ??= {};
+						dynamize[category] || (dynamize[category] = {});
+						//dynamize[category][base] ??= [];
+						dynamize[category][base] || (dynamize[category][base] = {});
+						dynamize[category][base].name = base;
+						dynamize[category][base][key] = dsf.value(field);
+					}
+				}
+				for (let category in dynamize) {
+					if (! tpls[category]) {
+						console.warn(`No foreign fields for ${category} when exporting static fields from ${section}.`);
+						continue;
+					}
+					for (let base in dynamize[category]) {
+						let values = dynamize[category][base];
+						// only export abilities that have something set
+						if (Object.entries(values).some(([k,v]) => 'name' != k && v)) {
+							this.export.fields(tpls[category], normalize(values) /*??*/|| values);
+						}
+					}
+				}
+			}
 		},
 
 		// copied to function `import`; `this` will get bound to `compatibility`
