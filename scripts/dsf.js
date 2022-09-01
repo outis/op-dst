@@ -330,7 +330,7 @@
 		/**
 		 * The closest named container of a given element, as a jQuery.
 		 *
-		 * @param {string|HTMLElement|jQuery} elt - an element of the section
+		 * @param {string|selector|HTMLElement|jQuery} elt - an element of the section
 		 *
 		 * @returns {jQuery}
 		 */
@@ -338,6 +338,9 @@
 			let $elt;
 			if ('string' == typeof(elt)) {
 				$elt = this.$context.find(elt);
+				if (! $elt.length) {
+					$elt = this.$dsf(elt);
+				}
 			} else if (elt instanceof $) {
 				$elt = elt;
 			} else {
