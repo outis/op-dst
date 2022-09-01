@@ -1101,7 +1101,7 @@
 							if (values.specialty) {
 								compatibility.export.field(
 									'specialty_type_{i:02}',
-									values.specialty,
+									`${values.name}: ${values.specialty}`,
 									names.specialty,
 									aliases.options.jp12x_splat
 								);
