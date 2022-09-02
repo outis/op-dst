@@ -821,8 +821,9 @@
 							compatibility.exportField(`${slug}_value`, values.value, {mine:names.value});
 							compatibility.exportField(`${slug}_specialty`, values.specialty, {mine:names.specialty});
 						} else {
-							const {base} = udf.parseName(names.name);
-							values.name = words.singulize(base) + ': ' + values.name;
+							//values.type = udf.parseName(names.name)?.base;
+							values.type = (udf.parseName(names.name) || {}).base;
+							values.name = words.singulize(values.type) + ': ' + values.name;
 							if (values.specialty) {
 								values.name += ` (${values.specialty})`;
 							}
