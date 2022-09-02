@@ -464,6 +464,27 @@
 					_start() {
 						this._items = {};
 						this._inventory = {};
+
+						const tpls = {
+							'talents': 'talents',
+							'skills': 'skills',
+							'knowledges': 'knowledges',
+						};
+
+						compatibility.export.staticToDynamic(
+							'abilities',
+							this._abilities,
+							tpls, {
+								exporter: (type, values) => {
+									values.type = 'abilities';
+									values.name = words.singulize(type) + ': ' + values.name;
+									if (values.specialty) {
+										values.name += ` (${values.specialty})`;
+									}
+									this._addTheirItem('abilities', values);
+								},
+							}
+						);
 					},
 
 					_addTheirItem(category, item, names) {
@@ -1072,12 +1093,13 @@
 						compatibility.export.staticToDynamic(
 							'abilities',
 							this._abilities,
-							tpls,
-							values => {
-								if (values.specialty) {
-									values.name += ` (${values.specialty})`;
-								}
-								values;
+							tpls, {
+								normalize: values => {
+									if (values.specialty) {
+										values.name += ` (${values.specialty})`;
+									}
+									values;
+								},
 							}
 						);
 					},

@@ -423,9 +423,14 @@
 			 * @param {string} section - HTML class name of section to scan for DSFs
 			 * @param {object} foreign - static DSFs in other sheet (names as keys)
 			 * @param {object} tpls - map of categories to foreign DSF name templates
-			 * @param {object => object} normalize - process values before export
+			 * @param {object} kwargs
+			 * @param {(names, values) => undefined} [kwargs.exporter] - . Defaults to {@link compatibility.export.fields}.
+			 * @param {object => object} [kwargs.normalize] - process values before export. Only called by default exporter.
 			 */
-			staticToDynamic(section, foreign, tpls, normalize=(x=>x)) {
+			staticToDynamic(section, foreign, tpls, {normalize=(x=>x), exporter}) {
+				//exporter ??= ;
+				exporter || (exporter = (names, values) => this.export.fields(names, normalize(values) /*??*/|| values));
+
 				const $dsfs = dsf.$dsfs(`.${section}`).not('[class*="dsf_dyn"]').not('.notes').not('.hidden'),
 					  dynamize = {};
 				for (let field of $dsfs) {
@@ -450,7 +455,7 @@
 						let values = dynamize[category][base];
 						// only export abilities that have something set
 						if (Object.entries(values).some(([k,v]) => 'name' != k && v)) {
-							this.export.fields(tpls[category], normalize(values) /*??*/|| values);
+							exporter(tpls[category], values);
 						}
 					}
 				}
