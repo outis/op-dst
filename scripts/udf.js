@@ -1320,3 +1320,5 @@
 			return i.toString().padStart(width /*??*/|| this.itemNumberWidth, '0')
 		},
 	};
+	// bind udf.exists, so it can be used directly as a filter
+	bindSome(udf, ['exists']);

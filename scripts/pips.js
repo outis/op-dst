@@ -522,4 +522,6 @@
 		},
 	};
 	pips.postLoad.queue = [];
+	// bind pips.is, so it can be used directly as a filter
+	bindSome(pips, ['is']);
 	mixIn(pips, resolver);

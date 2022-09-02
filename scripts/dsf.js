@@ -635,4 +635,6 @@
 			}
 		},
 	};
+	// bind dsf.exists, so it can be used directly as a filter
+	bindSome(dsf, ['exists']);
 	mixIn(dsf, nameGen);
