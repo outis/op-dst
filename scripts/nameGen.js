@@ -90,9 +90,7 @@
 				tpls = tpls[0];
 				const first = Object.values(tpls)[0];
 				i = this.next(first, opts.start);
-				for (const k in tpls) {
-					names[k] = klass.eval(tpls[k], {i});
-				}
+				names = klass.evalAll(tpls, {i});
 			} else {
 				if (Array.isArray(tpls[0])) {
 					opts = {...opts, ...(tpls[1] /*??*/|| {})};
