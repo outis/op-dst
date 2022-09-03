@@ -996,9 +996,15 @@
 
 					'traits_type_{i:02}': function (theirs, value, env) {
 						let names,
-							rating = theirs.replace('_type_', '_value_');
-						if (/pathos/i.test(value)) {
-							dsa.rename(rating, 'power');
+							rating = theirs.replace('_type_', '_value_'),
+							values = value.split(/\W+/).map(v => {
+								v = words.pluralize(v.toLowerCase());
+								return aliases.simple[v] /*??*/|| v;
+							}),
+							mine = values.find(dsf.exists);
+
+						if (mine) {
+							dsa.rename(rating, mine);
 						} else for (let base of ['fetter', 'passion', 'talent', 'skill', 'knowledge']) {
 							if (this.renameSplat(base, theirs, rating, value)) {
 								break;
