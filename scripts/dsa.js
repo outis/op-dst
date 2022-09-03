@@ -50,23 +50,23 @@
 			if (stop.index) {
 				loop = {
 					exists: true,
-					continue(i, j) {
+					continue(i) {
 						return this.exists || i <= stop.index;
 					},
-					missing(i, j) {
+					missing(i) {
 						this.exists = false;
 					},
-					present(i, j) {
+					present(i) {
 						this.exists = true;
 					},
 				};
 			} else if (stop.gap) {
 				loop = {
-					continue(i, j) {
+					continue(i) {
 						return (i - this.i) <= stop.gap;
 					},
-					missing(i, j) {},
-					present(i, j) {
+					missing(i) {},
+					present(i) {
 						this.i = i;
 					},
 				};
@@ -83,11 +83,11 @@
 				name = klass.eval(tpl, {i: ++i});
 				if (fields.exists(name)) {
 					fields.renumber(tpls, i, ++j);
-					loop.present(i, j);
+					loop.present(i);
 				} else {
-					loop.missing(i, j);
+					loop.missing(i);
 				}
-			} while (loop.continue(i, j));
+			} while (loop.continue(i));
 			return j;
 		},
 
