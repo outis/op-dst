@@ -629,6 +629,22 @@
 				return this.import.advantage(parsed, names);
 			},
 
+			/**
+			 * Import UDFs with notes (such as associates).
+			 *
+			 * This method will try to determine the UDF base by looking for tags in the values.
+			 *
+			 * @param {object} values - (partially) parsed values
+			 * @param {string} tags - regex subexpresion to match tags (must not have capturing groups)
+			 * @param {string} section - e.g. 'associates'
+			 * @param {string} base - default for UDF base, e.g. 'contacts'
+			 */
+			noted(values, tags, section, base) {
+				return this.import[section](
+					this.parse.noted(values, tags, base)
+				);
+			},
+
 			simple(parsed, names) {
 				// simple field: corpus, pathos, ...
 				if (parsed.name) {
@@ -1004,6 +1020,37 @@
 			normalize(parsed) {
 				if (parsed.name) {
 					parsed.name = parsed.name.ucfirst();
+				}
+				return parsed;
+			},
+
+			/**
+			 * Final stage parsing for simple UDFs with notes (such as associates).
+			 *
+			 * Mostly, this method tries to determine the UDF base by looking for tags (using <var>tags</var>) in the parsed values.
+			 *
+			 * @param {object} parsed
+			 * @param {string} tags - regex subexpresion to match tags (must not have capturing groups)
+			 * @param {string} base - default for base
+			 *
+			 * @returns {object}
+			 */
+			noted(parsed, tags, base) {
+				const reTag = new RegExp(`^(${tags})\\W+`, 'i'),
+					  reTags = new RegExp(`\\b(?:${tags})\\b`, 'gi'),
+					  value = (parsed.name || parsed.value);
+				let tag = value.match(reTag);
+				if (tag) {
+					parsed.base = words.pluralize(tag[1].toLowerCase());
+					if (parsed.name) {
+						parsed.name = parsed.name.replace(reTag, '');
+					} else {
+						parsed.value = parsed.value.replace(reTag, '');
+					}
+				} else if ((tag = parsed.notes.match(reTags)) && tag && tag/*?*/.length == 1) {
+					parsed.base = words.pluralize(tag[0]);
+				} else {
+					parsed.base = base /*??*/|| category;
 				}
 				return parsed;
 			},

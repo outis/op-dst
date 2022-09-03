@@ -70,6 +70,9 @@
 			'talent_value_{i:02}': 'jp12x_splat',
 			'knowledge_type_{i:02}': 'jp12x_splat',
 			'knowledge_value_{i:02}': 'jp12x_splat',
+
+			'contact_type_{i:02}': 'jp12x_splat',
+			'contact_tootip_{i:02}': 'jp12x_splat',
 		},
 
 		typos: { // typos in DSF names
@@ -1046,6 +1049,11 @@
 						values.charge = 10;
 
 						this.import.equipment(values, names);
+					},
+
+					'contact_type_{i:02}': function (theirs, value, env) {
+						const notes = dsa.data[klass.eval('contact_tootip_{i:02}', env)] /*??*/|| '';
+						this.import.noted({value, notes}, 'all(?:y|ies)|contacts?', 'associates', 'contacts');
 					},
 				},
 
