@@ -722,6 +722,7 @@
 								throw err;
 							}
 						}
+						return [];
 					},
 
 					_store_spillover(entries) {
@@ -746,6 +747,9 @@
 							tpls = sectionTpls.other,
 							maxI = this._max.other,
 							category, items, iItem, names, item;
+						if (! entries) {
+							return;
+						}
 						for (iEntry = 0; iEntry < entries.length; ++iEntry) {
 							[category, items] = entries[iEntry];
 							for ([iItem, item] of items.entries()) {
