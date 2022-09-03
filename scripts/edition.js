@@ -112,11 +112,11 @@
 						let tplTo = tpl(base);
 						// scan tplFrom, looking for 
 						for (let name of names) {
-							if (dsa.data[name]) {
+							if (dsa.exists(name) && ! abilities.find(name)) {
 								let item = dsa.nextName(tplTo);
 								dsa.data[item.name] = this.label(name);
-								dsa.data[item.specialty] = dsa.data[name + '_specialty'];
-								dsa.data[item.value] = dsa.data[name];
+								dsa.rename(name + '_specialty', item.specialty);
+								dsa.rename(name, item.value);
 								udf.updateSize(base, item.i);
 							}
 						}
