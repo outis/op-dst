@@ -30,7 +30,7 @@
 		compact(tpls, stop={gap:5}) {
 			let tpl = Object.values(tpls)[0],
 				names, name,
-				i, j, n, loop,
+				i, j, loop,
 				fields;
 
 			// allows compacting of different field collections (e.g. DSFs, UDFs)
@@ -72,23 +72,23 @@
 				};
 			}
 
-			i=0; j=0, n=0;
+			// i is index to check; j is index of last item in contiguous sequenc
+			i = 0; j = -1;
 			do { // stops at 1st nonexistent item
 				++i; ++j;
 				name = klass.eval(tpl, {i});
 			} while (fields.exists(name));
-			// no item at index i, j
+			// no item at index i
 			do {
 				name = klass.eval(tpl, {i: ++i});
 				if (fields.exists(name)) {
-					n = j;
+					fields.renumber(tpls, i, ++j);
 					loop.present(i, j);
-					fields.renumber(tpls, i, j++);
 				} else {
 					loop.missing(i, j);
 				}
 			} while (loop.continue(i, j));
-			return n;
+			return j;
 		},
 
 		count(tpl) {
