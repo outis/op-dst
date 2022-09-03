@@ -78,7 +78,8 @@
 				++i; ++j;
 				name = klass.eval(tpl, {i});
 			} while (fields.exists(name));
-			// no item at index i
+			loop.present(j);
+			loop.missing(i);
 			do {
 				name = klass.eval(tpl, {i: ++i});
 				if (fields.exists(name)) {
