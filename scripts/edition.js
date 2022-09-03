@@ -117,6 +117,7 @@
 								dsa.data[item.name] = this.label(name);
 								dsa.data[item.specialty] = dsa.data[name + '_specialty'];
 								dsa.data[item.value] = dsa.data[name];
+								udf.updateSize(base, item.i);
 							}
 						}
 					}
