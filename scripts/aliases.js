@@ -552,7 +552,12 @@
 								&& bases.length
 								&& ! bases.map(words.pluralize).includes(words.pluralize(item.type)))
 							{
-								item.name = `${item.type} ${item.name}`;
+								let type = words.singulize(item.type),
+									types = words.pluralize(item.type),
+									reTyped = new RegExp(`^(${type}|${types})\\b`, 'i');
+								if (! reTyped.test(item.name)) {
+									item.name = `${item.type} ${item.name}`;
+								}
 							}
 							for (let [i, base] of bases.entries()) {
 								if (base in this._preserve) {
