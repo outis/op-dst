@@ -638,9 +638,12 @@
 	}
 
 	function stripHtml(source) {
-		let elt = document.createElement("DIV");
-		elt.innerHTML = source;
-		return elt.textContent || elt.innerText || source.replace(/<(p)[^>]*\/?>/g, '').replace(/<(\/p|br)[^>]*\/?>\n+/g, "\n");
+		var doc = new DOMParser().parseFromString(source, "text/html");
+		return doc.documentElement.textContent;
+	}
+
+	function stripBreaks(source) {
+		return source.replace(/<(p)[^>]*\/?>/g, '').replace(/<(\/p|br)[^>]*\/?>\n+/g, "\n");
 	}
 
 	/*** jQuery extensions */
