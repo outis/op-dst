@@ -549,8 +549,8 @@
 						function (item, ...bases) {
 							let preserved;
 							if (   item.type
-								   && bases.length
-								   && ! bases.map(words.pluralize).includes(words.pluralize(item.type)))
+								&& bases.length
+								&& ! bases.map(words.pluralize).includes(words.pluralize(item.type)))
 							{
 								item.name = `${item.type} ${item.name}`;
 							}
