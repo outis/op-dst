@@ -174,22 +174,53 @@
 	 * Equivalent to the following, if it were valid in JS:
 	 *     obj[...keys][func](..args);
 	 *
-	 * Different from {@link callForAll} in that this takes an array for arguments, while the other is variadic in <var>args</var>.
+	 * Different from {@link callForAll} in that this takes an array for arguments, while the other is variadic in <var>args</var>. This function can also optionally either stop at the first exception (throwing it), or call all functions and collect any exceptions, throwing them only at the end.
+	 *
+	 * The functions can be indicated to be <var>related</var>, which will stop processing if any function throws an exception. If functions are unrelated, any thrown exceptions are collected, and only thrown (as a collection) after all functions have been invoked.
 	 *
 	 * @param {object} obj - Collection of objects.
 	 * @param {string[]} keys - Property names of <var>obj</var>.
 	 * @param {string} func - Method name.
 	 * @param {*[]} [args] - Method arguments.
+	 * @param {object} [options] - Options affect the calling of functions.
+	 * @param {boolean} [options.related] - Whether or not the functions are related.
 	 *
 	 * @returns {*[]} Return values of each function, indexed by object name.
 	 */
-	function applyForAll(obj, keys, func, args=[]) {
-		let results = [];
+	function applyForAll(obj, keys, func, args=[], {related=false}={}) {
+		let results = [],
+			exceptions = Object.defineProperties(
+				{}, {
+					length: {
+						value: 0,
+						writable: true,
+					},
+					results: {
+						value: results,
+					},
+				});
 		for (let key of keys) {
 			if (is_function(obj[key][func])) {
-				results[key] = obj[key][func](...args);
-				results.push(results[key]);
+				try {
+					results[key] = obj[key][func](...args);
+					results.push(results[key]);
+				} catch (err) {
+					if (related) {
+						err.for = key;
+						err.results = results;
+						throw err;
+					}
+					results.push(undefined);
+					exceptions[key] = err;
+					++exceptions.length;
+				}
 			}
+		}
+		if (exceptions.length) {
+			if (1 == exceptions.length) {
+				throw Object.values(exceptions)[0];
+			}
+			throw exceptions;
 		}
 		return results;
 	}
@@ -224,14 +255,7 @@
 	 * @returns {*[]} Return values of each function, indexed by object name.
 	 */
 	function callForAll(obj, keys, func, ...args) {
-		let results = [];
-		for (let key of keys) {
-			if (is_function(obj[key][func])) {
-				results[key] = obj[key][func](...args);
-				results.push(results[key]);
-			}
-		}
-		return results;
+		return applyForAll(obj, keys, func, args);
 	}
 
 	/**
