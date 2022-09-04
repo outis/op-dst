@@ -1,4 +1,6 @@
-	/*** */
+	/**
+	 * @require tabs, udf
+	 */
 	let shadow = globals.shadow = {
 		postLoad(opts, $context) {
 			let psyche_slug = dsf.value('psyche_slug');
