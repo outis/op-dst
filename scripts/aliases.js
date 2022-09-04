@@ -500,6 +500,7 @@
 								this._store();
 							}
 						} finally {
+							compatibility.createFields('bg{i}');
 							compatibility.createFields('bg{i}_expanded{j}');
 							compatibility.createFields('other_trait_{i}');
 							compatibility.createFields('other_value_{i}', aliases.options['other_trait_{i}']);
