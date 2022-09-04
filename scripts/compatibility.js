@@ -15,11 +15,12 @@
 			value = value.trim();
 			if (is_type(value)) {
 				parsed.type = value.toLowerCase();
+				return true;
 			} else {
 				for (let name of names) {
 					if (! parsed[name]) {
 						parsed[name] = value;
-						break;
+						return true;
 					}
 				}
 			}
@@ -803,6 +804,15 @@
 							parsed.base = words.pluralize(parsed.type);
 							parsed.type = words.singulize(parsed.type);
 						}
+						if (/*parsed.unmatched?.string*/parsed.unmatched && parsed.unmatched.string) {
+							parsed.unmatched.string = parsed.unmatched.string.join('. ');
+							if (parsed.notes) {
+								parsed.notes += '. ' + parsed.unmatched.string;
+							} else {
+								parsed.notes = parsed.unmatched.string;
+							}
+							delete parsed.unmatched.string;
+						}
 					},
 				},
 				backgrounds: function(tokens, prelim) {
@@ -843,6 +853,16 @@
 							parsed.type = parsed.base;
 						}
 						parsed.base = 'equipment';
+
+						if (/*parsed.unmatched?.string*/parsed.unmatched && parsed.unmatched.string) {
+							parsed.unmatched.string = parsed.unmatched.string.join('; ');
+							if (parsed.description) {
+								parsed.description += '; ' + parsed.unmatched.string;
+							} else {
+								parsed.description = parsed.unmatched.string;
+							}
+							delete parsed.unmatched.string;
+						}
 					},
 				},
 				generic: {
@@ -1141,6 +1161,17 @@
 				if (fields.pre) {
 					fields.pre(parsed);
 				}
+
+				function unmatched(parsed, type, token) {
+					//parsed.unmatched ??= [];
+					parsed.unmatched || (parsed.unmatched = []);
+					parsed.unmatched.push(token)
+					//parsed.unmatched[type] ??= [];
+					parsed.unmatched[type] || (parsed.unmatched[type] = []);
+					parsed.unmatched[type].push(token)
+					console.warn(`parse.stream: out of fields for '${token}':${type}`);
+				}
+
 				for (let token of tokens) {
 					token = this.parse.cleanToken(token);
 					type = this.parse.streamType(token, fields);
@@ -1153,18 +1184,14 @@
 							if (fields[type].length) {
 								parsed[fields[type].shift()] = token;
 							} else {
-								//parsed.unmatched ??= [];
-								parsed.unmatched || (parsed.unmatched = []);
-								parsed.unmatched.push(token)
-								//parsed.unmatched[type] ??= [];
-								parsed.unmatched[type] || (parsed.unmatched[type] = []);
-								parsed.unmatched[type].push(token)
-								console.warn(`parse.stream: out of fields for '${token}':'${type}'`);
+								unmatched(parsed, type, token);
 							}
 						} else if (is_function(fields[type])) {
 							let name = fields[type](token, parsed);
-							if (name) {
+							if (is_string(name)) {
 								parsed[name] = token;
+							} else if (is_undefined(name)) {
+								unmatched(parsed, type, token);
 							}
 						} else {
 							console.warn(`parse.stream: ${base} has unknown handler type for '${token}':'${type}'`);
