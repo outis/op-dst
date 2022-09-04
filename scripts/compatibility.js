@@ -1907,6 +1907,11 @@
 					dsf.entries(myTpl),
 					([myName, value]) => {
 						let env = klass.extract(myTpl, myName);
+						for (let [k, v] of Object.entries(env)) {
+							if (is_numeric(v)) {
+								env[k] = +env[k];
+							}
+						}
 						return {mine:myName, value, theirs, env};
 					}
 				);
