@@ -641,6 +641,8 @@
 								// merging reduces # of BGs; finalize merger
 								nBgs = nBgs1;
 								this._items.equipment = inventory;
+								// remove record of 'equipment' from merger, so loop won't remove it from items
+								delete merged.equipment;
 								for (let category in merged) {
 									delete this._items[category];
 								}
