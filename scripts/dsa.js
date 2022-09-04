@@ -27,6 +27,22 @@
 			};
 		},
 
+		/**
+		 * Make UDF fields continuous.
+		 *
+		 * There are two mechanisms to determine when to stop: by index, or by gap size.
+
+		 * The by-index mechanism should be used when there's a maximum index for gaps. It will scan items, stopping when no item exists and the current item index is greater than the maximum index.
+		 *
+		 * The by-gap mechanism should be used when gaps might happen at any index, but gaps have a maximum size. It will scan items, counting the size of each encountered gap (contiguous sequences of nonexistent items) and stopping when this size reaches a given threshold.
+		 *
+		 * If both an index and a gap size are given, the index takes precedence and a by-index scan is used.
+		 *
+		 * @param {object} tpls - name templates
+		 * @param {object} [stop] - scan options
+		 * @param {object} [stop.index] - maximum index at which gaps might be encountered
+		 * @param {object} [stop.gap] - maximum length of any gap
+		 */
 		compact(tpls, stop={gap:5}) {
 			let tpl = Object.values(tpls)[0],
 				names, name,
@@ -48,6 +64,7 @@
 				stop = {index: stop};
 			}
 			if (stop.index) {
+				// stop when the first nonexistent item is encountered after the given index
 				loop = {
 					exists: true,
 					continue(i) {
@@ -61,6 +78,7 @@
 					},
 				};
 			} else if (stop.gap) {
+				// stop when a gap surpasses the given size
 				loop = {
 					continue(i) {
 						return (i - this.i) <= stop.gap;
@@ -196,6 +214,10 @@
 			) {
 				this.data[newName] = this.data[oldName];
 				delete this.data[oldName];
+				/*
+				*  Deleting old name won't make it go away from storage; for that, must create a DSF with an empty value for it. The value should still be deleted here, so new UDFs can take up old slots. The overwriting DSF should only be created before saving, mostly so as to not confuse other modules during sheet editing.
+				*/
+				//this._renamed[oldName] = newName;
 			}
 		},
 

@@ -1706,10 +1706,10 @@
 		 */
 		finishExport() {
 			try {
-			callForAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_finish');
+				callForAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_finish');
 			} finally {
-			this.finishPrune();
-			this.exportTypos();
+				this.finishPrune();
+				this.exportTypos();
 			}
 		},
 

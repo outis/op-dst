@@ -496,14 +496,14 @@
 
 					_finish() {
 						try {
-						if (Object.keys(this._items).length) {
-							this._store();
-						}
+							if (Object.keys(this._items).length) {
+								this._store();
+							}
 						} finally {
-						compatibility.createFields('bg{i}_expanded{j}');
-						compatibility.createFields('other_trait_{i}');
-						compatibility.createFields('other_value_{i}', aliases.options['other_trait_{i}']);
-						compatibility.createFields('misc{i}');
+							compatibility.createFields('bg{i}_expanded{j}');
+							compatibility.createFields('other_trait_{i}');
+							compatibility.createFields('other_value_{i}', aliases.options['other_trait_{i}']);
+							compatibility.createFields('misc{i}');
 						}
 					},
 
@@ -619,11 +619,14 @@
 							if (category in this._items) {
 								equip_frags[category] = this._fragmentation(this._items[category]);
 								if (equip_frags[category]) {
+									// `category` has fragmentation, so it can benefit from being merged
+									// calculate the merged size & total current fragmentation
 									nInventory += this._items[category].length;
 									equip_frag += equip_frags[category];
 								}
 							}
 						}
+						// calculate the fragmentation after merging
 						inv_frag = this._fragmentation({length: nInventory});
 						if (equip_frag > inv_frag) {
 							// merging should reduce fragmentation; will it reduce # of BGs required?
@@ -636,9 +639,11 @@
 									// 1st stage merge
 									inventory.push(...this._items[category]);
 									merged[category] = this._items[category];
+									// will remove this BG, so remove it from new BG count
 									nBgs1 -= this._nBg(this._items[category]);
 								}
 							}
+							// will add merged background, so add it to new BG count
 							nBgs1 += this._nBg(inventory);
 							if (nBgs1 < nBgs) {
 								// merging reduces # of BGs; finalize merger
@@ -701,6 +706,7 @@
 							);
 						}).bind(this);
 
+						// must declare iEntry & iItem outside of loop, so outOfRoom handler can use them
 						let category, items, iEntry, iItem;
 						try {
 							for (iEntry = 0; iEntry < entries.length; ++iEntry) {
