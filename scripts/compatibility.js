@@ -1348,6 +1348,7 @@
 			let $field = this.$context.find(`.${theirs}`);
 			if (! $field.length) {
 				$field = $(`<span class="dsf ${theirs} ${classes}"${attrs}></span>`);
+				this.$aliases.append($(`<label for="${theirs}" class="${classes}">${dsf.stripPrefix(theirs)}</label>`));
 				this.$aliases.append($field);
 			} else if (mine) {
 				$field.attr('data-for', mine).addClass(classes);
