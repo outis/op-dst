@@ -1704,9 +1704,12 @@
 		 * Perform final tasks after exporting DSFs.
 		 */
 		finishExport() {
+			try {
 			callForAll(this.aliases.export.dst, Object.keys(this.aliases.export.dst), '_finish');
+			} finally {
 			this.finishPrune();
 			this.exportTypos();
+			}
 		},
 
 		finishPrune() {
