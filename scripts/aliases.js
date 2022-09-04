@@ -748,13 +748,13 @@
 							section = 'other',
 							tpls = sectionTpls.other,
 							maxI = this._max.other,
-							category, items, iItem, names, item;
+							category, items, names;
 						if (! entries) {
 							return;
 						}
-						for (iEntry = 0; iEntry < entries.length; ++iEntry) {
+						for (let iEntry = 0; iEntry < entries.length; ++iEntry) {
 							[category, items] = entries[iEntry];
-							for ([iItem, item] of items.entries()) {
+							for (let [iItem, item] of items.entries()) {
 								//iItem = 0; iItem < items.length; ++iItem
 								//item = items[iItem];
 								names = dsf.nextName(tpls);
