@@ -758,7 +758,7 @@
 								//iItem = 0; iItem < items.length; ++iItem
 								//item = items[iItem];
 								names = dsf.nextName(tpls);
-								if (names.i > maxI) {
+								while (names.i > maxI) {
 									entries = entries.slice(iEntry);
 									entries[0][1] = entries[0][1].slice(iItem);
 									if (! sections.length) {
