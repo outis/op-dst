@@ -102,7 +102,8 @@
 				if (tpls.length > 1) {
 					names = tpls.map(tpl => klass.eval(tpl, {i}));
 				} else {
-					names = klass.eval(tpls[0], {i});
+					// so `names` will take arbitrary properties
+					names = new String(klass.eval(tpls[0], {i}));
 				}
 			}
 			if (is_object(names)) {

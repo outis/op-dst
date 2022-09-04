@@ -932,7 +932,7 @@
 						} else {
 							theirs = dsf.nextName('misc{i}');
 							if (theirs.i > 5) {
-								console.warn(`Cannot export ${mine}: ran out of fields.`);
+								console.warn(`Cannot export ${mine /*??*/|| 'to misc{i}'}: ran out of fields.`);
 								return;
 							}
 							compatibility.export.dynamicField(theirs, `${name}: ${value}`, {mine});
