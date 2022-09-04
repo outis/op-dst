@@ -149,7 +149,7 @@
 		},
 
 		on(event, handler, id) {
-			if ('string' === typeof(handler)) {
+			if (is_string(handler)) {
 				[handler, id] = [id, handler];
 			}
 			if (! id) {

@@ -530,7 +530,7 @@
 	 */
 	function is_kind(kind, elt) {
 		let $elt = $(elt);
-		if ('string' === typeof(kind)) {
+		if (is_string(kind)) {
 			return $elt.closest(`.${kind}`).length;
 		} else {
 			return kind.find(kind => $elt.closest(`.${kind}`).length);
@@ -582,7 +582,8 @@
 	}
 
 	function is_object(value) {
-		return 'object' === typeof(value);
+		return 'object' === typeof(value)
+			&& ! (value instanceof String);
 	}
 
 	function is_real(value) {
@@ -591,6 +592,11 @@
 
 	function is_rational(value) {
 		return /^\s*\d+\s*\/\s*\d+\s*$/.test(value);
+	}
+
+	function is_string(value) {
+		return 'string' === typeof(value)
+			|| value instanceof String;
 	}
 
 	function is_undefined(value) {
@@ -629,7 +635,7 @@
 	 * @param {string|* => boolean} Predicate to filter elements.
 	 */
 	$.fn.closestHaving = function(sel, pred) {
-		if ('string' === typeof(pred)) {
+		if (is_string(pred)) {
 			// to support ':scope'
 			let psel = pred;
 			pred = (i, node) => node.querySelector(psel);
@@ -834,7 +840,7 @@
 		 * @returns {string} Modified string.
 		 */
 		String.prototype.splice = function(start, deleteCount, items='') {
-			if ('string' === typeof(deleteCount)) {
+			if (is_string(deleteCount)) {
 				items = deleteCount;
 				deleteCount = null;
 			}

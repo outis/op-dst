@@ -1024,7 +1024,7 @@
 		 */
 		resolve(list) {
 			let base, elt, $elt;
-			if ('string' == typeof(list)) {
+			if (is_string(list)) {
 				base = list;
 				$elt = this.$udf(base);
 				elt = $elt[0];
@@ -1231,7 +1231,7 @@
 
 		template(eltList) {
 			let $eltList;
-			if ('string' == typeof eltList) {
+			if (is_string(eltList)) {
 				$eltList = this.$udf(eltList);
 			} else {
 				$eltList = $(eltList);

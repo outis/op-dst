@@ -572,7 +572,7 @@
 					importer = this.import[category],
 					imported = importer(parsed, names);
 				if (imported && ! ('imported' in parsed)) {
-					if ('string' == typeof(imported)) {
+					if (is_string(imported)) {
 						parsed.imported = imported;
 					} else if (is_object(imported)) {
 						parsed = imported;
@@ -723,7 +723,7 @@
 
 			appendUnmatched(parsed, kwargs={}) {
 				let {to, unmatched} = kwargs;
-				if ('string' === typeof(kwargs)) {
+				if (is_string(kwargs)) {
 					to = kwargs;
 				} else if (Array.isArray(kwargs)) {
 					unmatched = kwargs;
@@ -1574,7 +1574,7 @@
 			// handle complex cases
 			for (let base in this.aliases.export) {
 				// dereference exporters (done when compatibility is first created, but do again in case a client has added more)
-				while ('string' == typeof(this.aliases.export[base]) && this.aliases.export[base] in this.aliases.export) {
+				while (is_string(this.aliases.export[base]) && this.aliases.export[base] in this.aliases.export) {
 					base = this.aliases.export[base];
 				}
 				if (! is_function(this.aliases.export[base])) {

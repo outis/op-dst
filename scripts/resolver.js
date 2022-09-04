@@ -30,7 +30,7 @@
 		 */
 		resolve(thing) {
 			let resolved = {};
-			if ('string' == typeof(thing)) {
+			if (is_string(thing)) {
 				resolved.$elt = $(thing);
 				resolved.elt = resolved.$elt[0];
 				resolved.selector = thing;

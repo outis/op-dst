@@ -96,7 +96,7 @@
 		 */
 		*entries(obj, include) {
 			let tpl = include;
-			if ('string' == typeof(include)) {
+			if (is_string(include)) {
 				include = name => klass.matches(name, tpl);
 			} else if (tpl instanceof RegExp) {
 				include = name => tpl.test(name);

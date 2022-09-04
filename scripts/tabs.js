@@ -40,7 +40,7 @@
 
 		resolve($tabGroup, tab) {
 			let $tab, name;
-			if ('string' == typeof(tab)) {
+			if (is_string(tab)) {
 				name = tab;
 				$tab = this.$tab($tabGroup, tab);
 			} else {

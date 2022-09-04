@@ -336,7 +336,7 @@
 		 */
 		$section(elt) {
 			let $elt;
-			if ('string' == typeof(elt)) {
+			if (is_string(elt)) {
 				$elt = this.$context.find(elt);
 				if (! $elt.length) {
 					$elt = this.$dsf(elt);
@@ -411,7 +411,7 @@
 		 */
 		resolve(field) {
 			let name, elt, $elt, type;
-			if ('string' == typeof(field)) {
+			if (is_string(field)) {
 				name = this.stripPrefix(field);
 				$elt = this.$dsf(name);
 				elt = $elt[0];
