@@ -637,6 +637,19 @@
 		pippedKinds = kinds;
 	}
 
+	/**
+	 * Replace HTML character entities.
+	 *
+	 * @param {string} source
+	 *
+	 * @returns {string}
+	 */
+	function decodeEntities(source) {
+		let elt = document.createElement("TEXTAREA");
+		elt.innerHTML = source;
+		return /*elt.childNodes[0]?.nodeValue ?? ''*/ elt.childNodes.length ? elt.childNodes[0]?.nodeValue : "";
+	}
+
 	function stripHtml(source) {
 		var doc = new DOMParser().parseFromString(source, "text/html");
 		return doc.documentElement.textContent;

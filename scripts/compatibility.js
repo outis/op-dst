@@ -1105,6 +1105,7 @@
 				if (values.every(v => v && v.length < 2)) {
 					return false;
 				}
+				values = values.map(decodeEntities);
 				let tokens = [...this.parse.tokenizeAll(values)],
 					prelim = this.parse.prelim(tokens),
 					{parser} = prelim /*??*/|| {};
