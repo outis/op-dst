@@ -912,8 +912,8 @@
 		 */
 		parseName(name, dflt='value') {
 			let parts = this.destructureName(name);
-			//parts.key ??= 'value';
-			parts.key || (parts.key = dflt);
+			//parts?.key ??= 'value';
+			parts && (parts.key || (parts.key = dflt));
 			return parts;
 		},
 
