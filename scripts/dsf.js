@@ -482,8 +482,7 @@
 			setters: {
 				checkbox($elt, value) {
 					$.disableHooks('prop', 'checked');
-					// `!! +value` doesn't properly handle 'true' & 'false' as strings
-					$elt.find('input').prop('checked', !! +value);
+					$elt.find('input').prop('checked', to_boolean(value));
 					$.enableHooks('prop', 'checked');
 				},
 				select($elt, values) {
