@@ -607,7 +607,8 @@
 
 	function is_object(value) {
 		return 'object' === typeof(value)
-			&& ! (value instanceof String);
+			&& ! (value instanceof String)
+			&& ! (Array.isArray(value));
 	}
 
 	function is_real(value) {
