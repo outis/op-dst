@@ -628,6 +628,48 @@
 		return 'undefined' === typeof(value);
 	}
 
+	/**
+	 * Interpret a value of any type as a boolean.
+	 *
+	 * The empty value for every type is false. Numeric strings are interpreted as numbers. Certain special strings are also interpreted as `false` (see table below).
+	 *
+	 * type   |   true   | false
+	 * ------------------------
+	 * object | nonempty | {}
+	 * array  | nonempty | []
+	 * string | most     | ''
+	 * string | 'true'   | 'false'
+	 * string | 'yes'    | 'no'
+	 * string | 'on'     | 'off'
+	 * string | non-zero | '0', 'NaN'
+	 *
+	 * @param {*} value
+	 *
+	 * @param {boolean}
+	 */
+	function to_boolean(value) {
+		if (is_object(value)) {
+			return ! $.isEmptyObject(value);
+		}
+		// handle arrays before literals, as 'in' will convert arrays to strings, and `[false]` will become 'false'
+		if (Array.isArray(value)) {
+			return !! value.length;
+		}
+		// the only special cases are falsey strings
+		const literals = {
+			'false': false,
+			'off': false,
+			'NaN': false,
+			'0': false,
+			'no': false,
+		};
+		if (value in literals) {
+			return literals[value];
+		}
+		value = +value;
+		return !!value || Number.isNaN(value);
+	}
+
 	/* Add the given field kinds to the kinds that should use pips. */
 	function addPippedKinds(...kinds) {
 		pippedKinds.push(...kinds);
