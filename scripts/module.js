@@ -9,7 +9,9 @@
 		modules: {},
 		dependencies: {},
 		handlers: {},
+		_current: {},
 		_done: {},
+		_active: [],
 
 		base: {
 			init($context, slug) {
@@ -44,6 +46,9 @@
 		 * which modules' handlers have already been invoked.
 		 */
 		all(func, ...args) {
+			if (this._current.func) {
+				this._active.push({current: this._current, done: this._done});
+			}
 			let done = {},
 				now = Object.keys(this.modules),
 				later = [],
@@ -92,7 +97,13 @@
 				}
 			}
 			} finally {
-				this._current = {};
+				if (this._active.length) {
+					const {current, done} = this._active.pop();
+					this._current = current;
+					this._done = done;
+				} else {
+					this._current = {};
+				}
 			}
 
 			this.fire(func, args);
@@ -119,7 +130,11 @@
 		},
 
 		fire(func, args=[]) {
-			let errs = {};
+			let errs = {},
+				previous;
+			if (this._current.func) {
+				previous = this._current.func;
+			}
 			this._current = { func };
 
 			if (func in this.handlers) {
@@ -132,7 +147,11 @@
 				}
 			}
 
-			this._current = {};
+			if (previous) {
+				this._current = {func: previous};
+			} else {
+				this._current = {};
+			}
 
 			switch (Object.keys(errs).length) {
 			case 0:

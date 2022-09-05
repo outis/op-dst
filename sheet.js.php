@@ -269,6 +269,11 @@ function include_modules($modules) {
 	};
 
 	listeners.Change = function dataChange(opts) {
+		if (listeners.Change.active) {
+			return;
+		}
+		listeners.Change.active = true;
+
 		opts.$field = dsf.$dsf(opts.fieldName);
 		opts.field = opts.$field[0];
 		if (! ('oldValue' in opts)) {
@@ -278,6 +283,8 @@ function include_modules($modules) {
 		module.base.tryTransact(() => {
 				module.all('change', opts, $context);
 			});
+
+		listeners.Change.active = false;
 	};
 
 	listeners.PreSave = function dataPreSave(opts) {

@@ -721,6 +721,25 @@
 		copyEventProps('dragend', toCopy);
 		//copyEventProps('drop', toCopy);
 	}
+	{ // block for scope
+		const disabledHooks = {};
+		$.disableHooks = function (category, name) {
+			const hooks = category + 'Hooks'
+			if (/*$?.[hooks]?.[name]*/$[hooks] && $[hooks][name]) {
+				//disabledHooks[category] ??= {};
+				disabledHooks[category] || (disabledHooks[category] = {});
+				disabledHooks[category][name] = $[hooks][name];
+				delete $[hooks][name];
+			}
+		}
+		$.enableHooks = function(category, name) {
+			const hooks = category + 'Hooks'
+			if ($[hooks] && /*disabledHooks?.[category]?.[name]*/disabledHooks[category] && disabledHooks[category][name]) {
+				$[hooks][name] = disabledHooks[category][name];
+			}
+		}
+	}
+
 	/**
 	 * Return which selectors are matched by a closest (i.e. the node or ancestor)node from this.
 	 *
