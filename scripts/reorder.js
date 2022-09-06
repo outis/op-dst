@@ -8,6 +8,9 @@
 
 		/* DST event handlers */
 		postLoad(opts, $context) {
+			if (! opts.isEditable) {
+				return;
+			}
 			this.$context = $context;
 
 			this.starter = this.started.bind(this);
