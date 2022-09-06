@@ -690,7 +690,8 @@
 	function decodeEntities(source) {
 		let elt = document.createElement("TEXTAREA");
 		elt.innerHTML = source;
-		return /*elt.childNodes[0]?.nodeValue ?? ''*/ elt.childNodes.length ? elt.childNodes[0]?.nodeValue : "";
+		//return elt.childNodes[0]?.nodeValue ?? '';
+		return elt.childNodes.length ? (elt.childNodes[0] || {}).nodeValue : "";
 	}
 
 	function stripHtml(source) {
