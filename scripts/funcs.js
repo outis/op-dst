@@ -848,6 +848,23 @@
 			};
 		};
 	}
+	if (! ('findLastIndex' in Array.prototype)) {
+		Object.defineProperty(
+			Array.prototype, 'findLastIndex', {
+				value: function (fn, that) {
+					if (that) {
+						fn = fn.bind(that);
+					}
+					let i = this.length - 1;
+					for (; i >= 0; --i) {
+						if (fn(this[i], i, this)) {
+							return i;
+						}
+					}
+					return i;
+				},
+			});
+	}
 	if (! ('map' in Object.prototype)) {
 		Object.defineProperties(Object.prototype, {
 			map: {
