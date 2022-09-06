@@ -947,6 +947,18 @@
 		}
 	}
 
+	if (! ('matchAll' in String.prototype)) {
+		Object.defineProperty(
+			String.prototype, 'matchAll', {
+				value: function* (regex) {
+					let match;
+					while ((match = regex.exec(this))) {
+						yield match;
+					}
+				},
+			});
+	}
+
 	if (! ('splice' in String.prototype)) {
 		/**
 		 * Replace a section of a string with another.
