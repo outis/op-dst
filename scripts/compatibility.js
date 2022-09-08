@@ -510,6 +510,7 @@
 			associates(parsed, names) {
 				let base = parsed.base;
 				names = {
+					name: `dyn_${base}_{i:02}_name`,
 					value: `dyn_${base}_{i:02}`,
 					notes:`dyn_${base}_{i:02}_notes`,
 				};
@@ -518,7 +519,7 @@
 					base: 'backgrounds',
 					name: parsed.type,
 					value: parsed.points /*??*/|| parsed.value,
-					description: parsed.value,
+					description: parsed.name,
 				};
 				this.import.backgrounds(bg);
 			},
@@ -803,8 +804,8 @@
 					},
 					/* recalculated during init, but provide sensible defaults */
 					reAssociates: /all(y|ies)|contacts?|foes?|mentors?/i,
-					string: makeStringTokenParser(/all(y|ies)|contacts?|foes?|mentors?/i, ['value', 'notes']),
-					number: ['points'],
+					string: makeStringTokenParser(/all(y|ies)|contacts?|foes?|mentors?/i, ['name', 'notes']),
+					number: ['value'],
 					post: function(parsed) {
 						if (parsed.type) {
 							// in case parsed.type is more specific (base might be 'associates')

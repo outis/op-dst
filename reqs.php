@@ -4,6 +4,7 @@ $requires = [
 	'abilities' => [ 'dsa', 'dsf', 'klass', 'module', 'pips', 'udf', ],
 	'alerts' => [ 'transitions', ],
 	'aliases' => [ 'abilities', 'compatibility', 'dsa', 'dsf', 'klass', 'module', 'pips', 'udf', 'words', ],
+	'associates' => [ ],
 	'authorize' => [ ],
 	'compatibility' => [ 'aliases', 'dsa', 'dsf', 'klass', 'module', 'path', 'range', 'ShorthandDict', 'udf', 'words', ],
 	'deluxe' => [ 'abilities', 'edition', 'editor', 'health', 'notes', 'tabs', 'undo', ],
@@ -33,4 +34,5 @@ $requires = [
 	'undo' => [ 'alerts', 'dsf', 'transitions', ],
 	'version' => [ 'module', ],
 	'words' => [ ],
+	'wraith' => [ 'associates', 'deluxe', ],
 ];

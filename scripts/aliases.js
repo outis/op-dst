@@ -869,8 +869,7 @@
 					},
 
 					associates(names, values) {
-						names = {name: names.value, description: names.notes};
-						values = {name: values.value, description: stripHtml(values.notes).trim()};
+						values.notes = stripHtml(values.notes).trim();
 						this._addTheirItem('associates', values, names);
 					},
 
@@ -1081,9 +1080,9 @@
 						this.import.equipment(values, names);
 					},
 
-					'contact_type_{i:02}': function (theirs, value, env) {
+					'contact_type_{i:02}': function (theirs, name, env) {
 						const notes = dsa.data[klass.eval('contact_tootip_{i:02}', env)] /*??*/|| '';
-						this.import.noted({value, notes}, 'all(?:y|ies)|contacts?', 'associates', 'contacts');
+						this.import.noted({name, notes}, 'all(?:y|ies)|contacts?', 'associates', 'contacts');
 					},
 				},
 
@@ -1282,9 +1281,12 @@
 
 					associates(names, values) {
 						values.notes = stripHtml(values.notes).trim();
+						if (values.value) {
+							values.name += ': ' + values.value;
+						}
 						compatibility.export.fields(
 							{
-								value: 'dsf_contact_type_{i:02}',
+								name: 'dsf_contact_type_{i:02}',
 								notes: 'dsf_contact_tootip_{i:02}'
 							}, values, {for: names}, {start:0}
 						);
