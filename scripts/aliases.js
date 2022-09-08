@@ -866,7 +866,7 @@
 					},
 
 					backgrounds(names, values) {
-						if (/all(y|ies)|contacts?/i.test(values.name)) {
+						if (compatibility.parse._byTokens.associates.reAssociates.test(values.name)) {
 							// let associates exporter handle this one
 							return;
 						}

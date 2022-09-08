@@ -796,7 +796,9 @@
 							parsed.type = parsed.base;
 						}
 					},
-					string: makeStringTokenParser(/^(?:all(y|ies)|contacts?)$/i, ['value', 'notes']),
+					/* recalculated during init, but provide sensible defaults */
+					reAssociates: /all(y|ies)|contacts?|foes?|mentors?/i,
+					string: makeStringTokenParser(/all(y|ies)|contacts?|foes?|mentors?/i, ['value', 'notes']),
 					number: ['points'],
 					post: function(parsed) {
 						if (parsed.type) {
