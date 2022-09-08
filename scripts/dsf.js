@@ -547,6 +547,7 @@
 		_setValue({elt, $elt, type, value}) {
 			this._dsf.setters[type]($elt, value);
 			this._saveValue({elt, $elt, value});
+			this._storeValue({elt, name:this.name(elt), value});
 		},
 
 		_saveValue({elt, $elt, value}) {
@@ -556,9 +557,14 @@
 
 		_storeValue({elt, name, value}) {
 			// only store volatile values if not currently editing
-			if (! this.isEditable && this.isVolatile(elt)) {
+			if (this.isVolatile(elt)) {
 				name = this.sku(this.stripPrefix(name || this.name(elt)));
-				localStorage[name] = value;
+				if (this.isEditable) {
+					// don't need local storage while editing; clean it out, so old value doesn't override when not editing
+					localStorage.removeItem(name);
+				} else {
+					localStorage[name] = value;
+				}
 			}
 		},
 
