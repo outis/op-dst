@@ -63,9 +63,16 @@
 		},
 
 		editCancelled(evt) {
+			//modules.undo?.freeze = true;
+			modules.undo && (modules.undo.freeze = true);
+			try {
 			let $dsf = this.resolve(evt);
 			this.stop($dsf);
 			this.restore($dsf);
+			} finally {
+				//modules.undo?.freeze = false;
+				modules.undo && (modules.undo.freeze = false);
+			}
 		},
 
 		keyCheck(evt) {
@@ -168,7 +175,19 @@
 				val = $editor.find('.value').val(),
 				oldVal = dsf.value($dsf);
 
-			this.store($dsf, val);
+			let noChange = val === oldVal;
+			if (noChange) {
+				//modules.undo?.freeze = true;
+				modules.undo && (modules.undo.freeze = true);
+			}
+			try {
+				this.store($dsf, val);
+			} finally {
+				if (noChange) {
+					//modules.undo?.freeze = true;
+					modules.undo && (modules.undo.freeze = false);
+				}
+			}
 
 			this.opts.fieldName = dsf.name($dsf);
 			this.opts.fieldValue = val;
