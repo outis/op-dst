@@ -214,8 +214,8 @@
 .mll_sheet .pips > span {
 	display: inline-block;
 	border-radius: 1em; /* as long as it's > 50% of height */
-	width: 0.75em;
-	height: 0.75em;
+	width: 13px;
+	height: 13px;
 }
 
 .editable .mll_sheet .pips > span,
@@ -232,7 +232,7 @@
 
 .mll_sheet .pips.demi > span,
 .mll_sheet .demi .pips > span {
-	width: 0.375em;
+	width: 7px;
 }
 
 .mll_sheet .pips.demi > span:nth-child(2n),
@@ -262,8 +262,8 @@
 	/*vertical-align: top;*/
 	border-radius: 0;
 	position: relative;
-	width: 12px;
-	height: 12px;
+	width: 13px;
+	height: 13px;
 }
 
 
@@ -281,12 +281,9 @@
 /* clear box */
 .mll_sheet .pips > span:first-child::before,
 .mll_sheet .help .control.clear::before {
-	content: "╳";
-	line-height: 12px;
-	font-size: 14px;
+	content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAQAAADY4iz3AAAAMUlEQVQY032OsQ0AAAjC+P/pujlBHUxMIyUhffjVQIOsgxXBEq9SDrAPLApzYHKsFQcIRxjoZIqTXQAAAABJRU5ErkJggg=="); /* 13px */
+	line-height: 13px;
 	position: absolute;
-	top: 1px;
-	left: -1px;
 }
 
 .editable .mll_sheet .pips > span:first-child,

@@ -783,15 +783,15 @@
 .mll_sheet .pips.health > span.B::before,
 .mll_sheet .pips.current.health > span:not(.X):not(.L):not(.A):not(:first-child)::before,
 .mll_sheet .help .pips > span:first-child::before {
-	content:"╱";
+	content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAQAAADY4iz3AAAAEUlEQVQY02NgIBn8H5UgGgAAf0MK9sDfEOAAAAAASUVORK5CYII="); /* short, 12px */
 }
 
 .mll_sheet .pips.health > span.L::before {
-	content:"╳";
+	content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAQAAADY4iz3AAAALklEQVQY042QyQ0AMAjDvP/S7gJgmmcOIwEpy7PKFsXA4xZwBdbCQlk3/PrGqAdO1hTs8Xx4NQAAAABJRU5ErkJggg=="); /* short, 13px */
 }
 
 .mll_sheet .pips.health > span.A::before {
-	content:"＊";
+	content: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAANCAQAAADY4iz3AAAAfklEQVQY02NgIBIsYRBBF+JgsEKS4mUwQ0ixM6xn8IRK8TJsZTBH1sfOsJHBAyilwLCBwRDT0E0MNxh2MuggC3YxfGd4z/Cc4RnDfySIBJgZ5gB17WLQRTeOlWEx2C5FoLEodrExrGTwgrqQj2EbgylCihPFX3wMFkSFBlYAADIRHZJs6rnyAAAAAElFTkSuQmCC"); /* 8-pt, 13px */
 }
 
 /*  */
