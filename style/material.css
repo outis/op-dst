@@ -155,27 +155,9 @@
 .mll_sheet .tip {
 	display: none;
 	position: absolute;
-	bottom: -1.5rem;
+	top: 99%;
 	left: 1rem;
 	z-index: 1;
-}
-
-.mll_sheet .abilities .tip {
-	bottom: -1.5rem;
-}
-
-.editable .mll_sheet .abilities .tip {
-	bottom: -1.25rem;
-}
-
-.mll_sheet .backgrounds .tip {
-	bottom: unset;
-	top: 0.9em;
-}
-
-.mll_sheet .page h4.tipped .tip {
-	bottom: unset;
-	top: 1.6em;
 }
 
 
