@@ -23,7 +23,7 @@
 		versionKey: 'mll_data_version',
 
 		/* DST event handlers */
-		preLoad(opts, $context) {
+		init($context) {
 			this.$context = $context;
 		},
 
@@ -104,7 +104,11 @@
 			if (this._resort) {
 				this._inorder.sort((a, b) => a.version - b.version);
 			}
-			let toapply =  this._inorder.filter(up => up.version > dataVersion);
+			let dstVersion = this.dstVersion() || Infinity,
+				toapply = this._inorder.filter(
+					up => up.version > dataVersion
+						&& up.version <= dstVersion
+				);
 			for (let updaters of toapply) {
 				for (let updater of updaters) {
 					try {
