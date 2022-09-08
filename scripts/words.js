@@ -41,7 +41,10 @@
 		 * Also converts to lower case (if corrected).
 		 */
 		correct(word) {
-			//let lower = word.toLowerCase();
+			let lower = word.toLowerCase();
+			if (/* modules?.aliases?.typos[lower] */ modules.aliases && modules.aliases.typos && modules.aliases.typos[lower]) {
+				return modules.aliases.typos[lower];
+			}
 			return this.lookup(word, this._typos);
 		},
 
