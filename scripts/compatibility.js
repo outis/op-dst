@@ -13,10 +13,14 @@
 
 		function stringTokenParser(value, parsed) {
 			value = value.trim();
-			if (is_type(value)) {
-				parsed.type = value.toLowerCase();
-				return true;
-			} else {
+			let [first, rest] = halveString(value, /\s+/),
+				matched; // leave `undefined` to indicate unmatched
+			if (! parsed.type && is_type(first)) {
+				parsed.type = first.toLowerCase();
+				matched = true
+				value = rest;
+			}
+			if (value) {
 				for (let name of names) {
 					if (! parsed[name]) {
 						parsed[name] = value;
@@ -24,6 +28,7 @@
 					}
 				}
 			}
+			return matched;
 		};
 		stringTokenParser.is_type = is_type;
 
