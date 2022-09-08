@@ -116,6 +116,8 @@
 			'oboli': 'money',
 			'cash': 'money',
 
+			'inventory': 'equipment',
+
 			// jp12x_splat (nWoD Reloaded!)
 			'willpower': 'perm_willpower',
 			'current_will': 'curr_willpower',
