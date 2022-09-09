@@ -135,10 +135,15 @@
 
 /** sheet */
 
-.mll_sheet .page.stats > section,
-.mll_sheet .page.bio > section.associates {
+.mll_sheet .page.stats > section {
 	display: grid;
 	grid-template-columns: 1fr 1fr 1fr;
+}
+
+.mll_sheet .page.bio > .associates .udf label.type {
+	min-width: 4em;
+	background-color: #DDD;
+	padding: 0.1em;
 }
 
 .mll_sheet .page.stats > section.advantages,
@@ -415,7 +420,11 @@
 
 .mll_sheet .associates dd,
 .mll_sheet .associates div.notes {
-	margin: 0 1em 0.25em;
+	margin: 0.15em 1em 0.35em;
+}
+
+.mll_sheet .associates .item {
+	padding: 0.25em 0;
 }
 
 .mll_sheet .page.bio .biodata,

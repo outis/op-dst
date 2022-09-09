@@ -57,6 +57,15 @@
 		 */
 		defaults: {
 		},
+		sections: {
+			artifact: 'equipment',
+			relic: 'equipment',
+
+			ally: 'associates',
+			contact: 'associates',
+			mentor: 'associates',
+			foe: 'associates',
+		},
 		_prune: [],
 		_aliases: null,
 		_sesalia: {},
@@ -510,18 +519,21 @@
 			associates(parsed, names) {
 				let base = parsed.base;
 				names = {
+					type: `dyn_${base}_{i:02}_type`,
 					name: `dyn_${base}_{i:02}_name`,
 					value: `dyn_${base}_{i:02}`,
 					notes:`dyn_${base}_{i:02}_notes`,
 				};
 				this.import._udf(parsed, names);
-				let bg = {
-					base: 'backgrounds',
-					name: parsed.type,
-					value: parsed.points /*??*/|| parsed.value,
-					description: parsed.name,
-				};
-				this.import.backgrounds(bg);
+				if (parsed.type) {
+					let bg = {
+						base: 'backgrounds',
+						name: parsed.type,
+						value: parsed.points /*??*/|| parsed.value,
+						description: parsed.name,
+					};
+					this.import.backgrounds(bg);
+				}
 			},
 
 			backgrounds(parsed) {
@@ -634,6 +646,32 @@
 					return this.import.simple(parsed, names);
 				}
 				return this.import.advantage(parsed, names);
+			},
+
+			/**
+			 * Finish parsing partially parsed data, then import.
+			 *
+			 * @param {object} defaults - already parsed data (may be overwritten)
+			 * @param {string[]} values - data to parse
+			 * @param {string} [section] - importer name; if not given, an importer matching the parsed' datas `type` or `base` is searched for
+			 */
+			partial(defaults, values, section) {
+				let parsed = {...defaults, ...this.parse.stream(values)};
+				if (! section) {
+					let type = parsed.type.toLowerCase(),
+						sections = [type, words.pluralize(type), parsed.base];
+					for (let sctn of sections) {
+						if (this.import[sctn]) {
+							section = sctn;
+							break;
+						}
+					}
+				}
+				if (this.import[section]) {
+					return this.import[section](parsed);
+				} else {
+					console.error(`No importer for '${section}' when importing partial: `, parsed, values);
+				}
 			},
 
 			/**
@@ -808,9 +846,7 @@
 					number: ['value'],
 					post: function(parsed) {
 						if (parsed.type) {
-							// in case parsed.type is more specific (base might be 'associates')
-							parsed.base = words.pluralize(parsed.type);
-							parsed.type = words.singulize(parsed.type);
+							parsed.type = words.singulize(parsed.type).ucfirst();
 						}
 						if (/*parsed.unmatched?.string*/parsed.unmatched && parsed.unmatched.string) {
 							parsed.unmatched.string = parsed.unmatched.string.join('. ');
@@ -914,13 +950,10 @@
 					//return {parser:section, base:section, type:base};
 				}
 
-				const sections = {
-					artifact: 'equipment',
-					relic: 'equipment',
-				};
+				// TODO: store elsewhere
 				section = type;
-				if (section in sections) {
-					section = sections[section];
+				if (section in this.sections) {
+					section = this.sections[section];
 				}
 				if (section in categories) {
 					// use `type`, even though it may be singular; parser will correct

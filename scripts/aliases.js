@@ -1082,7 +1082,7 @@
 
 					'contact_type_{i:02}': function (theirs, name, env) {
 						const notes = dsa.data[klass.eval('contact_tootip_{i:02}', env)] /*??*/|| '';
-						this.import.noted({name, notes}, 'all(?:y|ies)|contacts?', 'associates', 'contacts');
+						this.import.partial({base: 'associates', type: 'Contact', name, notes}, [name], 'associates');
 					},
 				},
 
@@ -1281,6 +1281,9 @@
 
 					associates(names, values) {
 						values.notes = stripHtml(values.notes).trim();
+						if (values.type) {
+							values.name = `${values.type}-${values.name}`;
+						}
 						if (values.value) {
 							values.name += ': ' + values.value;
 						}
