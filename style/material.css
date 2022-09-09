@@ -25,6 +25,10 @@
 	display: none;
 }
 
+.mll_sheet .dsf form {
+	display: inline-block;
+}
+
 
 /** Tabs */
 
