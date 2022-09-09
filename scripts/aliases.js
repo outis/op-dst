@@ -570,10 +570,17 @@
 						},
 						{
 							bg(item, category) {
+								let value = [item.name];
 								if (item.description) {
-									item.name += ` (${item.description})`;
+									value.push(' (', item.description, ')');
 								}
-								return `${item.name}: ${item.value || ''}`;
+								if (item.value) {
+									value.push(': ', item.value);
+								}
+								if (item.notes) {
+									value.push(' (', item.notes, ')');
+								}
+								return value.join('');
 							},
 							misc(item) {
 								return {
