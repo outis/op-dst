@@ -29,6 +29,7 @@
 
 			//$udf.on('dragstart', this.itemSel, this.starter);
 			$udf.on('dragstart', this.itemSel, this.starter);
+			$udf.on('dragover', evt => evt.preventDefault());
 			$udf.on('dragenter', this.itemSel, this.dragger);
 			$udf.on('dragend', this.stopper);
 
