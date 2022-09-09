@@ -820,11 +820,12 @@
 	 * Change the descendant selector for a delegated event.
 	 */
 	$.fn.redelegate = function(event, original, replacement) {
-		let elt = this[0],
-			handlers = ($._data(this[0], 'events') /*??*/|| {})[event] /*??*/|| [];
-		for (let handler of handlers) {
-			if (original == handler.selector) {
-				handler.selector = replacement;
+		for (let elt of this) {
+			let handlers = ($._data(elt, 'events') /*??*/|| {})[event] /*??*/|| [];
+			for (let handler of handlers) {
+				if (original == handler.selector) {
+					handler.selector = replacement;
+				}
 			}
 		}
 		return this;
