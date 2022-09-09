@@ -15,7 +15,7 @@
 			value = value.trim();
 			let [first, rest] = halveString(value, /\s+/),
 				matched; // leave `undefined` to indicate unmatched
-			if (! parsed.type && is_type(first)) {
+			if (is_type(first)) {
 				parsed.type = first.toLowerCase();
 				matched = true
 				value = rest;
