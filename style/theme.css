@@ -411,7 +411,6 @@
 
 .mll_sheet .associates dt {
 	float: none;
-
 }
 
 .mll_sheet .associates dd,
@@ -618,16 +617,6 @@
 	content: "";
 }
 
-/* cut
-.mll_sheet h4.tipped .tipped {
-	display: block;
-	content: "test content";
-}
-*/
-
-.mll_sheet h4.tipped:hover .tipped {
-	/*content: ;*/
-}
 
 
 
@@ -673,13 +662,6 @@
 	text-decoration: none;
 }
 
-
-/* cut
-.mll_sheet .pips.dsf::before,
-.mll_sheet input.dsf::before,
-.mll_sheet .dsf[]::before {
-}
-*/
 
 .mll_sheet .specialty input {
 	min-width: 5em ! important;
@@ -736,16 +718,6 @@
 	border-style: dotted;
 }
 
-/* cut
-.mll_sheet label + .pips > span:first-child,
-.mll_sheet dd > .pips > span:first-child,
-.mll_sheet label + .pips.demi > span:first-child,
-.mll_sheet .demi label + .pips > span:first-child
-{
-	/* * /
-	/*margin-left: -16px;* /
-}
-*/
 
 /* clear box */
 
@@ -762,14 +734,6 @@
 .mll_sheet .pips > span.X.D {
 	background-color: #449;
 }
-
-/*
-.mll_sheet .pips.health > span.B,
-.mll_sheet .pips.health > span.L,
-.mll_sheet .pips.health > span.A {
-	background-color: white;
-}
-*/
 
 .mll_sheet .pips.current.health > span:not(:first-child)::before,
 .mll_sheet .pips.health > span.B::before,

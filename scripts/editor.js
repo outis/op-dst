@@ -66,9 +66,9 @@
 			//modules.undo?.freeze = true;
 			modules.undo && (modules.undo.freeze = true);
 			try {
-			let $dsf = this.resolve(evt);
-			this.stop($dsf);
-			this.restore($dsf);
+				let $dsf = this.resolve(evt);
+				this.stop($dsf);
+				this.restore($dsf);
 			} finally {
 				//modules.undo?.freeze = false;
 				modules.undo && (modules.undo.freeze = false);
