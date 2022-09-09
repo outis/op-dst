@@ -333,12 +333,14 @@
 				return $elt;
 			}
 
-			mark(value);
+			if ($pips.length) {
+				mark(value);
 
-			modules.undo && modules.undo.record(
-				() => mark(oldValue),
-				() => mark(value)
-			);
+				modules.undo && modules.undo.record(
+					() => mark(oldValue),
+					() => mark(value)
+				);
+			}
 		},
 
 		markRe: memoize(function (marker='X') {
