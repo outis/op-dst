@@ -4,9 +4,12 @@
 
 /** site & browser style overrides */
 
+.mll_sheet ul {
+	list-style-type: none;
+}
+
 .mll_sheet ul,
 .mll_sheet li {
-	list-style-type: none;
 	padding: 0;
 	margin: 0;
 }
@@ -27,6 +30,11 @@
 
 .mll_sheet .dsf form {
 	display: inline-block;
+}
+
+.mll_sheet .tip .dsf form,
+.mll_sheet .tip.dsf form {
+	width: 100%;
 }
 
 
@@ -154,6 +162,10 @@
 
 .mll_sheet .tipped {
 	position: relative;
+}
+
+.mll_sheet .tipped:hover {
+	z-index: 1;
 }
 
 .mll_sheet .tip {

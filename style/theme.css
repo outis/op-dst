@@ -10,6 +10,7 @@
 .mll_sheet ol,
 .mll_sheet dl {
 	line-height: 1.1;
+	margin-bottom: 0;
 }
 
 .mll_sheet dt {
@@ -62,6 +63,20 @@
 .mll_sheet label + span {
 	margin-left: 0.5em;
 }
+
+.mll_sheet .notes ul,
+.mll_sheet .notes ul li {
+	list-style-type: initial;
+	list-style-position: outside;
+}
+
+.mll_sheet .notes ul,
+.mll_sheet .notes ol {
+	padding-left: 1.1em;
+}
+.mll_sheet .notes li {
+}
+
 
 /** Tabs */
 .mll_sheet .tabs {
@@ -306,6 +321,7 @@
 	float: left;
 	clear: left;
 	min-width: 5em;
+	margin-right: 0.5em;
 	margin-bottom: 0;
 	/*margin-right: 1em;*/
 }
