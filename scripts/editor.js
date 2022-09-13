@@ -91,7 +91,7 @@
 
 		/* */
 		addBreaks(value) {
-			return value.replace(/(?:<br\/?>)*\n/g, '<br/>\n');
+			return value.replace(/(?<!>)(?:<br\/?>)*\n(?!\s*<)/g, '<br/>\n');
 		},
 
 		delBreaks(value) {
