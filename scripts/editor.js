@@ -17,6 +17,16 @@
 				return $('<textarea></textarea>');
 			},
 		},
+		_inputUpdaters: {
+			input($input, {$dsf, name, type}) {
+			},
+			list($input, {$dsf, name, type}) {
+				let list = editor.listFor($dsf);
+				$input.attr('list', list);
+			},
+			text($input, {$dsf, name, type}) {
+			},
+		},
 
 		/* DST event handlers */
 		init($context, slug) {
@@ -119,6 +129,10 @@
 				$form.on('submit', this.submitter);
 
 				this._$editors[type] = $form;
+			} else {
+				let $form = this._$editors[type],
+					$input = this.$input($form);
+				this._inputUpdaters[type]($input, {$dsf, name, type});
 			}
 			return this._$editors[type];
 		},
