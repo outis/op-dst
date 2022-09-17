@@ -892,6 +892,7 @@
 				//env.i ??= iItem;
 				env.i || (env.i = iItem);
 				$eltItem = $tpl.clone(true);
+				this.setNameList($eltItem, env.base);
 				this.renameItem($eltItem, env);
 			} else {
 				$eltItem = $(eltList.children[0].cloneNode(true));
@@ -1098,6 +1099,19 @@
 					  values = dsa.getAll(names),
 					  data = this.extractFrom(zipObject(names, values));
 				yield data;
+			}
+		},
+
+		/**
+		 * If the given item has an associated `<datalist>` for names, set the list attribute of its name DSF.
+		 *
+		 * @param {jQuery} $eltItem
+		 * @param {string} base
+		 */
+		setNameList($eltItem, base) {
+			const namesList = `MLL_${base}_names`;
+			if ($(`#${namesList}`).length) {
+				$eltItem.find('.dsf.name').attr('list', namesList);
 			}
 		},
 
