@@ -127,7 +127,7 @@
 		 */
 		_appendItem(eltList, item) {
 			$(eltList).append(item);
-			$(eltList).trigger('add.mll.udf', item);
+			$(eltList).trigger('add.mll.udf', [item]);
 		},
 
 		/**
