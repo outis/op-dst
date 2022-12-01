@@ -482,6 +482,7 @@
 			item = elt;
 			this.id({item, $item});
 			$item.remove();
+			$parent.trigger('del.mll.udf', [item]);
 			modules.undo && modules.undo.record(
 				() => {
 					if (itemNext && itemNext.parentElement) {
