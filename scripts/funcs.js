@@ -581,6 +581,11 @@
 	}
 	*/
 
+	function is_int(value) {
+		// fails for 0.0
+		return (value % 1) === 0;
+	}
+
 	function is_iterable(value) {
 		return 'object' === typeof(value)
 			&& 'function' === typeof(value.next);
@@ -684,6 +689,53 @@
 
 	/*** DOM */
 	/**
+	 * Return the deepest common ancestor of the given nodes.
+	 *
+	 * source: https://stackoverflow.com/a/68583466/90527
+	 */
+	function commonAncestor(a, b) {
+		let range = new Range();
+		/*
+		  if (a.contains(b)) return a;
+		  if (b.contains(a)) return b;
+		  range.setStartBefore(a);
+		  range.setEndAfter(b);
+		/*/
+		range.setStart(a, 0);
+		range.setEnd(b, 0);
+		/**/
+		/* If nodeA is positioned after nodeB in the document, the range is
+		 * collapsed, which means the start and end of the range are at the
+		 * same position. In that case `range.commonAncestorContainer` would
+		 * likely just be `nodeB.parentNode`.
+		 */
+		if (range.collapsed) {
+			// The old switcheroo does the trick.
+			range.setStart(b, 0);
+			range.setEnd(a, 0);
+		}
+		return range.commonAncestorContainer;
+	}
+
+	/**
+	 * Return the deepest common ancestor of the given nodes (using compareDocumentPosition).
+	 * source: https://stackoverflow.com/a/68669655/90527
+	 */
+	/*
+	function commonAncestor(a, b){
+        let parent = a;
+        const contained = Node.DOCUMENT_POSITION_CONTAINED_BY;
+        let docpos = parent.compareDocumentPosition(b);
+
+        while (parent && docpos && !(docpos & contained)) {
+            parent = parent.parentElement;
+            docpos = parent.compareDocumentPosition(b);
+        }
+        return parent;
+    }
+	*/
+
+	/**
 	 * Replace HTML character entities.
 	 *
 	 * @param {string} source
@@ -702,6 +754,40 @@
 	 */
 	function nodeIndex(node) {
 		return Array.prototype.indexOf.call(node.parentNode.children, node);
+	}
+
+	/**
+	 * Change an HTML element's tag.
+	 *
+	 * @param {HTMLElement} elt - element to change
+	 * @param {string} tag - new tag for element
+	 *
+	 * @returns {HTMLElement}
+	 */
+	function retagElement(elt, tag) {
+		const to = document.createElement(tag);
+		for (let attr of elt.attributes) {
+			to.setAttribute(attr.name, attr.value);
+		}
+		to.append(...elt.childNodes);
+
+		elt.replaceWith(to);
+
+		return to;
+		/*
+		const name = this.name(elt),
+			  $from = $(elt),
+			  $to = $(tag); // document.createElement(tag);
+		for (let attr of elt.attributes) {
+			$to.attr(attr.name, attr.value);
+		}
+		$to.attr('name', name);
+		$to.append($from.children());
+
+		$from.replaceWith($to);
+
+		return $to;
+		*/
 	}
 
 	function stripBreaks(source) {
