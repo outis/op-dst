@@ -167,22 +167,31 @@
 
 			// for list-based UDFs
 			$(document).on('click', '.udf + .controls .add', (evt) => {
-				this.add(this.udfFor(evt.target));
 				// prevent form submission.
 				// For some reason, generic button.click above doesn't prevent
 				evt.preventDefault();
+
+				this.add(this.udfFor(evt.target));
+
+				// prevent form submission.
 				return false;
 			});
 
 			// for table-based UDFs
 			$(document).on('click', '.udf + * .controls .add', (evt) => {
-				this.add(this.udfFor(evt.target));
 				// prevent form submission.
 				evt.preventDefault();
+
+				this.add(this.udfFor(evt.target));
+
+				// prevent form submission.
 				return false;
 			});
 
 			$(document).on('click', '.udf .del', (evt) => {
+				// prevent form submission.
+				evt.preventDefault();
+
 				// ignore click if currently taking another action
 				if (! $(evt.target).closest(this.udfSel).hasClass('busy')) {
 					let $item = $(evt.target).closest('.udf > *');
@@ -196,8 +205,8 @@
 					}
 					this.del($item);
 				}
+
 				// prevent form submission.
-				evt.preventDefault();
 				return false;
 			});
 		},
