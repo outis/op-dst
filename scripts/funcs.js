@@ -1,32 +1,15 @@
+	/*** Math */
 	/**
-	 * Bind all methods in an object to a given object.
-	 *
-	 * @param {object} obj - object containing methods
-	 * @param {object} [self=obj] - object to bind those methods to
+	 * The number of digits in a number.
 	 */
-	function bindAll(obj, self) {
-		bindSome(obj, Object.keys(obj /*??*/|| {}), self);
+	/* Not currently used
+	function nDigits(x) {
+		return Math.floor(1 + Math.log10(x));
 	}
+	*/
 
-	/**
-	 * Bind the given methods in an object to a given object.
-	 *
-	 * @param {object} obj - object containing methods
-	 * @param {string} methods - method names to bind
-	 * @param {object} [self=obj] - object to bind those methods to
-	 */
-	function bindSome(obj, methods, self) {
-		//self ??= obj;
-		self || (self = obj);
-		for (let method of methods) {
-			if (is_function(obj[method])) {
-				obj[method] = obj[method].bind(self);
-			}
-		}
-	}
-
+	/*** String */
 	const {breakString, halveString} = (function () {
-
 		/* helper functions */
 		function breaker(string, sep, matcher, opts={include:1}) {
 			let i = matcher(string, sep),
@@ -154,6 +137,8 @@
 		return {breakString, halveString};
 	})();
 
+
+	/*** Function */
 	/**
 	 * Apply a collection of functions, returning non-`undefine`d results.
 	 *
@@ -259,19 +244,50 @@
 	}
 
 	/**
-	 * Combine two arrays into an object, using one for keys and another for values.
-	 *
-	 * @param {string[]} keys
-	 * @param {*} values
-	 *
-	 * @returns {object}
 	 */
-	function zipObject(keys, values) {
-		let result = {};
-		for (let i = 0; i < keys.length; ++i) {
-			result[keys[i]] = values[i];
+	function memoize(f) {
+		var results = {};
+
+		function _memoized(name, ...args) {
+			if (! (name in results)) {
+				results[name] = f.call(this, name, ...args);
+			}
+			return results[name];
 		}
-		return result;
+
+		_memoized.original = f;
+		f.results = results;
+
+		return _memoized;
+	}
+
+
+	/*** Object */
+	/**
+	 * Bind all methods in an object to a given object.
+	 *
+	 * @param {object} obj - object containing methods
+	 * @param {object} [self=obj] - object to bind those methods to
+	 */
+	function bindAll(obj, self) {
+		bindSome(obj, Object.keys(obj /*??*/|| {}), self);
+	}
+
+	/**
+	 * Bind the given methods in an object to a given object.
+	 *
+	 * @param {object} obj - object containing methods
+	 * @param {string} methods - method names to bind
+	 * @param {object} [self=obj] - object to bind those methods to
+	 */
+	function bindSome(obj, methods, self) {
+		//self ??= obj;
+		self || (self = obj);
+		for (let method of methods) {
+			if (is_function(obj[method])) {
+				obj[method] = obj[method].bind(self);
+			}
+		}
 	}
 
 	function copy(thing) {
@@ -288,23 +304,6 @@
 		return things.map(copy);
 	}
 	globals.copyAll = copyAll;
-
-	/**
-	 * Fill an object with a single value for multiple keys.
-	 *
-	 * @param {string[]} keys
-	 * @param value
-	 * @param {Object} target Object to add entries to.
-	 */
-	function fillObject(keys, value, target = {}) {
-		if (! (keys instanceof Array || Array.isArray(keys))) {
-			keys = Object.keys(keys);
-		}
-		for (let key of keys) {
-			target[key] = value;
-		}
-		return target;
-	}
 
 	/**
 	 * Replace properties referring to other properties with those property values.
@@ -326,52 +325,20 @@
 	}
 
 	/**
-	 * Add a value to an object property.
+	 * Fill an object with a single value for multiple keys.
 	 *
-	 * Instead of overwriting existing properties, they're converted to arrays (if necessary) and the new value is added to the array.
-	 *
-	 * @param {Object} Object to add value to.
-	 * @param {string} key
-	 * @param {*} value
+	 * @param {string[]} keys
+	 * @param value
+	 * @param {Object} target Object to add entries to.
 	 */
-	function mergeVal(obj, key, val) {
-		if (key in obj) {
-			if (Array.isArray(obj[key])) {
-				obj[key].push(val);
-			} else {
-				obj[key] = [obj[key], val];
-			}
-		} else {
-			obj[key] = val;
+	function fillObject(keys, value, target = {}) {
+		if (! (keys instanceof Array || Array.isArray(keys))) {
+			keys = Object.keys(keys);
 		}
-	}
-
-	/**
-	 * Copies properties from source objects if they either don't already exist at the destination, or exist but are falsey.
-	 */
-	function mergeObjects(dest, ...srcs) {
-		for (let src of srcs) {
-			for (let [k, v] of Object.entries(src)) {
-				if (! (k in dest && dest[k])) {
-					dest[k] = v;
-				}
-			}
+		for (let key of keys) {
+			target[key] = value;
 		}
-		return dest;
-	}
-
-	/**
-	 * Copies properties from source objects if they don't already exist at the destination.
-	 */
-	function mixIn(dest, ...srcs) {
-		for (let src of srcs) {
-			for (let [k, v] of Object.entries(src)) {
-				if (! (k in dest)) {
-					dest[k] = v;
-				}
-			}
-		}
-		return dest;
+		return target;
 	}
 
 	function filterObject(obj, pred) {
@@ -384,6 +351,7 @@
 		return filtered;
 	}
 	globals.filterObject = filterObject;
+
 	/**
 	 * Exchange keys & values.
 	 *
@@ -427,6 +395,55 @@
 	}
 
 	/**
+	 * Copies properties from source objects if they either don't already exist at the destination, or exist but are falsey.
+	 */
+	function mergeObjects(dest, ...srcs) {
+		for (let src of srcs) {
+			for (let [k, v] of Object.entries(src)) {
+				if (! (k in dest && dest[k])) {
+					dest[k] = v;
+				}
+			}
+		}
+		return dest;
+	}
+
+	/**
+	 * Add a value to an object property.
+	 *
+	 * Instead of overwriting existing properties, they're converted to arrays (if necessary) and the new value is added to the array.
+	 *
+	 * @param {Object} Object to add value to.
+	 * @param {string} key
+	 * @param {*} value
+	 */
+	function mergeVal(obj, key, val) {
+		if (key in obj) {
+			if (Array.isArray(obj[key])) {
+				obj[key].push(val);
+			} else {
+				obj[key] = [obj[key], val];
+			}
+		} else {
+			obj[key] = val;
+		}
+	}
+
+	/**
+	 * Copies properties from source objects if they don't already exist at the destination.
+	 */
+	function mixIn(dest, ...srcs) {
+		for (let src of srcs) {
+			for (let [k, v] of Object.entries(src)) {
+				if (! (k in dest)) {
+					dest[k] = v;
+				}
+			}
+		}
+		return dest;
+	}
+
+	/**
 	 * Picks properties from an object based on property names.
 	 *
 	 * Similar to {@link filterObject}, but filters by selecting properties that match the given names.
@@ -439,7 +456,24 @@
 		return Object.fromEntries(keys.map(k => [k, obj[k]]));
 	}
 
+	/**
+	 * Combine two arrays into an object, using one for keys and another for values.
+	 *
+	 * @param {string[]} keys
+	 * @param {*} values
+	 *
+	 * @returns {object}
+	 */
+	function zipObject(keys, values) {
+		let result = {};
+		for (let i = 0; i < keys.length; ++i) {
+			result[keys[i]] = values[i];
+		}
+		return result;
+	}
 
+
+	/*** Time */
 	/**
 	 * Run code that awaits this function before the next repaint.
 	 *
@@ -475,6 +509,22 @@
 	globals.animationPost = animationPost;
 
 	/**
+	 * Wait for the given number of milliseconds.
+	 *
+	 * Async version of `setTimeout()`.
+	 *
+	 * @param {number} time - Time to wait, in milliseconds.
+	 *
+	 * @async
+	 */
+	function wait(time) {
+		return new Promise(resolve => {
+			setTimeout(resolve, time);
+		});
+	}
+	globals.wait = wait;
+
+	/**
 	 * Await an event.
 	 *
 	 * Async equivalent to a one-time event handler.
@@ -495,72 +545,8 @@
 	}
 	globals.waitOn = waitOn;
 
-	/**
-	 * Wait for the given number of milliseconds.
-	 *
-	 * Async version of `setTimeout()`.
-	 *
-	 * @param {number} time - Time to wait, in milliseconds.
-	 *
-	 * @async
-	 */
-	function wait(time) {
-		return new Promise(resolve => {
-			setTimeout(resolve, time);
-		});
-	}
-	globals.wait = wait;
 
-	/**
-	 */
-	function memoize(f) {
-		var results = {};
-
-		function _memoized(name, ...args) {
-			if (! (name in results)) {
-				results[name] = f.call(this, name, ...args);
-			}
-			return results[name];
-		}
-
-		_memoized.original = f;
-		f.results = results;
-
-		return _memoized;
-	}
-
-	/**
-	 * The number of digits in a number.
-	 */
-	/* Not currently used
-	function nDigits(x) {
-		return Math.floor(1 + Math.log10(x));
-	}
-	*/
-
-	/**
-	 * Return where a child node is among its parent's children.
-	 */
-	function nodeIndex(node) {
-		return Array.prototype.indexOf.call(node.parentNode.children, node);
-	}
-
-
-	/**
-	 * Test whether the given element has an ancestor with the given class (making it of that kind).
-	 *
-	 * @param {string | string[]} kind Class names to test.
-	 * @param {HTMLElement} elt
-	 */
-	function is_kind(kind, elt) {
-		let $elt = $(elt);
-		if (is_string(kind)) {
-			return $elt.closest(`.${kind}`).length;
-		} else {
-			return kind.find(kind => $elt.closest(`.${kind}`).length);
-		}
-	}
-
+	/*** Type */
 	/* Not currently used
 	function is_ability(elt) {
 		return is_kind('abilities', elt);
@@ -581,12 +567,6 @@
 			|| 'boolean' === typeof(value);
 	}
 
-	/* Not currently used
-	function is_included(name) {
-		return name in included;
-	}
-	*/
-
 	function is_function(value) {
 		return 'function' === typeof(value);
 	}
@@ -595,9 +575,30 @@
 		return /^\s*(?:0x[\da-f]+|\d+)\s*\/\s*(?:0x[\da-f]+|\d+)\s*$/i.test(value);
 	}
 
+	/* Not currently used
+	function is_included(name) {
+		return name in included;
+	}
+	*/
+
 	function is_iterable(value) {
 		return 'object' === typeof(value)
 			&& 'function' === typeof(value.next);
+	}
+
+	/**
+	 * Test whether the given element has an ancestor with the given class (making it of that kind).
+	 *
+	 * @param {string | string[]} kind Class names to test.
+	 * @param {HTMLElement} elt
+	 */
+	function is_kind(kind, elt) {
+		let $elt = $(elt);
+		if (is_string(kind)) {
+			return $elt.closest(`.${kind}`).length;
+		} else {
+			return kind.find(kind => $elt.closest(`.${kind}`).length);
+		}
 	}
 
 	function is_numeric(value) {
@@ -680,6 +681,8 @@
 		pippedKinds = kinds;
 	}
 
+
+	/*** DOM */
 	/**
 	 * Replace HTML character entities.
 	 *
@@ -694,15 +697,23 @@
 		return elt.childNodes.length ? (elt.childNodes[0] || {}).nodeValue : "";
 	}
 
-	function stripHtml(source) {
-		var doc = new DOMParser().parseFromString(source, "text/html");
-		return doc.documentElement.textContent;
+	/**
+	 * Return where a child node is among its parent's children.
+	 */
+	function nodeIndex(node) {
+		return Array.prototype.indexOf.call(node.parentNode.children, node);
 	}
 
 	function stripBreaks(source) {
 		return source.replace(/<(p)[^>]*\/?>/g, '').replace(/<(\/p|br)[^>]*\/?>\n+/g, "\n");
 	}
 
+	function stripHtml(source) {
+		var doc = new DOMParser().parseFromString(source, "text/html");
+		return doc.documentElement.textContent;
+	}
+
+	/**** Extensions */
 	/*** jQuery extensions */
 	// TODO: feature-add methods that take multiple selectors, and return which has closer matching descendents (i.e. `closer()` for descendents)
 
