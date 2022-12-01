@@ -804,6 +804,9 @@
 			return /^(dsf_)?dyn_/.test(name);
 		},
 
+		/**
+		 * Answers whether `name` is a name template for a dynamic DSF.
+		 */
 		isTemplate(name) {
 			return /^(dsf_)?dyn_.*\{.*\}/.test(name);
 		},

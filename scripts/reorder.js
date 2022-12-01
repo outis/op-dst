@@ -102,7 +102,8 @@
 
 			/* As `reorder` is only to be used for UDFs, assume that calling 
 			 * `udf.renumberList` is appropriate. Alternatively, reorder could
-			 * support callbacks registered for reorderable lists.
+			 * support callbacks registered for reorderable lists, or udf
+			 * could subscribe to dragend on UDFs.
 			 */
 			udf.renumberList(evt.delegateTarget);
 		},

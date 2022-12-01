@@ -384,7 +384,7 @@
 				// NOOP
 			} else if (Array.isArray(mapped)) {
 				[key, value] = mapped;
-				mapped = {[key]: value}
+				mapped = {[key]: value};
 			} else {
 				// ?
 				mapped = {[key]: mapped};
