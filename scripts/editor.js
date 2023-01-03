@@ -101,7 +101,8 @@
 
 		/* */
 		addBreaks(value) {
-			return value.replace(/(?<!>)(?:<br\/?>)*\n(?!\s*<)/g, '<br/>\n');
+			//return value.replace(/(?<!>)(?:<br\/?>)*\n(?!\s*<)/g, '<br/>\n');
+			return value.replace(/(^|[^>])(?:<br\/?>)*\n(?!\s*<)/gm, '$1<br/>\n');
 		},
 
 		delBreaks(value) {
