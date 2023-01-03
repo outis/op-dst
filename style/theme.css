@@ -210,7 +210,7 @@
 	background: radial-gradient(circle at -5% 95%, black 0%, #888 10%, white 100%);
 }
 
-.mll_sheet section {
+.character-show .main-content .mll_sheet section {
 	margin-top: 1em;
 	/* solid line all the way to left side */
 	/*border-top: 2px solid black;*/
